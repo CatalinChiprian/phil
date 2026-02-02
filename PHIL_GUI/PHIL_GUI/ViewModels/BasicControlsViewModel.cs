@@ -1,9 +1,10 @@
+using System;
 using System.Windows.Input;
 using PHIL_GUI.Commands;
 
 namespace PHIL_GUI.ViewModels;
 
-public class BasicControlsViewModel : ViewModelBase
+public class BasicControlsViewModel : ViewModelBase, IDisposable
 {
     private readonly MainWindowViewModel _mainViewModel;
     
@@ -41,18 +42,13 @@ public class BasicControlsViewModel : ViewModelBase
         MoveBackwardCommand = new RelayCommand(() => SendMotorCommand("b"));
         MoveUpCommand = new RelayCommand(() => SendMotorCommand("u"));
         MoveDownCommand = new RelayCommand(() => SendMotorCommand("d"));
-        
-        _mainViewModel.PropertyChanged += (s, e) =>
-        {
-            if (e.PropertyName == nameof(_mainViewModel.ReceivedData))
-            {
-                OnPropertyChanged(nameof(ReceivedData));
-            }
-        };
+
+        _mainViewModel.PropertyChanged += OnPropertyChanged;
     }
     
     private void GoBack()
     {
+        Dispose();
         _mainViewModel.GoBackToMainPage();
     }
     
@@ -64,5 +60,19 @@ public class BasicControlsViewModel : ViewModelBase
     private void SendMotorCommand(string command)
     {
         _mainViewModel.SendMotorCommand(command);
+    }
+
+    private void OnPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(_mainViewModel.ReceivedData))
+        {
+            OnPropertyChanged(nameof(ReceivedData));
+        }
+    }
+
+    public void Dispose()
+    {
+        if (_mainViewModel == null) return;
+        _mainViewModel.PropertyChanged -= OnPropertyChanged;
     }
 }

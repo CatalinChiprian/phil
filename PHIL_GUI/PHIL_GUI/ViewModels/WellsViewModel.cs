@@ -1,10 +1,11 @@
+using System;
 using System.Windows.Input;
 using CommunityToolkit.Mvvm.Input;
 using RelayCommand = PHIL_GUI.Commands.RelayCommand;
 
 namespace PHIL_GUI.ViewModels;
 
-public class WellsViewModel : ViewModelBase
+public class WellsViewModel : ViewModelBase, IDisposable
 {
     private readonly MainWindowViewModel _mainViewModel;
     private string _statusMessage = "";
@@ -41,21 +42,13 @@ public class WellsViewModel : ViewModelBase
         
         // Command that accepts the well position as a parameter
         WellsPositionCommand = new RelayCommand<string>(SendWellCommand);
-        
-        _mainViewModel.PropertyChanged += (s, e) =>
-        {
-            if (e.PropertyName == nameof(_mainViewModel.ReceivedData))
-            {
-                OnPropertyChanged(nameof(ReceivedData));
-            }
-        };
-        
-    
-        
+
+        _mainViewModel.PropertyChanged += OnPropertyChanged;  
     }
     
     private void GoBack()
     {
+        Dispose();
         _mainViewModel.GoToBasicControlsPage();  
     }
     
@@ -64,11 +57,24 @@ public class WellsViewModel : ViewModelBase
         _mainViewModel.SendMotorCommand(command);
     }
     
-    private void SendWellCommand(string wellPosition)
+    private void SendWellCommand(string? wellPosition)
     {
         // Convert "A1" to "wa1", "D7" to "wd7", etc.
-        string command = $"w{wellPosition.ToLower()}";
+        string command = $"w{wellPosition?.ToLower()}";
         SendMotorCommand(command);
     }
-    
+
+    private void OnPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(_mainViewModel.ReceivedData))
+        {
+            OnPropertyChanged(nameof(ReceivedData));
+        }
+    }
+
+    public void Dispose()
+    {
+        if (_mainViewModel == null) return;
+        _mainViewModel.PropertyChanged -= OnPropertyChanged;
+    }
 }
