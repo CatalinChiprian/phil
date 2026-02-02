@@ -1,0 +1,165 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:PHIL_GUI.ViewModels"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600"
+             x:Class="PHIL_GUI.Views.SecondPage"
+             x:DataType="vm:BasicControlsViewModel">
+    
+    <DockPanel Margin="20">
+        <TextBlock Text="Send - l/left, r/right, f/forward, b/back, u/up, d/down to move or use buttons" 
+                   FontSize="15"
+                   FontWeight="Bold"
+                   DockPanel.Dock="Bottom"/>
+        
+        <!-- Serial Monitor docked to bottom -->
+        <Border BorderBrush="Gray" 
+                BorderThickness="1" 
+                Padding="5"
+                
+                DockPanel.Dock="Bottom">
+            
+            <StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
+                    <TextBlock Text="Serial Monitor" 
+                               FontWeight="Bold" 
+                               FontSize="16"
+                               VerticalAlignment="Center"/>
+                    <Button Content="Clear" 
+                            Command="{Binding ClearMonitorCommand}"
+                            Width="80"
+                            Margin="10,0,0,0"
+                            HorizontalAlignment="Left"/>
+                </StackPanel>
+                
+                
+                <!-- Received Data Display -->
+                <TextBox Text="{Binding ReceivedData}"
+                         IsReadOnly="True"
+                         Height="150"
+                         TextWrapping="Wrap"
+                         AcceptsReturn="True"
+                         FontFamily="Courier New"
+                         Background="#F5F5F5"/>
+                
+                <!-- Send Message Section -->
+                <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                    <TextBox Text="{Binding MessageToSend}"
+                             Width="400"
+                             Watermark="Type message to send..."
+                             Margin="0,0,10,0">
+                        <TextBox.KeyBindings>
+                            <KeyBinding Gesture="Enter" Command="{Binding SendMessageCommand}"/>
+                        </TextBox.KeyBindings>
+                    </TextBox>
+                    <Button Content="Send"
+                            Command="{Binding SendMessageCommand}"
+                            Background="#1EEB7E"
+                            Width="100"/>
+                </StackPanel>
+            </StackPanel>
+        </Border>
+        
+        <!-- Main content -->
+        <ScrollViewer>
+            <StackPanel>
+                <TextBlock Text="Basic controls" 
+                           FontSize="20"/>
+    
+                <StackPanel Orientation="Horizontal" Margin="0,20,0,0">
+                    <Button Content="Go Back"
+                            Command="{Binding GoBackCommand}"
+                            Width="150"
+                            Margin="0,0,10,0"/>
+        
+                    <Button Content="Continue to the wells"
+                            Command="{Binding GoToWellsPageCommand}"
+                            Width="150"/>
+                    
+                    <Button Content="Emergency stop"
+                            Command="{Binding EmergencyStopCommand}"
+                            Width="150"
+                            Margin="300,0,0,0"
+                            Background="#FF4A24"/>
+                </StackPanel>
+                
+                <Grid Margin="0,85,0,0" HorizontalAlignment="Center">
+                    
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="50"/>
+                        <ColumnDefinition Width="50"/>
+                        <ColumnDefinition Width="50"/>
+                        <ColumnDefinition Width="50"/> 
+                        <ColumnDefinition Width="50"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="50"/>
+                        <RowDefinition Height="50"/>
+                        <RowDefinition Height="50"/>
+                    </Grid.RowDefinitions>
+                    
+                    <Button Content="F"
+                            Command="{Binding MoveForwardCommand}"
+                            Width="50"
+                            Height="50"
+                            Grid.Row="0" Grid.Column="1"
+                            HorizontalAlignment="Center"
+                            HorizontalContentAlignment="Center"
+                            VerticalContentAlignment="Center"/>
+                    
+                    <Button Content="L"
+                            Command="{Binding MoveLeftCommand}"
+                            Width="50"
+                            Height="50"
+                            Grid.Row="1" Grid.Column="0"
+                            HorizontalAlignment="Center"
+                            HorizontalContentAlignment="Center"
+                            VerticalContentAlignment="Center"/>
+                    
+                    <Button Content="R"
+                            Command="{Binding MoveRightCommand}"
+                            Width="50"
+                            Height="50"
+                            Grid.Row="1" Grid.Column="2"
+                            HorizontalAlignment="Center"
+                            HorizontalContentAlignment="Center"
+                            VerticalContentAlignment="Center"/>
+                    
+                    <Button Content="B"
+                            Command="{Binding MoveBackwardCommand}"
+                            Width="50"
+                            Height="50"
+                            Grid.Row="2" Grid.Column="1"
+                            HorizontalAlignment="Center"
+                            HorizontalContentAlignment="Center"
+                            VerticalContentAlignment="Center"/>
+                    
+                    
+                    <Button Content="Up"
+                            Command="{Binding MoveUpCommand}"
+                            Width="70"
+                            Height="50"
+                            Grid.Row="0" Grid.Column="4"
+                            HorizontalAlignment="Center"
+                            HorizontalContentAlignment="Center"
+                            VerticalContentAlignment="Center"/>
+    
+                    <Button Content="Down"
+                            Command="{Binding MoveDownCommand}"
+                            Width="70"
+                            Height="50"
+                            Grid.Row="2" Grid.Column="4"
+                            HorizontalAlignment="Center"
+                            HorizontalContentAlignment="Center"
+                            VerticalContentAlignment="Center"/>
+                </Grid>
+               
+                    
+            </StackPanel>
+            
+            
+        </ScrollViewer>
+    </DockPanel>
+    
+</UserControl>

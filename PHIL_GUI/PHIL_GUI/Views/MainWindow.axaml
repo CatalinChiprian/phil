@@ -1,0 +1,136 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:PHIL_GUI.ViewModels"
+        xmlns:views="using:PHIL_GUI.Views"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600"
+        x:Class="PHIL_GUI.Views.MainWindow"
+        x:DataType="vm:MainWindowViewModel"
+        Icon="/Assets/avalonia-logo.ico"
+        Title="PHIL_GUI"
+        WindowState="Maximized">
+    
+    <!-- Main content area that switches between pages -->
+    <Panel>
+        <!-- Original main page content -->
+        <ScrollViewer IsVisible="{Binding CurrentPage, Converter={x:Static ObjectConverters.IsNull}}">
+            <StackPanel Margin="20">
+                <!-- Port Selection -->
+                <Button Content="Get Available Ports" 
+                        Command="{Binding GetPortsCommand}"
+                        Width="150" 
+                        Margin="0,5"
+                        HorizontalAlignment="Left"/>
+                
+                <ListBox ItemsSource="{Binding AvailablePorts}"
+                         SelectedItem="{Binding SelectedPort}"
+                         Height="80"
+                         Margin="0,10"/>
+                
+                <!-- Connect/Disconnect Buttons -->
+                <StackPanel Orientation="Horizontal" Margin="0,5">
+                    <Button Content="Connect to Selected Port"
+                            Command="{Binding ConnectCommand}"
+                            Width="200"
+                            Background="#1EA1EB"
+                            Margin="0,0,10,0"/>
+                    
+                    <Button Content="Disconnect"
+                            Command="{Binding DisconnectCommand}"
+                            Width="150"
+                            Background="#4BB459"/>
+                    
+                    <Button Content="Emergency stop"
+                            Command="{Binding EmergencyStopCommand}"
+                            Width="150"
+                            Margin="300,0,0,0"
+                            Background="#FF4A24"/>
+                </StackPanel>
+                
+                <TextBlock Text="{Binding ConnectionStatus}"
+                           Margin="0,10"
+                           FontWeight="Bold"/>
+                
+                <!-- Serial Monitor Section -->
+                <Border BorderBrush="Gray" 
+                        BorderThickness="1" 
+                        Margin="0,10"
+                        Padding="5">
+                    <StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
+                            <TextBlock Text="Serial Monitor" 
+                                       FontWeight="Bold" 
+                                       FontSize="16"
+                                       VerticalAlignment="Center"/>
+                            <Button Content="Clear" 
+                                    Command="{Binding ClearMonitorCommand}"
+                                    Width="80"
+                                    Margin="10,0,0,0"
+                                    HorizontalAlignment="Left"/>
+                        </StackPanel>
+                        
+                        <!-- Received Data Display -->
+                        <TextBox Text="{Binding ReceivedData}"
+                                 IsReadOnly="True"
+                                 Height="150"
+                                 TextWrapping="Wrap"
+                                 AcceptsReturn="True"
+                                 FontFamily="Courier New"
+                                 Background="#F5F5F5"/>
+                        
+                        <!-- Send Message Section -->
+                        <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                            <TextBox Text="{Binding MessageToSend}"
+                                     Width="400"
+                                     Watermark="Type message to send..."
+                                     Margin="0,0,10,0">
+                                <TextBox.KeyBindings>
+                                    <KeyBinding Gesture="Enter" Command="{Binding SendMessageCommand}"/>
+                                </TextBox.KeyBindings>
+                            </TextBox>
+                            <Button Content="Send"
+                                    Command="{Binding SendMessageCommand}"
+                                    Background="#1EEB7E"
+                                    Width="100"/>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+                
+                <!-- Navigation Button -->
+                <StackPanel Orientation="Horizontal" Margin="0,20,0,0">
+                    <Button Content="Continue to the basic controls"
+                            Command="{Binding GoToBasicControlsPageCommand}"
+                            Width="210"
+                            Background="#1EA1EB"
+                            Margin="0,0,10,0"/>
+                </StackPanel>
+            </StackPanel>
+        </ScrollViewer>
+        
+        <!-- Basic Controls page content -->
+        <ContentControl Content="{Binding CurrentPage}"
+                        IsVisible="{Binding CurrentPage, Converter={x:Static ObjectConverters.IsNotNull}}">
+            <ContentControl.DataTemplates>
+                <DataTemplate DataType="vm:BasicControlsViewModel">
+                    <views:SecondPage />
+                </DataTemplate>
+            </ContentControl.DataTemplates>
+        </ContentControl>
+        
+        <!-- Wells  page content -->
+        <ContentControl Content="{Binding CurrentPage}"
+                        IsVisible="{Binding CurrentPage, Converter={x:Static ObjectConverters.IsNotNull}}">
+            <ContentControl.DataTemplates>
+                <DataTemplate DataType="vm:BasicControlsViewModel">
+                    <views:SecondPage />
+                </DataTemplate>
+                <DataTemplate DataType="vm:WellsViewModel">
+                    <views:WellsPage />
+                </DataTemplate>
+            </ContentControl.DataTemplates>
+        </ContentControl>
+        
+    </Panel>
+    
+</Window>

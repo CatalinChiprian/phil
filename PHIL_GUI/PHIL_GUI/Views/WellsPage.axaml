@@ -1,0 +1,1108 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:PHIL_GUI.ViewModels"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600"
+             x:Class="PHIL_GUI.Views.WellsPage"
+             x:DataType="vm:WellsViewModel">
+    
+    <DockPanel Margin="20">
+        <!-- Serial Monitor docked to bottom -->
+        <Border BorderBrush="Gray" 
+                BorderThickness="1" 
+                Padding="5"
+                
+                DockPanel.Dock="Bottom">
+            
+            <StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
+                    <TextBlock Text="Serial Monitor" 
+                               FontWeight="Bold" 
+                               FontSize="16"
+                               VerticalAlignment="Center"/>
+                    <Button Content="Clear" 
+                            Command="{Binding ClearMonitorCommand}"
+                            Width="80"
+                            Margin="10,0,0,0"
+                            HorizontalAlignment="Left"/>
+                </StackPanel>
+                
+                
+                <!-- Received Data Display -->
+                <TextBox Text="{Binding ReceivedData}"
+                         IsReadOnly="True"
+                         Height="150"
+                         TextWrapping="Wrap"
+                         AcceptsReturn="True"
+                         FontFamily="Courier New"
+                         Background="#F5F5F5"/>
+                
+                <!-- Send Message Section -->
+                <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                    <TextBox Text="{Binding MessageToSend}"
+                             Width="400"
+                             Watermark="Type message to send..."
+                             Margin="0,0,10,0">
+                        <TextBox.KeyBindings>
+                            <KeyBinding Gesture="Enter" Command="{Binding SendMessageCommand}"/>
+                        </TextBox.KeyBindings>
+                    </TextBox>
+                    <Button Content="Send"
+                            Command="{Binding SendMessageCommand}"
+                            Background="#1EEB7E"
+                            Width="100"/>
+                </StackPanel>
+            </StackPanel>
+        </Border>
+        
+        <!-- Main content -->
+        <ScrollViewer>
+            <StackPanel>
+                <TextBlock Text="Wells" 
+                           FontSize="20"/>
+    
+                <StackPanel Orientation="Horizontal" Margin="0,20,0,0">
+                    <Button Content="Go Back"
+                            Command="{Binding GoBackCommand}"
+                            Width="150"
+                            Margin="0,0,10,0"/>
+        
+                    <Button Content="Continue to pipetting"
+                            Width="200"/>
+                    
+                    <Button Content="Go home"
+                            Command="{Binding GoHomeCommand}"
+                            Width="150"
+                            Margin="250,0,0,0"
+                            Background="#1EA1EB"/>
+                    
+                    <Button Content="Emergency stop"
+                            Command="{Binding EmergencyStopCommand}"
+                            Width="150"
+                            Margin="300,0,0,0"
+                            Background="#FF4A24"/>
+                    
+                </StackPanel>
+                
+                 <Grid Margin="0,0,0,0" HorizontalAlignment="Center">
+                    
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="50"/>
+                        <ColumnDefinition Width="50"/>
+                        <ColumnDefinition Width="50"/>
+                        <ColumnDefinition Width="50"/> 
+                        <ColumnDefinition Width="50"/>
+                        <ColumnDefinition Width="50"/>
+                        <ColumnDefinition Width="50"/>
+                        <ColumnDefinition Width="50"/>
+                        <ColumnDefinition Width="50"/>
+                        <ColumnDefinition Width="50"/> 
+                        <ColumnDefinition Width="50"/>
+                        <ColumnDefinition Width="50"/>
+                        <ColumnDefinition Width="50"/>
+                        <ColumnDefinition Width="50"/>
+                        <ColumnDefinition Width="50"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="50"/>
+                        <RowDefinition Height="50"/>
+                        <RowDefinition Height="50"/>
+                        <RowDefinition Height="50"/>
+                        <RowDefinition Height="50"/>
+                        <RowDefinition Height="50"/>
+                        <RowDefinition Height="50"/>
+                        <RowDefinition Height="50"/>
+                        <RowDefinition Height="50"/>
+                    </Grid.RowDefinitions>
+                     
+                     <Button Content="A1"
+                             Command="{Binding WellsPositionCommand}"
+                             CommandParameter="A1"
+                             Width="50"
+                             Height="50"
+                             Grid.Row="1" Grid.Column="1"
+                             HorizontalAlignment="Center"
+                             HorizontalContentAlignment="Center"
+                             VerticalContentAlignment="Center"/>
+                     
+                     <Button Content="A2"
+                             Command="{Binding WellsPositionCommand}"
+                             CommandParameter="A2"
+                             Width="50"
+                             Height="50"
+                             Grid.Row="1" Grid.Column="2"
+                             HorizontalAlignment="Center"
+                             HorizontalContentAlignment="Center"
+                             VerticalContentAlignment="Center"/>
+                     
+                     <Button Content="A3"
+                             Command="{Binding WellsPositionCommand}"
+                             CommandParameter="A3"
+                             Width="50"
+                             Height="50"
+                             Grid.Row="1" Grid.Column="3"
+                             HorizontalAlignment="Center"
+                             HorizontalContentAlignment="Center"
+                             VerticalContentAlignment="Center"/>
+                     
+                     <Button Content="A4"
+                             Command="{Binding WellsPositionCommand}"
+                             CommandParameter="A4"
+                             Width="50"
+                             Height="50"
+                             Grid.Row="1" Grid.Column="4"
+                             HorizontalAlignment="Center"
+                             HorizontalContentAlignment="Center"
+                             VerticalContentAlignment="Center"/>
+                     
+                     <Button Content="A5"
+                             Command="{Binding WellsPositionCommand}"
+                             CommandParameter="A5"
+                             Width="50"
+                             Height="50"
+                             Grid.Row="1" Grid.Column="5"
+                             HorizontalAlignment="Center"
+                             HorizontalContentAlignment="Center"
+                             VerticalContentAlignment="Center"/>
+                     
+                     <Button Content="A6"
+                             Command="{Binding WellsPositionCommand}"
+                             CommandParameter="A6"
+                             Width="50"
+                             Height="50"
+                             Grid.Row="1" Grid.Column="6"
+                             HorizontalAlignment="Center"
+                             HorizontalContentAlignment="Center"
+                             VerticalContentAlignment="Center"/>
+                     
+                     <Button Content="A7"
+                             Command="{Binding WellsPositionCommand}"
+                             CommandParameter="A7"
+                             Width="50"
+                             Height="50"
+                             Grid.Row="1" Grid.Column="7"
+                             HorizontalAlignment="Center"
+                             HorizontalContentAlignment="Center"
+                             VerticalContentAlignment="Center"/>
+                     
+                     <Button Content="A8"
+                             Command="{Binding WellsPositionCommand}"
+                             CommandParameter="A8"
+                             Width="50"
+                             Height="50"
+                             Grid.Row="1" Grid.Column="8"
+                             HorizontalAlignment="Center"
+                             HorizontalContentAlignment="Center"
+                             VerticalContentAlignment="Center"/>
+                     
+                     <Button Content="A9"
+                             Command="{Binding WellsPositionCommand}"
+                             CommandParameter="A9"
+                             Width="50"
+                             Height="50"
+                             Grid.Row="1" Grid.Column="9"
+                             HorizontalAlignment="Center"
+                             HorizontalContentAlignment="Center"
+                             VerticalContentAlignment="Center"/>
+                     
+                     <Button Content="A10"
+                             Command="{Binding WellsPositionCommand}"
+                             CommandParameter="A10"
+                             Width="50"
+                             Height="50"
+                             Grid.Row="1" Grid.Column="10"
+                             HorizontalAlignment="Center"
+                             HorizontalContentAlignment="Center"
+                             VerticalContentAlignment="Center"/>
+                     
+                     <Button Content="A11"
+                             Command="{Binding WellsPositionCommand}"
+                             CommandParameter="A11"
+                             Width="50"
+                             Height="50"
+                             Grid.Row="1" Grid.Column="11"
+                             HorizontalAlignment="Center"
+                             HorizontalContentAlignment="Center"
+                             VerticalContentAlignment="Center"/>
+                     
+                     <Button Content="A12"
+                             Command="{Binding WellsPositionCommand}"
+                             CommandParameter="A12"
+                             Width="50"
+                             Height="50"
+                             Grid.Row="1" Grid.Column="12"
+                             HorizontalAlignment="Center"
+                             HorizontalContentAlignment="Center"
+                             VerticalContentAlignment="Center"/>
+                     
+                     <Button Content="B1"
+                             Command="{Binding WellsPositionCommand}"
+                             CommandParameter="B1"
+                             Width="50"
+                             Height="50"
+                             Grid.Row="2" Grid.Column="1"
+                             HorizontalAlignment="Center"
+                             HorizontalContentAlignment="Center"
+                             VerticalContentAlignment="Center"/>
+                     
+                     <Button Content="B2"
+                             Command="{Binding WellsPositionCommand}"
+                             CommandParameter="B2"
+                             Width="50"
+                             Height="50"
+                             Grid.Row="2" Grid.Column="2"
+                             HorizontalAlignment="Center"
+                             HorizontalContentAlignment="Center"
+                             VerticalContentAlignment="Center"/>
+                     
+                     <Button Content="B3"
+                             Command="{Binding WellsPositionCommand}"
+                             CommandParameter="B3"
+                             Width="50"
+                             Height="50"
+                             Grid.Row="2" Grid.Column="3"
+                             HorizontalAlignment="Center"
+                             HorizontalContentAlignment="Center"
+                             VerticalContentAlignment="Center"/>
+                     
+                     <Button Content="B4"
+                             Command="{Binding WellsPositionCommand}"
+                             CommandParameter="B4"
+                             Width="50"
+                             Height="50"
+                             Grid.Row="2" Grid.Column="4"
+                             HorizontalAlignment="Center"
+                             HorizontalContentAlignment="Center"
+                             VerticalContentAlignment="Center"/>
+                     
+                     <Button Content="B5"
+                             Command="{Binding WellsPositionCommand}"
+                             CommandParameter="B5"
+                             Width="50"
+                             Height="50"
+                             Grid.Row="2" Grid.Column="5"
+                             HorizontalAlignment="Center"
+                             HorizontalContentAlignment="Center"
+                             VerticalContentAlignment="Center"/>
+                     
+                     <Button Content="B6"
+                             Command="{Binding WellsPositionCommand}"
+                             CommandParameter="B6"
+                             Width="50"
+                             Height="50"
+                             Grid.Row="2" Grid.Column="6"
+                             HorizontalAlignment="Center"
+                             HorizontalContentAlignment="Center"
+                             VerticalContentAlignment="Center"/>
+                     
+                     <Button Content="B7"
+                             Command="{Binding WellsPositionCommand}"
+                             CommandParameter="B7"
+                             Width="50"
+                             Height="50"
+                             Grid.Row="2" Grid.Column="7"
+                             HorizontalAlignment="Center"
+                             HorizontalContentAlignment="Center"
+                             VerticalContentAlignment="Center"/>
+                     
+                     <Button Content="B8"
+                             Command="{Binding WellsPositionCommand}"
+                             CommandParameter="B8"
+                             Width="50"
+                             Height="50"
+                             Grid.Row="2" Grid.Column="8"
+                             HorizontalAlignment="Center"
+                             HorizontalContentAlignment="Center"
+                             VerticalContentAlignment="Center"/>
+                     
+                     <Button Content="B9"
+                             Command="{Binding WellsPositionCommand}"
+                             CommandParameter="B9"
+                             Width="50"
+                             Height="50"
+                             Grid.Row="2" Grid.Column="9"
+                             HorizontalAlignment="Center"
+                             HorizontalContentAlignment="Center"
+                             VerticalContentAlignment="Center"/>
+                     
+                     <Button Content="B10"
+                             Command="{Binding WellsPositionCommand}"
+                             CommandParameter="B10"
+                             Width="50"
+                             Height="50"
+                             Grid.Row="2" Grid.Column="10"
+                             HorizontalAlignment="Center"
+                             HorizontalContentAlignment="Center"
+                             VerticalContentAlignment="Center"/>
+                     
+                     <Button Content="B11"
+                             Command="{Binding WellsPositionCommand}"
+                             CommandParameter="B11"
+                             Width="50"
+                             Height="50"
+                             Grid.Row="2" Grid.Column="11"
+                             HorizontalAlignment="Center"
+                             HorizontalContentAlignment="Center"
+                             VerticalContentAlignment="Center"/>
+                     
+                     <Button Content="B12"
+                             Command="{Binding WellsPositionCommand}"
+                             CommandParameter="B12"
+                             Width="50"
+                             Height="50"
+                             Grid.Row="2" Grid.Column="12"
+                             HorizontalAlignment="Center"
+                             HorizontalContentAlignment="Center"
+                             VerticalContentAlignment="Center"/>
+                     
+                     <Button Content="C1"
+                             Command="{Binding WellsPositionCommand}"
+                             CommandParameter="C1"
+                             Width="50"
+                             Height="50"
+                             Grid.Row="3" Grid.Column="1"
+                             HorizontalAlignment="Center"
+                             HorizontalContentAlignment="Center"
+                             VerticalContentAlignment="Center"/>
+                     
+                     <Button Content="C2"
+                             Command="{Binding WellsPositionCommand}"
+                             CommandParameter="C2"
+                             Width="50"
+                             Height="50"
+                             Grid.Row="3" Grid.Column="2"
+                             HorizontalAlignment="Center"
+                             HorizontalContentAlignment="Center"
+                             VerticalContentAlignment="Center"/>
+                     
+                     <Button Content="C3"
+                             Command="{Binding WellsPositionCommand}"
+                             CommandParameter="C3"
+                             Width="50"
+                             Height="50"
+                             Grid.Row="3" Grid.Column="3"
+                             HorizontalAlignment="Center"
+                             HorizontalContentAlignment="Center"
+                             VerticalContentAlignment="Center"/>
+                     
+                     <Button Content="C4"
+                             Command="{Binding WellsPositionCommand}"
+                             CommandParameter="C4"
+                             Width="50"
+                             Height="50"
+                             Grid.Row="3" Grid.Column="4"
+                             HorizontalAlignment="Center"
+                             HorizontalContentAlignment="Center"
+                             VerticalContentAlignment="Center"/>
+                     
+                     <Button Content="C5"
+                             Command="{Binding WellsPositionCommand}"
+                             CommandParameter="C5"
+                             Width="50"
+                             Height="50"
+                             Grid.Row="3" Grid.Column="5"
+                             HorizontalAlignment="Center"
+                             HorizontalContentAlignment="Center"
+                             VerticalContentAlignment="Center"/>
+                     
+                     <Button Content="C6"
+                             Command="{Binding WellsPositionCommand}"
+                             CommandParameter="C6"
+                             Width="50"
+                             Height="50"
+                             Grid.Row="3" Grid.Column="6"
+                             HorizontalAlignment="Center"
+                             HorizontalContentAlignment="Center"
+                             VerticalContentAlignment="Center"/>
+                     
+                     <Button Content="C7"
+                             Command="{Binding WellsPositionCommand}"
+                             CommandParameter="C7"
+                             Width="50"
+                             Height="50"
+                             Grid.Row="3" Grid.Column="7"
+                             HorizontalAlignment="Center"
+                             HorizontalContentAlignment="Center"
+                             VerticalContentAlignment="Center"/>
+                     
+                     <Button Content="C8"
+                             Command="{Binding WellsPositionCommand}"
+                             CommandParameter="C8"
+                             Width="50"
+                             Height="50"
+                             Grid.Row="3" Grid.Column="8"
+                             HorizontalAlignment="Center"
+                             HorizontalContentAlignment="Center"
+                             VerticalContentAlignment="Center"/>
+                     
+                     <Button Content="C9"
+                             Command="{Binding WellsPositionCommand}"
+                             CommandParameter="C9"
+                             Width="50"
+                             Height="50"
+                             Grid.Row="3" Grid.Column="9"
+                             HorizontalAlignment="Center"
+                             HorizontalContentAlignment="Center"
+                             VerticalContentAlignment="Center"/>
+                     
+                     <Button Content="C10"
+                             Command="{Binding WellsPositionCommand}"
+                             CommandParameter="C10"
+                             Width="50"
+                             Height="50"
+                             Grid.Row="3" Grid.Column="10"
+                             HorizontalAlignment="Center"
+                             HorizontalContentAlignment="Center"
+                             VerticalContentAlignment="Center"/>
+                     
+                     <Button Content="C11"
+                             Command="{Binding WellsPositionCommand}"
+                             CommandParameter="C11"
+                             Width="50"
+                             Height="50"
+                             Grid.Row="3" Grid.Column="11"
+                             HorizontalAlignment="Center"
+                             HorizontalContentAlignment="Center"
+                             VerticalContentAlignment="Center"/>
+                     
+                     <Button Content="C12"
+                             Command="{Binding WellsPositionCommand}"
+                             CommandParameter="C12"
+                             Width="50"
+                             Height="50"
+                             Grid.Row="3" Grid.Column="12"
+                             HorizontalAlignment="Center"
+                             HorizontalContentAlignment="Center"
+                             VerticalContentAlignment="Center"/>
+                     
+                     <Button Content="D1"
+                             Command="{Binding WellsPositionCommand}"
+                             CommandParameter="D1"
+                             Width="50"
+                             Height="50"
+                             Grid.Row="4" Grid.Column="1"
+                             HorizontalAlignment="Center"
+                             HorizontalContentAlignment="Center"
+                             VerticalContentAlignment="Center"/>
+                     
+                     <Button Content="D2"
+                             Command="{Binding WellsPositionCommand}"
+                             CommandParameter="D2"
+                             Width="50"
+                             Height="50"
+                             Grid.Row="4" Grid.Column="2"
+                             HorizontalAlignment="Center"
+                             HorizontalContentAlignment="Center"
+                             VerticalContentAlignment="Center"/>
+                     
+                     <Button Content="D3"
+                             Command="{Binding WellsPositionCommand}"
+                             CommandParameter="D3"
+                             Width="50"
+                             Height="50"
+                             Grid.Row="4" Grid.Column="3"
+                             HorizontalAlignment="Center"
+                             HorizontalContentAlignment="Center"
+                             VerticalContentAlignment="Center"/>
+                     
+                     <Button Content="D4"
+                             Command="{Binding WellsPositionCommand}"
+                             CommandParameter="D4"
+                             Width="50"
+                             Height="50"
+                             Grid.Row="4" Grid.Column="4"
+                             HorizontalAlignment="Center"
+                             HorizontalContentAlignment="Center"
+                             VerticalContentAlignment="Center"/>
+                     
+                     <Button Content="D5"
+                             Command="{Binding WellsPositionCommand}"
+                             CommandParameter="D5"
+                             Width="50"
+                             Height="50"
+                             Grid.Row="4" Grid.Column="5"
+                             HorizontalAlignment="Center"
+                             HorizontalContentAlignment="Center"
+                             VerticalContentAlignment="Center"/>
+                     
+                     <Button Content="D6"
+                             Command="{Binding WellsPositionCommand}"
+                             CommandParameter="D6"
+                             Width="50"
+                             Height="50"
+                             Grid.Row="4" Grid.Column="6"
+                             HorizontalAlignment="Center"
+                             HorizontalContentAlignment="Center"
+                             VerticalContentAlignment="Center"/>
+                     
+                     <Button Content="D7"
+                             Command="{Binding WellsPositionCommand}"
+                             CommandParameter="D7"
+                             Width="50"
+                             Height="50"
+                             Grid.Row="4" Grid.Column="7"
+                             HorizontalAlignment="Center"
+                             HorizontalContentAlignment="Center"
+                             VerticalContentAlignment="Center"/>
+                     
+                     <Button Content="D8"
+                             Command="{Binding WellsPositionCommand}"
+                             CommandParameter="D8"
+                             Width="50"
+                             Height="50"
+                             Grid.Row="4" Grid.Column="8"
+                             HorizontalAlignment="Center"
+                             HorizontalContentAlignment="Center"
+                             VerticalContentAlignment="Center"/>
+                     
+                     <Button Content="D9"
+                             Command="{Binding WellsPositionCommand}"
+                             CommandParameter="D9"
+                             Width="50"
+                             Height="50"
+                             Grid.Row="4" Grid.Column="9"
+                             HorizontalAlignment="Center"
+                             HorizontalContentAlignment="Center"
+                             VerticalContentAlignment="Center"/>
+                     
+                     <Button Content="D10"
+                             Command="{Binding WellsPositionCommand}"
+                             CommandParameter="D10"
+                             Width="50"
+                             Height="50"
+                             Grid.Row="4" Grid.Column="10"
+                             HorizontalAlignment="Center"
+                             HorizontalContentAlignment="Center"
+                             VerticalContentAlignment="Center"/>
+                     
+                     <Button Content="D11"
+                             Command="{Binding WellsPositionCommand}"
+                             CommandParameter="D11"
+                             Width="50"
+                             Height="50"
+                             Grid.Row="4" Grid.Column="11"
+                             HorizontalAlignment="Center"
+                             HorizontalContentAlignment="Center"
+                             VerticalContentAlignment="Center"/>
+                     
+                     <Button Content="D12"
+                             Command="{Binding WellsPositionCommand}"
+                             CommandParameter="D12"
+                             Width="50"
+                             Height="50"
+                             Grid.Row="4" Grid.Column="12"
+                             HorizontalAlignment="Center"
+                             HorizontalContentAlignment="Center"
+                             VerticalContentAlignment="Center"/>
+                     
+                     <Button Content="Up"
+                             Command="{Binding MoveUpCommand}"
+                             Width="70"
+                             Height="50"
+                             Grid.Row="4" Grid.Column="14"
+                             HorizontalAlignment="Center"
+                             HorizontalContentAlignment="Center"
+                             VerticalContentAlignment="Center"
+                             Background="#4BB459"/>
+                     
+                     <Button Content="E1"
+                             Command="{Binding WellsPositionCommand}"
+                             CommandParameter="E1"
+                             Width="50"
+                             Height="50"
+                             Grid.Row="5" Grid.Column="1"
+                             HorizontalAlignment="Center"
+                             HorizontalContentAlignment="Center"
+                             VerticalContentAlignment="Center"/>
+                     
+                     <Button Content="E2"
+                             Command="{Binding WellsPositionCommand}"
+                             CommandParameter="E2"
+                             Width="50"
+                             Height="50"
+                             Grid.Row="5" Grid.Column="2"
+                             HorizontalAlignment="Center"
+                             HorizontalContentAlignment="Center"
+                             VerticalContentAlignment="Center"/>
+                     
+                     <Button Content="E3"
+                             Command="{Binding WellsPositionCommand}"
+                             CommandParameter="E3"
+                             Width="50"
+                             Height="50"
+                             Grid.Row="5" Grid.Column="3"
+                             HorizontalAlignment="Center"
+                             HorizontalContentAlignment="Center"
+                             VerticalContentAlignment="Center"/>
+                     
+                     <Button Content="E4"
+                             Command="{Binding WellsPositionCommand}"
+                             CommandParameter="E4"
+                             Width="50"
+                             Height="50"
+                             Grid.Row="5" Grid.Column="4"
+                             HorizontalAlignment="Center"
+                             HorizontalContentAlignment="Center"
+                             VerticalContentAlignment="Center"/>
+                     
+                     <Button Content="E5"
+                             Command="{Binding WellsPositionCommand}"
+                             CommandParameter="E5"
+                             Width="50"
+                             Height="50"
+                             Grid.Row="5" Grid.Column="5"
+                             HorizontalAlignment="Center"
+                             HorizontalContentAlignment="Center"
+                             VerticalContentAlignment="Center"/>
+                     
+                     <Button Content="E6"
+                             Command="{Binding WellsPositionCommand}"
+                             CommandParameter="E6"
+                             Width="50"
+                             Height="50"
+                             Grid.Row="5" Grid.Column="6"
+                             HorizontalAlignment="Center"
+                             HorizontalContentAlignment="Center"
+                             VerticalContentAlignment="Center"/>
+                     
+                     <Button Content="E7"
+                             Command="{Binding WellsPositionCommand}"
+                             CommandParameter="E7"
+                             Width="50"
+                             Height="50"
+                             Grid.Row="5" Grid.Column="7"
+                             HorizontalAlignment="Center"
+                             HorizontalContentAlignment="Center"
+                             VerticalContentAlignment="Center"/>
+                     
+                     <Button Content="E8"
+                             Command="{Binding WellsPositionCommand}"
+                             CommandParameter="E8"
+                             Width="50"
+                             Height="50"
+                             Grid.Row="5" Grid.Column="8"
+                             HorizontalAlignment="Center"
+                             HorizontalContentAlignment="Center"
+                             VerticalContentAlignment="Center"/>
+                     
+                     <Button Content="E9"
+                             Command="{Binding WellsPositionCommand}"
+                             CommandParameter="E9"
+                             Width="50"
+                             Height="50"
+                             Grid.Row="5" Grid.Column="9"
+                             HorizontalAlignment="Center"
+                             HorizontalContentAlignment="Center"
+                             VerticalContentAlignment="Center"/>
+                     
+                     <Button Content="E10"
+                             Command="{Binding WellsPositionCommand}"
+                             CommandParameter="E10"
+                             Width="50"
+                             Height="50"
+                             Grid.Row="5" Grid.Column="10"
+                             HorizontalAlignment="Center"
+                             HorizontalContentAlignment="Center"
+                             VerticalContentAlignment="Center"/>
+                     
+                     <Button Content="E11"
+                             Command="{Binding WellsPositionCommand}"
+                             CommandParameter="E11"
+                             Width="50"
+                             Height="50"
+                             Grid.Row="5" Grid.Column="11"
+                             HorizontalAlignment="Center"
+                             HorizontalContentAlignment="Center"
+                             VerticalContentAlignment="Center"/>
+                     
+                     <Button Content="E12"
+                             Command="{Binding WellsPositionCommand}"
+                             CommandParameter="E12"
+                             Width="50"
+                             Height="50"
+                             Grid.Row="5" Grid.Column="12"
+                             HorizontalAlignment="Center"
+                             HorizontalContentAlignment="Center"
+                             VerticalContentAlignment="Center"/>
+                     
+                     <Button Content="Down"
+                             Command="{Binding MoveDownCommand}"
+                             Width="70"
+                             Height="50"
+                             Grid.Row="5" Grid.Column="14"
+                             HorizontalAlignment="Center"
+                             HorizontalContentAlignment="Center"
+                             VerticalContentAlignment="Center"
+                             Background="#4BB459"/>
+                     
+                     <Button Content="F1"
+                             Command="{Binding WellsPositionCommand}"
+                             CommandParameter="F1"
+                             Width="50"
+                             Height="50"
+                             Grid.Row="6" Grid.Column="1"
+                             HorizontalAlignment="Center"
+                             HorizontalContentAlignment="Center"
+                             VerticalContentAlignment="Center"/>
+                     
+                     <Button Content="F2"
+                             Command="{Binding WellsPositionCommand}"
+                             CommandParameter="F2"
+                             Width="50"
+                             Height="50"
+                             Grid.Row="6" Grid.Column="2"
+                             HorizontalAlignment="Center"
+                             HorizontalContentAlignment="Center"
+                             VerticalContentAlignment="Center"/>
+                     
+                     <Button Content="F3"
+                             Command="{Binding WellsPositionCommand}"
+                             CommandParameter="F3"
+                             Width="50"
+                             Height="50"
+                             Grid.Row="6" Grid.Column="3"
+                             HorizontalAlignment="Center"
+                             HorizontalContentAlignment="Center"
+                             VerticalContentAlignment="Center"/>
+                     
+                     <Button Content="F4"
+                             Command="{Binding WellsPositionCommand}"
+                             CommandParameter="F4"
+                             Width="50"
+                             Height="50"
+                             Grid.Row="6" Grid.Column="4"
+                             HorizontalAlignment="Center"
+                             HorizontalContentAlignment="Center"
+                             VerticalContentAlignment="Center"/>
+                     
+                     <Button Content="F5"
+                             Command="{Binding WellsPositionCommand}"
+                             CommandParameter="F5"
+                             Width="50"
+                             Height="50"
+                             Grid.Row="6" Grid.Column="5"
+                             HorizontalAlignment="Center"
+                             HorizontalContentAlignment="Center"
+                             VerticalContentAlignment="Center"/>
+                     
+                     <Button Content="F6"
+                             Command="{Binding WellsPositionCommand}"
+                             CommandParameter="F6"
+                             Width="50"
+                             Height="50"
+                             Grid.Row="6" Grid.Column="6"
+                             HorizontalAlignment="Center"
+                             HorizontalContentAlignment="Center"
+                             VerticalContentAlignment="Center"/>
+                     
+                     <Button Content="F7"
+                             Command="{Binding WellsPositionCommand}"
+                             CommandParameter="F7"
+                             Width="50"
+                             Height="50"
+                             Grid.Row="6" Grid.Column="7"
+                             HorizontalAlignment="Center"
+                             HorizontalContentAlignment="Center"
+                             VerticalContentAlignment="Center"/>
+                     
+                     <Button Content="F8"
+                             Command="{Binding WellsPositionCommand}"
+                             CommandParameter="F8"
+                             Width="50"
+                             Height="50"
+                             Grid.Row="6" Grid.Column="8"
+                             HorizontalAlignment="Center"
+                             HorizontalContentAlignment="Center"
+                             VerticalContentAlignment="Center"/>
+                     
+                     <Button Content="F9"
+                             Command="{Binding WellsPositionCommand}"
+                             CommandParameter="F9"
+                             Width="50"
+                             Height="50"
+                             Grid.Row="6" Grid.Column="9"
+                             HorizontalAlignment="Center"
+                             HorizontalContentAlignment="Center"
+                             VerticalContentAlignment="Center"/>
+                     
+                     <Button Content="F10"
+                             Command="{Binding WellsPositionCommand}"
+                             CommandParameter="F10"
+                             Width="50"
+                             Height="50"
+                             Grid.Row="6" Grid.Column="10"
+                             HorizontalAlignment="Center"
+                             HorizontalContentAlignment="Center"
+                             VerticalContentAlignment="Center"/>
+                     
+                     <Button Content="F11"
+                             Command="{Binding WellsPositionCommand}"
+                             CommandParameter="F11"
+                             Width="50"
+                             Height="50"
+                             Grid.Row="6" Grid.Column="11"
+                             HorizontalAlignment="Center"
+                             HorizontalContentAlignment="Center"
+                             VerticalContentAlignment="Center"/>
+                     
+                     <Button Content="F12"
+                             Command="{Binding WellsPositionCommand}"
+                             CommandParameter="F12"
+                             Width="50"
+                             Height="50"
+                             Grid.Row="6" Grid.Column="12"
+                             HorizontalAlignment="Center"
+                             HorizontalContentAlignment="Center"
+                             VerticalContentAlignment="Center"/>
+                     
+                     <Button Content="G1"
+                             Command="{Binding WellsPositionCommand}"
+                             CommandParameter="G1"
+                             Width="50"
+                             Height="50"
+                             Grid.Row="7" Grid.Column="1"
+                             HorizontalAlignment="Center"
+                             HorizontalContentAlignment="Center"
+                             VerticalContentAlignment="Center"/>
+                     
+                     <Button Content="G2"
+                             Command="{Binding WellsPositionCommand}"
+                             CommandParameter="G2"
+                             Width="50"
+                             Height="50"
+                             Grid.Row="7" Grid.Column="2"
+                             HorizontalAlignment="Center"
+                             HorizontalContentAlignment="Center"
+                             VerticalContentAlignment="Center"/>
+                     
+                     <Button Content="G3"
+                             Command="{Binding WellsPositionCommand}"
+                             CommandParameter="G3"
+                             Width="50"
+                             Height="50"
+                             Grid.Row="7" Grid.Column="3"
+                             HorizontalAlignment="Center"
+                             HorizontalContentAlignment="Center"
+                             VerticalContentAlignment="Center"/>
+                     
+                     <Button Content="G4"
+                             Command="{Binding WellsPositionCommand}"
+                             CommandParameter="G4"
+                             Width="50"
+                             Height="50"
+                             Grid.Row="7" Grid.Column="4"
+                             HorizontalAlignment="Center"
+                             HorizontalContentAlignment="Center"
+                             VerticalContentAlignment="Center"/>
+                     
+                     <Button Content="G5"
+                             Command="{Binding WellsPositionCommand}"
+                             CommandParameter="G5"
+                             Width="50"
+                             Height="50"
+                             Grid.Row="7" Grid.Column="5"
+                             HorizontalAlignment="Center"
+                             HorizontalContentAlignment="Center"
+                             VerticalContentAlignment="Center"/>
+                     
+                     <Button Content="G6"
+                             Command="{Binding WellsPositionCommand}"
+                             CommandParameter="G6"
+                             Width="50"
+                             Height="50"
+                             Grid.Row="7" Grid.Column="6"
+                             HorizontalAlignment="Center"
+                             HorizontalContentAlignment="Center"
+                             VerticalContentAlignment="Center"/>
+                     
+                     <Button Content="G7"
+                             Command="{Binding WellsPositionCommand}"
+                             CommandParameter="G7"
+                             Width="50"
+                             Height="50"
+                             Grid.Row="7" Grid.Column="7"
+                             HorizontalAlignment="Center"
+                             HorizontalContentAlignment="Center"
+                             VerticalContentAlignment="Center"/>
+                     
+                     <Button Content="G8"
+                             Command="{Binding WellsPositionCommand}"
+                             CommandParameter="G8"
+                             Width="50"
+                             Height="50"
+                             Grid.Row="7" Grid.Column="8"
+                             HorizontalAlignment="Center"
+                             HorizontalContentAlignment="Center"
+                             VerticalContentAlignment="Center"/>
+                     
+                     <Button Content="G9"
+                             Command="{Binding WellsPositionCommand}"
+                             CommandParameter="G9"
+                             Width="50"
+                             Height="50"
+                             Grid.Row="7" Grid.Column="9"
+                             HorizontalAlignment="Center"
+                             HorizontalContentAlignment="Center"
+                             VerticalContentAlignment="Center"/>
+                     
+                     <Button Content="G10"
+                             Command="{Binding WellsPositionCommand}"
+                             CommandParameter="G10"
+                             Width="50"
+                             Height="50"
+                             Grid.Row="7" Grid.Column="10"
+                             HorizontalAlignment="Center"
+                             HorizontalContentAlignment="Center"
+                             VerticalContentAlignment="Center"/>
+                     
+                     <Button Content="G11"
+                             Command="{Binding WellsPositionCommand}"
+                             CommandParameter="G11"
+                             Width="50"
+                             Height="50"
+                             Grid.Row="7" Grid.Column="11"
+                             HorizontalAlignment="Center"
+                             HorizontalContentAlignment="Center"
+                             VerticalContentAlignment="Center"/>
+                     
+                     <Button Content="G12"
+                             Command="{Binding WellsPositionCommand}"
+                             CommandParameter="G12"
+                             Width="50"
+                             Height="50"
+                             Grid.Row="7" Grid.Column="12"
+                             HorizontalAlignment="Center"
+                             HorizontalContentAlignment="Center"
+                             VerticalContentAlignment="Center"/>
+                     
+                     <Button Content="H1"
+                             Command="{Binding WellsPositionCommand}"
+                             CommandParameter="H1"
+                             Width="50"
+                             Height="50"
+                             Grid.Row="8" Grid.Column="1"
+                             HorizontalAlignment="Center"
+                             HorizontalContentAlignment="Center"
+                             VerticalContentAlignment="Center"/>
+                     
+                     <Button Content="H2"
+                             Command="{Binding WellsPositionCommand}"
+                             CommandParameter="H2"
+                             Width="50"
+                             Height="50"
+                             Grid.Row="8" Grid.Column="2"
+                             HorizontalAlignment="Center"
+                             HorizontalContentAlignment="Center"
+                             VerticalContentAlignment="Center"/>
+                     
+                     <Button Content="H3"
+                             Command="{Binding WellsPositionCommand}"
+                             CommandParameter="H3"
+                             Width="50"
+                             Height="50"
+                             Grid.Row="8" Grid.Column="3"
+                             HorizontalAlignment="Center"
+                             HorizontalContentAlignment="Center"
+                             VerticalContentAlignment="Center"/>
+                     
+                     <Button Content="H4"
+                             Command="{Binding WellsPositionCommand}"
+                             CommandParameter="H4"
+                             Width="50"
+                             Height="50"
+                             Grid.Row="8" Grid.Column="4"
+                             HorizontalAlignment="Center"
+                             HorizontalContentAlignment="Center"
+                             VerticalContentAlignment="Center"/>
+                     
+                     <Button Content="H5"
+                             Command="{Binding WellsPositionCommand}"
+                             CommandParameter="H5"
+                             Width="50"
+                             Height="50"
+                             Grid.Row="8" Grid.Column="5"
+                             HorizontalAlignment="Center"
+                             HorizontalContentAlignment="Center"
+                             VerticalContentAlignment="Center"/>
+                     
+                     <Button Content="H6"
+                             Command="{Binding WellsPositionCommand}"
+                             CommandParameter="H6"
+                             Width="50"
+                             Height="50"
+                             Grid.Row="8" Grid.Column="6"
+                             HorizontalAlignment="Center"
+                             HorizontalContentAlignment="Center"
+                             VerticalContentAlignment="Center"/>
+                     
+                     <Button Content="H7"
+                             Command="{Binding WellsPositionCommand}"
+                             CommandParameter="H7"
+                             Width="50"
+                             Height="50"
+                             Grid.Row="8" Grid.Column="7"
+                             HorizontalAlignment="Center"
+                             HorizontalContentAlignment="Center"
+                             VerticalContentAlignment="Center"/>
+                     
+                     <Button Content="H8"
+                             Command="{Binding WellsPositionCommand}"
+                             CommandParameter="H8"
+                             Width="50"
+                             Height="50"
+                             Grid.Row="8" Grid.Column="8"
+                             HorizontalAlignment="Center"
+                             HorizontalContentAlignment="Center"
+                             VerticalContentAlignment="Center"/>
+                     
+                     <Button Content="H9"
+                             Command="{Binding WellsPositionCommand}"
+                             CommandParameter="H9"
+                             Width="50"
+                             Height="50"
+                             Grid.Row="8" Grid.Column="9"
+                             HorizontalAlignment="Center"
+                             HorizontalContentAlignment="Center"
+                             VerticalContentAlignment="Center"/>
+                     
+                     <Button Content="H10"
+                             Command="{Binding WellsPositionCommand}"
+                             CommandParameter="H10"
+                             Width="50"
+                             Height="50"
+                             Grid.Row="8" Grid.Column="10"
+                             HorizontalAlignment="Center"
+                             HorizontalContentAlignment="Center"
+                             VerticalContentAlignment="Center"/>
+                     
+                     <Button Content="H11"
+                             Command="{Binding WellsPositionCommand}"
+                             CommandParameter="H11"
+                             Width="50"
+                             Height="50"
+                             Grid.Row="8" Grid.Column="11"
+                             HorizontalAlignment="Center"
+                             HorizontalContentAlignment="Center"
+                             VerticalContentAlignment="Center"/>
+                     
+                     <Button Content="H12"
+                             Command="{Binding WellsPositionCommand}"
+                             CommandParameter="H12"
+                             Width="50"
+                             Height="50"
+                             Grid.Row="8" Grid.Column="12"
+                             HorizontalAlignment="Center"
+                             HorizontalContentAlignment="Center"
+                             VerticalContentAlignment="Center"/>
+                     
+                     
+                </Grid>
+                
+            </StackPanel>
+            
+            
+        </ScrollViewer>
+    </DockPanel>
+    
+</UserControl>
