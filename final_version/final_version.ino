@@ -1,6 +1,7 @@
   /* Created by Victoria Shvets
   Based on Phillip Dettinger work availible on https://github.com/CSDGroup/PHIL.git */
 
+  #include <EEPROM.h>
   #include <AccelStepper.h>
   #include <MultiStepper.h>
 
@@ -41,7 +42,7 @@
   int faultR = 37;
   int faultL = 39;
 
-  int microIndex = 4; // 0=full, 1=half, 2=1/4, 3=1/8, 4=1/16, 5=1/32
+  int microIndex = 3; // 0=full, 1=half, 2=1/4, 3=1/8, 4=1/16, 5=1/32
   int currentMicrosteps = MICROoptions[microIndex]; 
 
   bool systemInitialized = false;
@@ -50,8 +51,6 @@
   bool motorsCurrentlyEnabled = false;
   const unsigned long MOTOR_TIMEOUT = 5000;  // 5 seconds
   bool emergencyStopRequested = false;
-
-
 
   void setup() {
     Serial.begin(9600);
@@ -96,18 +95,26 @@
 
     Serial.println("System starting - performing initial home...");
     interruptibleDelay(1000);
-    calibrate(); 
-    setupCalibration(); 
 
-    int finalHome = home();
-    if(finalHome == 1) {
-      Serial.println("Final home complete - position reset to 0,0");
-    } else {
-      Serial.println("Final home failed");
-      disableMotors(); 
-      motorsCurrentlyEnabled = false;
-      interruptibleDelay(1000);
+
+  
+    if (!loadPositions()) {
+      home();
     }
+
+
+    // calibrate(); 
+    // setupCalibration(); 
+
+    // int finalHome = home();
+    // if(finalHome == 1) {
+    //   Serial.println("Final home complete - position reset to 0,0");
+    // } else {
+    //   Serial.println("Final home failed");
+    //   disableMotors(); 
+    //   motorsCurrentlyEnabled = false;
+    //   interruptibleDelay(1000);
+    // }
 
 
     emergencyStopRequested = false; 
@@ -119,6 +126,34 @@
     Serial.print(" | R: ");
     Serial.println(stepperR.currentPosition());
 
+  }
+
+  void moveBackward() {
+    enableMotors();
+
+    stepperL.move(-4 * currentMicrosteps);
+    stepperR.move(5 * currentMicrosteps);
+  }
+
+  void moveForward() {
+    enableMotors();
+
+    stepperL.move(4 * currentMicrosteps);
+    stepperR.move(-5 * currentMicrosteps);
+  }
+
+  void moveLeft(int times = 1) {
+    enableMotors();
+
+    stepperL.move(-4 * times * currentMicrosteps);
+    stepperR.move(-3 * times * currentMicrosteps);
+  }
+
+  void moveRight(int times = 1) {
+    enableMotors();
+
+    stepperL.move(4 * times * currentMicrosteps);
+    stepperR.move(3 * times * currentMicrosteps);
   }
 
   void loop() {
@@ -156,31 +191,27 @@
         
         switch (cmd) {
           case 'b': // backward
-            enableMotors();   
-            stepperR.move(5 * currentMicrosteps);
-            stepperL.move(-4 * currentMicrosteps);
+            moveBackward();
             Serial.print("PHIL moved backward \n");
+            savePositions();
           break;
       
           case 'f': // forward
-            enableMotors();
-            stepperR.move(-5 * currentMicrosteps);
-            stepperL.move(4 * currentMicrosteps);
+            moveForward();
             Serial.print("PHIL moved forward \n");
+            savePositions();
           break;
       
           case 'l': // left
-            enableMotors();
-            stepperL.move(-4 * currentMicrosteps);
-            stepperR.move(-3 * currentMicrosteps);
+            moveLeft();
             Serial.print("PHIL moved left \n");
+            savePositions();
           break;
       
           case 'r': // right
-            enableMotors();
-            stepperL.move(4 * currentMicrosteps);
-            stepperR.move(3 * currentMicrosteps);
+            moveRight();
             Serial.print("PHIL moved right \n");
+            savePositions();
           break;
       
           case 'u': // Up
@@ -188,6 +219,7 @@
             stepperZ1.move(6 * currentMicrosteps);
             stepperZ2.move(6 * currentMicrosteps);
             Serial.print("PHIL moved up \n");
+            savePositions();
           break;
       
           case 'd': // Down
@@ -195,11 +227,18 @@
             stepperZ1.move(-6 * currentMicrosteps);
             stepperZ2.move(-6 * currentMicrosteps);
             Serial.print("PHIL moved down \n");
+            savePositions();
           break;
 
           case 'h': // Home
-            home();
-            calibrate();  
+            stepperL.moveTo(0); 
+            stepperR.moveTo(0); 
+    
+            while(stepperR.distanceToGo() != 0 || stepperL.distanceToGo() != 0) {
+              stepperR.run();
+              stepperL.run();
+            }
+            savePositions();  
           break; 
 
           case 'p': // Print positions
@@ -220,7 +259,10 @@
           case 'w': // Go to well
             if(received.length() >= 3) {
               char row = received.charAt(1);
-              wells(row, received);  
+              String columnStr = received.substring(2);  
+              int column = columnStr.toInt();
+              wells(row, column);  
+              savePositions();
             } else {
               Serial.println("Invalid well command. Use format: wa1, wb2, wa10, etc.");
             }
@@ -254,7 +296,21 @@
               digitalWrite(ena[i], LOW);
             }
             Serial.println("Motors should be locked now");
-          break;      
+          break;
+
+          case 'm':
+            for (char i = 'a'; i <= 'h'; i++) {
+              for (int j = 1; j <= 1; j++) {
+                wells(i, j);
+                interruptibleDelay(1000);
+                home();
+                interruptibleDelay(1000);
+                Serial.println("Went to well ");
+                Serial.print(i);
+                Serial.print(j);
+              }
+            }
+          break;  
         }
       }
     }
@@ -297,6 +353,7 @@
         Serial.println("Limit R PRESSED");
         rWasPressed = true;
       }
+      stepperR.stop();
       stepperR.setCurrentPosition(stepperR.currentPosition());
     } else {
       rWasPressed = false;
@@ -304,7 +361,6 @@
   }
 
   int home(){
-
     if(emergencyStopRequested) {
       emergencyStopRequested = false; 
       return -1;
@@ -418,8 +474,7 @@
 
   int attemptHome(int speedR, int speedL, unsigned long timeout, unsigned long overallStartTime, unsigned long overallTimeout){
     
-    stepperL.setSpeed(speedR);
-    stepperR.setSpeed(speedL);  
+    enterHomingMode(speedL, speedR); 
     
     unsigned long startTime = millis();
     
@@ -456,10 +511,12 @@
     stepperL.setSpeed(0);
     stepperR.setCurrentPosition(0);
     stepperL.setCurrentPosition(0);
+
+    exitHomingMode();
     return 1; 
   }
 
-  void wells(char row, String columnNum){  
+  void wells(char row, int column){  
 
     if(emergencyStopRequested) {
       emergencyStopRequested = false;  
@@ -482,79 +539,72 @@
     // interruptibleDelay(60000);
 
     // enableMotors(); 
-
-    String columnStr = columnNum.substring(2);  
-    int column = columnStr.toInt();
     
     Serial.print("Row: ");
     Serial.print(row);
     Serial.print(" | Column: ");
     Serial.println(column);
 
-    setSlowSpeed(); 
+    //setSlowSpeed(); 
 
     
     switch(row) {
         case 'a':
           switch(column) {
-            case 1: 
-              calibrate(); 
-              moveToWell(-62, -49, "A1"); // Motor L, Motor R, Well name
+            
+            case 1: // V
+              moveToWell(-62, -50, "A1"); // Motor L, Motor R, Well name
             break;
             
             case 2:
-              calibrate(); 
-              moveToWell(-44, -52, "A2"); // Motor L, Motor R, Well name
+              moveToWell(-48, -57, "A2"); // Motor L, Motor R, Well name
             break;
 
             case 3:
-              calibrate(); 
               moveToWell(-38, -56, "A3"); // Motor L, Motor R, Well name
             break;
 
             case 4:
-              calibrate(); 
               moveToWell(-33, -60, "A4"); // Motor L, Motor R, Well name
             break;
 
             case 5:
-              calibrate(); 
               moveToWell(-29, -63, "A5"); // Motor L, Motor R, Well name
             break;
 
             case 6:
-              calibrate(); 
               moveToWell(-28, -67, "A6"); // Motor L, Motor R, Well name
             break;
 
             case 7:
-              calibrate(); 
               moveToWell(-20, -70, "A7"); // Motor L, Motor R, Well name
             break;
 
             case 8:
-              calibrate(); 
               moveToWell(-15, -72, "A8"); // Motor L, Motor R, Well name
             break;
 
             case 9:
-              calibrate(); 
               moveToWell(-13, -78, "A9"); // Motor L, Motor R, Well name
             break;
 
             case 10:
-              calibrate(); 
               moveToWell(-10, -81, "A10"); // Motor L, Motor R, Well name
             break;
 
             case 11:
-              calibrate(); 
               moveToWell(-4, -87, "A11"); // Motor L, Motor R, Well name
             break;
 
             case 12:
-              calibrate(); 
-              moveToWell(22, -91, "A12"); // Motor L, Motor R, Well name
+              moveLeft(10);
+
+              while(stepperR.distanceToGo() != 0 || stepperL.distanceToGo() != 0) {
+                stepperR.run();
+                stepperL.run();
+              }
+              //interruptibleDelay(50000);
+              moveToWell(31, -88, "A12"); // Motor L, Motor R, Well name
             break;
 
             default:
@@ -567,26 +617,22 @@
         case 'b' :
         switch(column) {
             
-            case 1: 
-              calibrate();  
-              moveToWell(-60, -45, "B1"); // Motor L, Motor R, Well name
+            case 1: //V
+              moveToWell(-54, -44, "B1"); // Motor L, Motor R, Well name
             break;
 
             case 2: 
-              calibrate();  
               moveToWell(-38, -49, "B2"); // Motor L, Motor R, Well name
             break;
 
 
             case 8:
-              //calibrate(); 
               stepperL.move(-15 * currentMicrosteps); 
               stepperR.move(-75 * currentMicrosteps);
               Serial.println("Moved to B8");
             break;
 
             case 12:
-              calibrate();   
               moveToWell(30, -90, "B12"); // Motor L, Motor R, Well name        
             break;
 
@@ -603,20 +649,17 @@
         case 'c' :
         switch(column) {
             
-            case 1:
-              calibrate();  
-              moveToWell(-43, -41, "C1"); // Motor L, Motor R, Well name
+            case 1: // V
+              moveToWell(-51, -39, "C1"); // Motor L, Motor R, Well name
             break;
 
             case 2:
-              //calibrate(); 
               stepperR.move(48 * currentMicrosteps); 
               stepperL.move(-40 * currentMicrosteps);
               Serial.println("Moving to D2");
             break;
 
             case 4:
-              //calibrate(); 
               stepperL.move(-30 * currentMicrosteps); 
               stepperR.move(-60 * currentMicrosteps);
               Serial.println("Moved to C4");
@@ -632,32 +675,27 @@
         case 'd' :
         switch(column) {
             
-            case 1:
-              calibrate();  
+            case 1: // V
               moveToWell(-50, -33, "D1"); // Motor L, Motor R, Well name
             break;
 
             case 2:
-              //calibrate(); 
               stepperR.move(45 * currentMicrosteps); 
               stepperL.move(-36 * currentMicrosteps);
               Serial.println("Moving to D2");
             break;
 
             case 3:
-              ///calibrate(); 
               stepperR.move(50 * currentMicrosteps); 
               stepperL.move(-32 * currentMicrosteps);
               Serial.println("Moving to D3");
             break;
 
             case 7: 
-              calibrate();  
               moveToWell(-14, -62, "D7"); // Motor L, Motor R, Well name
             break;
 
             case 12:
-              calibrate(); 
               moveToWell(43, -84, "D12"); // Motor L, Motor R, Well name        
             break;
 
@@ -672,21 +710,16 @@
         switch(column) {
             
             case 1:
-              //calibrate(); 
-              stepperR.move(37 * currentMicrosteps); 
-              stepperL.move(-14 * currentMicrosteps); 
-              Serial.println("Moved to E1");
+              moveToWell(-45, -29.25, "E1"); 
             break;
 
             case 2:
-              //calibrate(); 
               stepperR.move(43 * currentMicrosteps); 
               stepperL.move(-10 * currentMicrosteps);
               Serial.println("Moving to E2");
             break;
 
             case 7: 
-              calibrate();  
               moveToWell(-12, -60, "E7"); // Motor L, Motor R, Well name
             break;
 
@@ -700,22 +733,17 @@
         case 'f' :
         switch(column) {
             
-            case 1:
-              //calibrate(); 
-              stepperR.move(30 * currentMicrosteps); 
-              stepperL.move(-35 * currentMicrosteps);
-              Serial.println("Moving to F1");
+            case 1: //V
+              moveToWell(-39, -24.75, "F1");
             break;
 
             case 2:
-              //calibrate(); 
               stepperR.move(40 * currentMicrosteps); 
               stepperL.move(-6 * currentMicrosteps);
               Serial.println("Moving to F2");
             break;
 
             case 3:
-              //calibrate(); 
               stepperR.move(45 * currentMicrosteps); 
               stepperL.move(-25 * currentMicrosteps);
               Serial.println("Moving to H2");
@@ -732,28 +760,22 @@
         switch(column) {
             
             case 1:
-              //calibrate(); 
-              stepperR.move(29 * currentMicrosteps); 
-              stepperL.move(-6 * currentMicrosteps); 
-              Serial.println("Moved to G1");
+              moveToWell(-34, -20.5, "G1");
             break;
 
             case 2:
-              //calibrate(); 
               stepperR.move(36 * currentMicrosteps); 
               stepperL.move(-2 * currentMicrosteps);
               Serial.println("Moving to G2");
             break;
 
             case 9:
-              //calibrate(); 
               stepperR.move(70* currentMicrosteps); 
               stepperL.move(2 * currentMicrosteps);
               Serial.println("Moved to G9");
             break;
 
             case 12:
-              //calibrate(); 
               stepperR.move(86 * currentMicrosteps); 
               stepperL.move(58 * currentMicrosteps);
               Serial.println("Moved to G12");
@@ -768,15 +790,11 @@
 
         case 'h' :
         switch(column) {
-            
-            case 1:
-              calibrate();  
-              moveToWell(-24, -19, "H1"); // Motor L, Motor R, Well name
-              
+            case 1: // V
+              moveToWell(-23, -18.25, "H1"); // Motor L, Motor R, Well name
             break;
 
             case 2:
-              //calibrate(); 
               stepperR.move(33 * currentMicrosteps); 
               stepperL.move(-20 * currentMicrosteps);
               Serial.println("Moving to H2");
@@ -784,32 +802,28 @@
             break;
 
             case 6:
-              //calibrate(); 
               stepperR.move(55* currentMicrosteps); 
               stepperL.move(-5 * currentMicrosteps);
               Serial.println("Moved to H6");
             break;
 
             case 7:
-              calibrate();  
               moveToWell(-3, -55, "H7"); // Motor L, Motor R, Well name
             break;
 
             case 8:
-              //calibrate(); 
               stepperR.move(-60 * currentMicrosteps); 
               Serial.println("Moved to H8");
             break;
 
             case 10:
-              //calibrate(); 
               stepperR.move(71 * currentMicrosteps); 
               stepperL.move(40 * currentMicrosteps);
               Serial.println("Moved to H10");
             break;
 
             case 12:
-              calibrate(); 
+              //moveToWellWithPreload(58 * currentMicrosteps, -76 * currentMicrosteps, "H12");
               stepperL.move(58 * currentMicrosteps); 
               stepperR.move(-76 * currentMicrosteps);
               Serial.println("Moved to H12");
@@ -910,13 +924,12 @@
     return 1;
   }
 
-
-  void moveToWell(int moveL, int moveR, String wellName) {
+  void moveToWell(long moveL, long moveR, String wellName) {
 
     enableMotors();
 
-    stepperL.move(moveL * currentMicrosteps); 
-    stepperR.move(moveR * currentMicrosteps); 
+    stepperL.moveTo(moveL * currentMicrosteps); 
+    stepperR.moveTo(moveR * currentMicrosteps); 
     
     while(stepperR.distanceToGo() != 0 || stepperL.distanceToGo() != 0) {
       stepperR.run();
@@ -1072,4 +1085,63 @@
     } else {
       faultLatched = false;
     }
+  }
+
+  void enterHomingMode(int homingSpeedL, int homingSpeedR) {
+  stepperL.stop();
+  stepperR.stop();
+
+  stepperL.setSpeed(homingSpeedL);
+  stepperR.setSpeed(homingSpeedR);
+  }
+
+  void exitHomingMode() {
+  stepperL.setSpeed(0);
+  stepperR.setSpeed(0);
+
+  setNormalSpeed();
+  }
+
+  void savePositions() {
+  EEPROM.put(0, stepperL.currentPosition());
+  EEPROM.put(4, stepperR.currentPosition());
+  EEPROM.put(8, stepperZ1.currentPosition());
+  EEPROM.put(12, stepperZ2.currentPosition());
+
+  byte ok = 123;
+  EEPROM.put(16, ok);
+
+  Serial.println("Saved stepper positions to EEPROM");
+  }
+
+  bool loadPositions() {
+  byte ok;
+  EEPROM.get(16, ok);
+
+  if (ok != 123) {
+    Serial.println("No valid stored positions – doing normal home");
+    return false;
+  }
+
+  long L, R, Z1, Z2;
+  EEPROM.get(0, L);
+  EEPROM.get(4, R);
+  EEPROM.get(8, Z1);
+  EEPROM.get(12, Z2);
+
+  stepperL.setCurrentPosition(L);
+  stepperR.setCurrentPosition(R);
+  stepperZ1.setCurrentPosition(Z1);
+  stepperZ2.setCurrentPosition(Z2);
+
+  Serial.print("Loaded L=");
+  Serial.print(L);
+  Serial.print(" R=");
+  Serial.print(R);
+  Serial.print(" Z1=");
+  Serial.print(Z1);
+  Serial.print(" Z2=");
+  Serial.println(Z2);
+
+  return true;
   }
