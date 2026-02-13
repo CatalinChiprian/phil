@@ -231,6 +231,7 @@
           break;
 
           case 'h': // Home
+            enableMotors();
             stepperL.moveTo(0); 
             stepperR.moveTo(0); 
     
