@@ -58,12 +58,7 @@
     Serial.println("Hello from Arduino!");
     interruptibleDelay(1000);
 
-    for (int i = 0; i < 4; i++) {
-      pinMode(ena[i], OUTPUT);
-      digitalWrite(ena[i], LOW);
-      pinMode(step[i], OUTPUT);
-      pinMode(dir[i], OUTPUT);
-    }
+    enableMotors();
 
     //digitalWrite(limitSwitchL, HIGH);
     pinMode(limitSwitchR, INPUT_PULLUP);
@@ -298,8 +293,9 @@
                 wells(i, j);
                 interruptibleDelay(500);
                 goToOrigin();
-                interruptibleDelay(5000);
+                interruptibleDelay(500);
                 disableMotors();
+                interruptibleDelay(500);
                 Serial.println("Went to well ");
                 Serial.print(i);
                 Serial.print(j);
