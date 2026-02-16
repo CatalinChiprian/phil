@@ -227,6 +227,8 @@
 
           case 'h': // Home
             goToOrigin();
+            interruptibleDelay(500);
+            disableMotors();
             savePositions();  
           break; 
 
@@ -555,11 +557,11 @@
           switch(column) {
             
             case 1: // V
-              moveToWell(-62, -50, "A1"); // Motor L, Motor R, Well name
+              moveToWell(-60, -50.25, "A1"); // Motor L, Motor R, Well name
             break;
             
             case 2: // V
-              moveToWell(-45, -54.25, "A2"); // Motor L, Motor R, Well name
+              moveToWell(-43.5, -54.375, "A2"); // Motor L, Motor R, Well name
             break;
 
             case 3:
@@ -620,7 +622,7 @@
         switch(column) {
             
             case 1: // V
-              moveToWell(-54, -44, "B1"); // Motor L, Motor R, Well name
+              moveToWell(-55, -45.5, "B1"); // Motor L, Motor R, Well name
             break;
 
             case 2: // V
@@ -730,7 +732,7 @@
         switch(column) {
             
             case 1: // V
-              moveToWell(-40, -25.5, "F1");
+              moveToWell(-39, -24.75, "F1");
             break;
 
             case 2: // V
@@ -754,7 +756,7 @@
         switch(column) {
             
             case 1: // V
-              moveToWell(-33, -20.25, "G1");
+              moveToWell(-29, -21.25, "G1");
             break;
 
             case 2: // V
@@ -787,7 +789,7 @@
             break;
 
             case 2: // V
-              moveToWell(-18, -28.5, "H2");
+              moveToWell(-19, -27.25, "H2");
             break;
 
             case 6:
