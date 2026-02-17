@@ -629,6 +629,10 @@
               moveToWell(-41.5, -50.5, "B2"); // Motor L, Motor R, Well name
             break;
 
+            case 3: // V
+              moveToWell(-36, -54.25, "B3"); // Motor L, Motor R, Well name
+            break;
+
 
             case 8:
               stepperL.move(-15 * currentMicrosteps); 
@@ -742,7 +746,7 @@
             case 3:
               stepperR.move(45 * currentMicrosteps); 
               stepperL.move(-25 * currentMicrosteps);
-              Serial.println("Moving to H2");
+              Serial.println("Moving to F3");
             break;
 
             default:
