@@ -35,6 +35,7 @@
   AccelStepper stepperZ2(1, step[3], dir[3]);
 
 
+  int limitSwitchL = 31; // Target Limit Switch L
   int limitSwitchR = 30; // Target Limit Switch R
   int limitSwitchZ1 = 33; // Target Limit Switch Z
   int limitSwitchZ2 = 32; // Target Limit Switch Z
@@ -339,6 +340,19 @@
       z2WasPressed = false;
     }
     
+    
+    static bool lWasPressed = false;
+    if(digitalRead(limitSwitchL) == LOW) {
+      if (!lWasPressed) {
+        Serial.println("Limit L PRESSED");
+        lWasPressed = true;
+      }
+      stepperL.stop();
+      stepperL.setCurrentPosition(stepperL.currentPosition());
+    }
+    else {
+      lWasPressed = false;
+    }
     
     static bool rWasPressed = false;
     if(digitalRead(limitSwitchR) == LOW) {
