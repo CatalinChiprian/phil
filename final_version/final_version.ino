@@ -62,6 +62,7 @@
     enableMotors();
 
     //digitalWrite(limitSwitchL, HIGH);
+    pinMode(limitSwitchL, INPUT_PULLUP);
     pinMode(limitSwitchR, INPUT_PULLUP);
     //digitalWrite(limitSwitchR, HIGH);
     pinMode(limitSwitchZ1, INPUT_PULLUP);
