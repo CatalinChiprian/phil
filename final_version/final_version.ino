@@ -430,7 +430,7 @@
     unsigned long overallStartTime = millis();
     unsigned long overallTimeout = 20000;
     
-    int result = attemptHome(100* currentMicrosteps, 200 * currentMicrosteps, 4000, overallStartTime, overallTimeout);
+    int result = attemptHome(50 * currentMicrosteps, 100 * currentMicrosteps, 4000, overallStartTime, overallTimeout);
     
     if(result == 1) {
       Serial.println("PHIL homed (Attempt 1)");
@@ -488,7 +488,7 @@
 
     Serial.println("Retry position reached");
     interruptibleDelay(1000);
-    attemptHome(100* currentMicrosteps, 200 * currentMicrosteps, 4000, overallStartTime, overallTimeout);
+    attemptHome(50 * currentMicrosteps, 100 * currentMicrosteps, 4000, overallStartTime, overallTimeout);
   }
 
   int attemptHome(int speedR, int speedL, unsigned long timeout, unsigned long overallStartTime, unsigned long overallTimeout) {
@@ -894,43 +894,38 @@
     interruptibleDelay(1000);
     Serial.println("Calibrating - moving L motor...");
 
-    stepperL.move(100 * currentMicrosteps);
+    stepperL.setSpeed(10 * currentMicrosteps);
   
-    while(stepperR.distanceToGo() != 0 || stepperL.distanceToGo() != 0) {
-      if(Serial.available() > 0) {
-          char c = Serial.read();
-          if(c == 's') {
-            emergencyStop(); 
-            Serial.println("STOPPED by user");
-            return -1;
+    unsigned long pushStart = millis();
+    while (millis() - pushStart < 2500) {
+
+        stepperL.runSpeed();
           }
-      }
+
+    stepperL.setSpeed(0);
+
+    stepperR.setCurrentPosition(0);
+    stepperL.setCurrentPosition(0);
+
+    Serial.println("=== CALIBRATION COMPLETE ===");
+
+    // move to absolute value (middle)
+
+    disableMotors();
+    interruptibleDelay(500);
+    enableMotors();
+
+    stepperR.moveTo(stepperR.currentPosition() - 23.8 * currentMicrosteps);
+    stepperL.moveTo(stepperL.currentPosition() - 62.8 * currentMicrosteps);
+
+    while(stepperR.distanceToGo() != 0 || stepperL.distanceToGo() != 0) {
       stepperR.run();
       stepperL.run();
     }
-
-    Serial.print("After calibration move - L: ");
-    Serial.print(stepperL.currentPosition());
-    Serial.print(" | R: ");
-    Serial.println(stepperR.currentPosition());
-
-    interruptibleDelay(1000);
-
-    Serial.println("Homing again to reset position...");
-    homeResult = home(); 
-    if(homeResult != 1) {
-      Serial.println("Calibration aborted - second homing failed");
-      return homeResult;
-    }
     
-    Serial.print("After second home - L: ");
-    Serial.print(stepperL.currentPosition());
-    Serial.print(" | R: ");
-    Serial.println(stepperR.currentPosition());
+    stepperR.setCurrentPosition(0);
+    stepperL.setCurrentPosition(0);
     
-    interruptibleDelay(1000);
-
-    Serial.println("=== CALIBRATION COMPLETE ===");
     return 1;
   }
 
