@@ -437,6 +437,19 @@
             Serial.println("Calibration cleared");
           break;
 
+          case 'o':
+            enableMotors();
+
+            stepperL.moveTo(60 * currentMicrosteps); 
+            stepperR.moveTo(-5.5 * currentMicrosteps); 
+            
+            while(stepperR.distanceToGo() != 0 || stepperL.distanceToGo() != 0) {
+              stepperR.run();
+              stepperL.run();
+            }
+
+          break;
+
           case '+':
             times += 0.10;
             Serial.print("Increased to: ");
