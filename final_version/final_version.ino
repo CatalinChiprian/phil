@@ -21,13 +21,13 @@
     float plateX0 = 0.0;
     float plateY0 = 0.0;
 
-    const int MAX_CAL = 12;
+    const int MAX_CAL = 96;
     float calX[MAX_CAL], calY[MAX_CAL], calL[MAX_CAL], calR[MAX_CAL];
     int calCount = 0;
 
-    const int TERMS = 6;
-    float ML[MAX_CAL] = {0,0,0,0,0,0,0,0};
-    float MR[MAX_CAL] = {0,0,0,0,0,0,0,0};
+    const int TERMS = 10;
+    float ML[TERMS] = {0};
+    float MR[TERMS] = {0};
     bool mapReady = false;
 
 
@@ -298,6 +298,62 @@
             if (received.startsWith("z solve")) {
                 solveMapping();
             }
+            else if (received.startsWith("z deleteidx")) {
+              int idx = received.substring(12).toInt();
+              if (idx < 0 || idx >= calCount) {
+                Serial.println("Invalid index");
+              } else {
+                Serial.print("Deleting Pt "); Serial.print(idx);
+                Serial.print(": XY("); Serial.print(calX[idx]);
+                Serial.print(","); Serial.print(calY[idx]); Serial.println(")");
+                for (int i = idx; i < calCount-1; i++) {
+                  calX[i]=calX[i+1]; calY[i]=calY[i+1];
+                  calL[i]=calL[i+1]; calR[i]=calR[i+1];
+                }
+                calCount--;
+                Serial.print(calCount); Serial.println(" points remaining");
+              }
+            }
+            else if (received.startsWith("z delete")) {
+                // Format: "z delete a1"
+                if (received.length() >= 10) {
+                    char row = received.charAt(9);
+                    int col = received.substring(10).toInt();
+                    
+                    // Find the point
+                    float x, y;
+                    wellToXY(row, col, x, y);
+                    
+                    int foundIdx = -1;
+                    for (int i = 0; i < calCount; i++) {
+                        if (fabs(calX[i] - x) < 0.1f && fabs(calY[i] - y) < 0.1f) {
+                            foundIdx = i;
+                            break;
+                        }
+                    }
+                    
+                    if (foundIdx == -1) {
+                        Serial.print("Point not found for ");
+                        Serial.print(row); Serial.println(col);
+                    } else {
+                        // Shift all points after it down by one
+                        for (int i = foundIdx; i < calCount - 1; i++) {
+                            calX[i] = calX[i+1];
+                            calY[i] = calY[i+1];
+                            calL[i] = calL[i+1];
+                            calR[i] = calR[i+1];
+                        }
+                        calCount--;
+                        Serial.print("Deleted point ");
+                        Serial.print(row); Serial.print(col);
+                        Serial.print(" — "); Serial.print(calCount);
+                        Serial.println(" points remaining");
+                        Serial.println("Run 'z solve' to update the map");
+                    }
+                } else {
+                    Serial.println("Usage: z delete a1");
+                }
+            }
             else if (received.startsWith("z print")) {
               Serial.println("--- Calibration Data ---");
               for (int i=0; i<calCount; i++) {
@@ -308,19 +364,19 @@
                 Serial.print(",");     Serial.print(calR[i],2);
                 Serial.println(")");
               }
-              Serial.println("ML (Ldeg) coeffs [1, x, y, x^2, x*y, y^2]:");
-              for (int i=0;i<TERMS;i++) { Serial.print(ML[i],5); Serial.print(i<TERMS-1?' ':'\n'); }
-              Serial.println("MR (Rdeg) coeffs [1, x, y, x^2, x*y, y^2]:");
-              for (int i=0;i<TERMS;i++) { Serial.print(MR[i],5); Serial.print(i<TERMS-1?' ':'\n'); }
+                Serial.println("ML (Ldeg) coeffs [1, x, y, x^2, x*y, y^2, x^3, x^2y, xy^2, y^3]:");
+                for (int i=0;i<TERMS;i++) { Serial.print(ML[i],5); Serial.print(i<TERMS-1?' ':'\n'); }
+                Serial.println("MR (Rdeg) coeffs [1, x, y, x^2, x*y, y^2, x^3, x^2y, xy^2, y^3]:");
+                for (int i=0;i<TERMS;i++) { Serial.print(MR[i],5); Serial.print(i<TERMS-1?' ':'\n'); }
 
                 if (mapReady && calCount > 0) {
                   float rmsL=0, rmsR=0, maxErrL=0, maxErrR=0;
                   Serial.println("--- Residuals ---");
                   for (int i=0; i<calCount; i++) {
                     float x = calX[i], y = calY[i];
-                    float b[TERMS] = { 1.0f, x, y, x*x, x*y, y*y };
-                    float predL = dot6(ML, b);
-                    float predR = dot6(MR, b);
+                    float b[TERMS] = { 1.0f, x, y, x*x, x*y, y*y, x*x*x, x*x*y, x*y*y, y*y*y };
+                    float predL = dot10(ML, b);
+                    float predR = dot10(MR, b);
                     float errL  = calL[i] - predL;
                     float errR  = calR[i] - predR;
                     rmsL += errL*errL;
@@ -959,13 +1015,26 @@
 
 void saveCalibration() {
   int addr = 20;
-  byte magic = 0xCA;
+  byte magic = 0xCC;  // bump magic byte so old saves are invalidated
   EEPROM.put(addr, magic);  addr += sizeof(magic);
 
+  // Save coefficients
   for (int i = 0; i < TERMS; i++) { EEPROM.put(addr, ML[i]); addr += sizeof(float); }
   for (int i = 0; i < TERMS; i++) { EEPROM.put(addr, MR[i]); addr += sizeof(float); }
 
+  // Save point count
+  EEPROM.put(addr, calCount);  addr += sizeof(int);
+
+  // Save each point
+  for (int i = 0; i < calCount; i++) {
+    EEPROM.put(addr, calX[i]);  addr += sizeof(float);
+    EEPROM.put(addr, calY[i]);  addr += sizeof(float);
+    EEPROM.put(addr, calL[i]);  addr += sizeof(float);
+    EEPROM.put(addr, calR[i]);  addr += sizeof(float);
+  }
+
   Serial.println("Calibration saved to EEPROM");
+  Serial.print("Saved "); Serial.print(calCount); Serial.println(" points");
 }
 
 bool loadCalibration() {
@@ -973,17 +1042,40 @@ bool loadCalibration() {
   byte magic;
   EEPROM.get(addr, magic);  addr += sizeof(magic);
 
-  if (magic != 0xCA) {
-    Serial.println("No valid calibration in EEPROM");
+  if (magic != 0xCC) {
+    Serial.println("No valid calibration in EEPROM (or old format)");
     return false;
   }
 
+  // Load coefficients
   for (int i = 0; i < TERMS; i++) { EEPROM.get(addr, ML[i]); addr += sizeof(float); }
   for (int i = 0; i < TERMS; i++) { EEPROM.get(addr, MR[i]); addr += sizeof(float); }
 
+  // Load point count
+  EEPROM.get(addr, calCount);  addr += sizeof(int);
+  if (calCount < 0 || calCount > MAX_CAL) {
+    Serial.println("Corrupt point count in EEPROM");
+    calCount = 0;
+    return false;
+  }
+
+  // Load each point
+  for (int i = 0; i < calCount; i++) {
+    EEPROM.get(addr, calX[i]);  addr += sizeof(float);
+    EEPROM.get(addr, calY[i]);  addr += sizeof(float);
+    EEPROM.get(addr, calL[i]);  addr += sizeof(float);
+    EEPROM.get(addr, calR[i]);  addr += sizeof(float);
+  }
+
   mapReady = true;
-  Serial.print("Calibration loaded. ML: ");
+  Serial.print("Calibration loaded: ");
+  Serial.print(calCount);
+  Serial.println(" points");
+  Serial.print("ML: ");
   for (int i = 0; i < TERMS; i++) { Serial.print(ML[i], 4); Serial.print(" "); }
+  Serial.println();
+  Serial.print("MR: ");
+  for (int i = 0; i < TERMS; i++) { Serial.print(MR[i], 4); Serial.print(" "); }
   Serial.println();
   return true;
 }
@@ -1009,9 +1101,9 @@ void xyToAngles(float x, float y, float &Ldeg, float &Rdeg) {
     return;
   }
   // Basis vector for quadratic model
-  float b[TERMS] = { 1.0f, x, y, x*x, x*y, y*y };
-  Ldeg = dot6(ML, b);
-  Rdeg = dot6(MR, b);
+  float b[TERMS] = { 1.0f, x, y, x*x, x*y, y*y, x*x*x, x*x*y, x*y*y, y*y*y };
+  Ldeg = dot10(ML, b);
+  Rdeg = dot10(MR, b);
 }
 
 void recordCalibrationPoint(char row, int col) {
@@ -1046,32 +1138,25 @@ void recordCalibrationPoint(char row, int col) {
 }
 
 
-// Simple dot product for TERMS=6 vectors
-inline float dot6(const float a[TERMS], const float b[TERMS]) {
-  return a[0]*b[0] + a[1]*b[1] + a[2]*b[2] + a[3]*b[3] + a[4]*b[4] + a[5]*b[5];
+inline float dot10(const float a[TERMS], const float b[TERMS]) {
+  return a[0]*b[0] + a[1]*b[1] + a[2]*b[2] + a[3]*b[3] + a[4]*b[4]
+       + a[5]*b[5] + a[6]*b[6] + a[7]*b[7] + a[8]*b[8] + a[9]*b[9];
 }
 
-// Solve 6x6 linear system A*x = b using Gauss-Jordan with partial pivoting
-// Returns true on success; false if singular.
-bool solve6(float A[TERMS][TERMS], float b[TERMS], float x[TERMS]) {
-  // Augment A | b
+bool solve10(float A[TERMS][TERMS], float b[TERMS], float x[TERMS]) {
   float M[TERMS][TERMS+1];
   for (int i=0;i<TERMS;i++){
     for (int j=0;j<TERMS;j++) M[i][j] = A[i][j];
     M[i][TERMS] = b[i];
   }
-
-  // Elimination
   for (int col=0; col<TERMS; col++) {
-    // Find pivot
     int piv = col;
     float best = fabs(M[piv][col]);
     for (int r=col+1; r<TERMS; r++) {
       float v = fabs(M[r][col]);
       if (v > best) { best = v; piv = r; }
     }
-    if (best < 1e-9) return false; // singular
-
+    if (best < 1e-9) return false;
     if (piv != col) {
       for (int c=col; c<=TERMS; c++) {
         float tmp = M[col][c];
@@ -1079,19 +1164,14 @@ bool solve6(float A[TERMS][TERMS], float b[TERMS], float x[TERMS]) {
         M[piv][c] = tmp;
       }
     }
-
-    // Normalize pivot row
     float div = M[col][col];
     for (int c=col; c<=TERMS; c++) M[col][c] /= div;
-
-    // Eliminate other rows
     for (int r=0; r<TERMS; r++) {
       if (r == col) continue;
       float f = M[r][col];
       for (int c=col; c<=TERMS; c++) M[r][c] -= f * M[col][c];
     }
   }
-
   for (int i=0;i<TERMS;i++) x[i] = M[i][TERMS];
   return true;
 }
@@ -1110,7 +1190,7 @@ bool solveMapping() {
 
   for (int i=0; i<calCount; i++) {
     float x = calX[i], y = calY[i];
-    float b[TERMS] = { 1.0f, x, y, x*x, x*y, y*y };
+    float b[TERMS] = { 1.0f, x, y, x*x, x*y, y*y, x*x*x, x*x*y, x*y*y, y*y*y };
     float L = calL[i];
     float R = calR[i];
 
@@ -1128,8 +1208,8 @@ bool solveMapping() {
   }
 
   float MLtmp[TERMS], MRtmp[TERMS];
-  bool okL = solve6(ATA, ATyL, MLtmp);
-  bool okR = solve6(ATA, ATyR, MRtmp);
+  bool okL = solve10(ATA, ATyL, MLtmp);
+  bool okR = solve10(ATA, ATyR, MRtmp);
 
   if (!okL || !okR) {
     Serial.println("solveMapping: normal matrix singular — choose non-collinear, well-spread points");
@@ -1156,9 +1236,9 @@ bool solveMapping() {
   float maxErrL = 0, maxErrR = 0, rmsL = 0, rmsR = 0;
   for (int i=0; i<calCount; i++) {
     float x = calX[i], y = calY[i];
-    float b[TERMS] = { 1.0f, x, y, x*x, x*y, y*y };
-    float predL = dot6(ML, b);
-    float predR = dot6(MR, b);
+    float b[TERMS] = { 1.0f, x, y, x*x, x*y, y*y, x*x*x, x*x*y, x*y*y, y*y*y };
+    float predL = dot10(ML, b);
+    float predR = dot10(MR, b);
     float errL  = calL[i] - predL;
     float errR  = calR[i] - predR;
     rmsL += errL*errL; rmsR += errR*errR;
