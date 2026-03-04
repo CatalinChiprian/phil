@@ -1,16 +1,18 @@
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
-using Avalonia.Data.Core;
 using Avalonia.Data.Core.Plugins;
-using System.Linq;
 using Avalonia.Markup.Xaml;
 using PHIL_GUI.ViewModels;
-using PHIL_GUI.Views;
+using System.Linq;
+using Microsoft.Extensions.DependencyInjection;
+using System;
+using PHIL_GUI.Services;
 
 namespace PHIL_GUI;
 
 public partial class App : Application
 {
+    public static IServiceProvider Services { get; private set; }
     public override void Initialize()
     {
         AvaloniaXamlLoader.Load(this);
@@ -18,15 +20,22 @@ public partial class App : Application
 
     public override void OnFrameworkInitializationCompleted()
     {
+        ServiceCollection services = new ServiceCollection();
+        services.AddSingleton<SerialPortService>();
+        services.AddTransient<PortsViewModel>();
+        services.AddTransient<MainWindowViewModel>();
+        Services = services.BuildServiceProvider();
+
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
             // Avoid duplicate validations from both Avalonia and the CommunityToolkit. 
             // More info: https://docs.avaloniaui.net/docs/guides/development-guides/data-validation#manage-validationplugins
             DisableAvaloniaDataAnnotationValidation();
-            desktop.MainWindow = new MainWindow
-            {
-                DataContext = new MainWindowViewModel(),
-            };
+
+            PortsView portsView = new PortsView();
+
+            desktop.MainWindow = portsView;
+            portsView.Show();
         }
 
         base.OnFrameworkInitializationCompleted();

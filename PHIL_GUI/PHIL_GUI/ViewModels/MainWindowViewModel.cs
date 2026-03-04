@@ -3,7 +3,6 @@
 Based on Phillip Dettinger work availible on https://github.com/CSDGroup/PHIL.git */
 
 using System;
-using System.Collections.ObjectModel;
 using System.Windows.Input;
 using Avalonia.Threading;
 using PHIL_GUI.Commands;
@@ -14,36 +13,9 @@ namespace PHIL_GUI.ViewModels;
 public class MainWindowViewModel : ViewModelBase
 {
     private readonly SerialPortService _serialPortService;
-    private ObservableCollection<string> _availablePorts;
-    private string _selectedPort;
-    private string _connectionStatus;
     private string _receivedData;
     private string _messageToSend;
     private object _currentPage; 
-    
-    public ObservableCollection<string> AvailablePorts
-    {
-        get => _availablePorts;
-        set => SetProperty(ref _availablePorts, value);
-    }
-    
-    public string SelectedPort
-    {
-        get => _selectedPort;
-        set
-        {
-            if (SetProperty(ref _selectedPort, value))
-            {
-                _connectCommand.RaiseCanExecuteChanged();
-            }
-        }
-    }
-    
-    public string ConnectionStatus
-    {
-        get => _connectionStatus;
-        set => SetProperty(ref _connectionStatus, value);
-    }
     
     public string ReceivedData
     {
@@ -68,85 +40,26 @@ public class MainWindowViewModel : ViewModelBase
         set => SetProperty(ref _currentPage, value);
     }
 
-    private RelayCommand _connectCommand;
-    private RelayCommand _disconnectCommand;
     private RelayCommand _sendMessageCommand;
-    private RelayCommand _goToBasicControlsPageCommand;
-    public ICommand ConnectCommand => _connectCommand;
-    public ICommand DisconnectCommand => _disconnectCommand;
+    private RelayCommand _goToBasicControlsViewCommand;
     public ICommand SendMessageCommand => _sendMessageCommand;
-    public ICommand GoToBasicControlsPageCommand => _goToBasicControlsPageCommand;
+    public ICommand GoToBasicControlsViewCommand => _goToBasicControlsViewCommand;
     public ICommand ClearMonitorCommand { get; }
     public ICommand EmergencyStopCommand { get; }
-    public ICommand GetPortsCommand { get; }
 
-    public MainWindowViewModel()
+    public MainWindowViewModel(SerialPortService serialPortService)
     {
-        _serialPortService = new SerialPortService();
-        _availablePorts = new ObservableCollection<string>();
+        _serialPortService = serialPortService;
 
-        _connectCommand = new RelayCommand(ConnectToPort, CanConnect);
-        _disconnectCommand = new RelayCommand(DisconnectFromPort, CanDisconnect);
         _sendMessageCommand = new RelayCommand(SendMessage, CanSendMessage);
-        _goToBasicControlsPageCommand = new RelayCommand(GoToBasicControlsPage, CanGoToBasicControlsPage);
+        _goToBasicControlsViewCommand = new RelayCommand(GoToBasicControlsView, CanGoToBasicControlsView);
 
         EmergencyStopCommand = new RelayCommand(() => SendMotorCommand("s"));
-        GetPortsCommand = new RelayCommand(GetAvailablePorts);
         ClearMonitorCommand = new RelayCommand(ClearMonitor);
         
-        ConnectionStatus = "Disconnected";
         ReceivedData = "";
         
         _serialPortService.MessageReceived += OnMessageReceived;
-    }
-    
-    private void GetAvailablePorts()
-    {
-        AvailablePorts.Clear();
-        var ports = _serialPortService.GetAvailablePorts();
-        foreach (var port in ports)
-        {
-            AvailablePorts.Add(port);
-        }
-    }
-    
-    private bool CanConnect()
-    {
-        return !string.IsNullOrEmpty(SelectedPort) && !_serialPortService.IsConnected;
-    }
-    
-    private bool CanDisconnect()
-    {
-        return _serialPortService.IsConnected;
-    }
-    
-    private void ConnectToPort()
-    {
-        try
-        {
-            _serialPortService.Connect(SelectedPort);
-            ConnectionStatus = $"Connected to {SelectedPort}";
-
-            _connectCommand.RaiseCanExecuteChanged();
-            _disconnectCommand.RaiseCanExecuteChanged();
-            _sendMessageCommand.RaiseCanExecuteChanged();
-            _goToBasicControlsPageCommand.RaiseCanExecuteChanged();
-        }
-        catch (Exception ex)
-        {
-            ConnectionStatus = $"Failed: {ex.Message}";
-        }
-    }
-    
-    private void DisconnectFromPort()
-    {
-        _serialPortService.Disconnect();
-        ConnectionStatus = "Disconnected";
-        
-        _connectCommand.RaiseCanExecuteChanged();
-        _disconnectCommand.RaiseCanExecuteChanged();
-        _sendMessageCommand.RaiseCanExecuteChanged();
-        _goToBasicControlsPageCommand.RaiseCanExecuteChanged();      
     }
     
     private void OnMessageReceived(string message)
@@ -185,24 +98,19 @@ public class MainWindowViewModel : ViewModelBase
         ReceivedData = "";
     }
     
-    private bool CanGoToBasicControlsPage()
+    private bool CanGoToBasicControlsView()
     {
         return _serialPortService.IsConnected;
     }
     
-    public void GoToBasicControlsPage()
+    public void GoToBasicControlsView()
     {
         CurrentPage = new BasicControlsViewModel(this);
     }
     
-    public void GoToWellsPage()
+    public void GoToWellsView()
     {
         CurrentPage = new WellsViewModel(this);
-    }
-    
-    public void GoBackToMainPage()
-    {
-        CurrentPage = null;
     }
     
     public void SendMotorCommand(string command)

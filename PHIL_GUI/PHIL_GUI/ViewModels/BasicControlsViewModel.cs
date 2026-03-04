@@ -8,7 +8,6 @@ public class BasicControlsViewModel : ViewModelBase, IDisposable
 {
     private readonly MainWindowViewModel _mainViewModel;
     
-    public ICommand GoBackCommand { get; }
     public ICommand EmergencyStopCommand { get; }
     public ICommand MoveLeftCommand { get; }
     public ICommand MoveRightCommand { get; }
@@ -17,7 +16,7 @@ public class BasicControlsViewModel : ViewModelBase, IDisposable
     public ICommand MoveUpCommand { get; }
     public ICommand MoveDownCommand { get; }
     
-    public ICommand GoToWellsPageCommand { get; } 
+    public ICommand GoToWellsViewCommand { get; } 
    
     public string ReceivedData => _mainViewModel.ReceivedData;
     public string MessageToSend
@@ -32,8 +31,7 @@ public class BasicControlsViewModel : ViewModelBase, IDisposable
     public BasicControlsViewModel(MainWindowViewModel mainViewModel)
     {
         _mainViewModel = mainViewModel;
-        GoBackCommand = new RelayCommand(GoBack);
-        GoToWellsPageCommand = new RelayCommand(GoToWellsPage);
+        GoToWellsViewCommand = new RelayCommand(GoToWellsView);
 
         EmergencyStopCommand = new RelayCommand(() => SendMotorCommand("s"));
         MoveLeftCommand = new RelayCommand(() => SendMotorCommand("l"));
@@ -46,15 +44,9 @@ public class BasicControlsViewModel : ViewModelBase, IDisposable
         _mainViewModel.PropertyChanged += OnPropertyChanged;
     }
     
-    private void GoBack()
+    private void GoToWellsView()
     {
-        Dispose();
-        _mainViewModel.GoBackToMainPage();
-    }
-    
-    private void GoToWellsPage()
-    {
-        _mainViewModel.GoToWellsPage();  
+        _mainViewModel.GoToWellsView();  
     }
     
     private void SendMotorCommand(string command)

@@ -49,7 +49,7 @@ public class WellsViewModel : ViewModelBase, IDisposable
     private void GoBack()
     {
         Dispose();
-        _mainViewModel.GoToBasicControlsPage();  
+        _mainViewModel.GoToBasicControlsView();  
     }
     
     private void SendMotorCommand(string command)

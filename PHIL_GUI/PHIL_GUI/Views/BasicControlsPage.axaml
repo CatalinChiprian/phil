@@ -4,7 +4,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600"
-             x:Class="PHIL_GUI.Views.SecondPage"
+             x:Class="PHIL_GUI.Views.BasicControlsView"
              x:DataType="vm:BasicControlsViewModel">
     
     <DockPanel Margin="20">
@@ -68,19 +68,15 @@
                            FontSize="20"/>
     
                 <StackPanel Orientation="Horizontal" Margin="0,20,0,0">
-                    <Button Content="Go Back"
-                            Command="{Binding GoBackCommand}"
-                            Width="150"
-                            Margin="0,0,10,0"/>
         
                     <Button Content="Continue to the wells"
-                            Command="{Binding GoToWellsPageCommand}"
+                            Command="{Binding GoToWellsViewCommand}"
                             Width="150"/>
                     
                     <Button Content="Emergency stop"
                             Command="{Binding EmergencyStopCommand}"
                             Width="150"
-                            Margin="300,0,0,0"
+                            Margin="400,0,0,0"
                             Background="#FF4A24"/>
                 </StackPanel>
                 
