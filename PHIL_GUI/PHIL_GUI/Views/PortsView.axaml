@@ -4,31 +4,44 @@
         xmlns:vm="using:PHIL_GUI.ViewModels"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="220"
+        mc:Ignorable="d" d:DesignWidth="350" d:DesignHeight="250"
         x:Class="PHIL_GUI.PortsView"
         x:DataType="vm:PortsViewModel"
         Icon="/Assets/applied-nanotechnology.ico"
-        Width="400" Height="220"
+        Width="350" Height="250"
         WindowStartupLocation="CenterScreen"
         CanResize="False"
         Title="PHIL_GUI">
 
-  <StackPanel Margin="20">
-      <Button Content="Get Available Ports"
-              Command="{Binding GetPortsCommand}"
-              Width="150" 
-              Margin="0,5"
-              HorizontalAlignment="Left"/>
+  <StackPanel Margin="20" Spacing="15">
+      <TextBlock Text="CONNECT TO DEVICE"
+                 FontSize="14"
+                 LetterSpacing="1.3"/>
                 
       <ListBox ItemsSource="{Binding AvailablePorts}"
                SelectedItem="{Binding SelectedPort}"
-               Height="80"
-               Margin="0,10"/>
-                
-      <Button Content="Connect"
-              Command="{Binding ConnectCommand}"
-              Width="80"
-              Background="#1EA1EB"
-              Margin="0,0,10,0"/>
+               Height="120">
+
+          <ListBox.ItemTemplate>
+              <DataTemplate>
+                  <TextBlock Text="{Binding StringFormat='{}{0} - USB Serial'}"/>
+               </DataTemplate>
+           </ListBox.ItemTemplate>
+      </ListBox>
+
+      <StackPanel Orientation="Horizontal" 
+                  HorizontalAlignment="Right"
+                  Spacing="5">
+
+          <Button Classes="btn"
+                  Content="Scan"
+                  Command="{Binding GetPortsCommand}"
+                  Width="80"/>
+
+          <Button Classes="btn btn-primary"
+                  Content="Connect"
+                  Command="{Binding ConnectCommand}"
+                  Width="80"/>
+      </StackPanel>
   </StackPanel>
 </Window>

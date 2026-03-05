@@ -2,14 +2,135 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              x:Class="PHIL_GUI.App"
              xmlns:local="using:PHIL_GUI"
-             RequestedThemeVariant="Light">
+             RequestedThemeVariant="Dark">
              <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
 
     <Application.DataTemplates>
         <local:ViewLocator/>
     </Application.DataTemplates>
+
+    <Application.Resources>
+        <SolidColorBrush x:Key="Bg">#0d0f0e</SolidColorBrush>
+        <SolidColorBrush x:Key="Surface">#141614</SolidColorBrush>
+	    <SolidColorBrush x:Key="BorderColor">#1e221e</SolidColorBrush>
+        <SolidColorBrush x:Key="Text">#e8ede8</SolidColorBrush>
+        <SolidColorBrush x:Key="Accent">#00e87a</SolidColorBrush>
+        <SolidColorBrush x:Key="Accent-Dim">#2200e87a</SolidColorBrush>
+        <SolidColorBrush x:Key="Muted">#4a544a</SolidColorBrush>
+    </Application.Resources>
   
     <Application.Styles>
         <FluentTheme />
+
+        <Style Selector="Window">
+		    <Setter Property="Background" Value="{StaticResource Surface}"/>
+        </Style>
+
+        <Style Selector="TextBlock">
+            <Setter Property="FontFamily" Value="avares://PHIL_GUI/Assets/Fonts/SpaceMono-Regular.ttf#Space Mono"/>
+            <Setter Property="Foreground" Value="{StaticResource Accent}"/>
+        </Style>
+
+        <Style Selector="ListBox">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+        </Style>
+
+        <!-- Replace the ListBoxItem template so items render inside a Border with class 'portItem' -->
+        <Style Selector="ListBoxItem">
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Template">
+                <ControlTemplate>
+                  <Border Classes="portItem">
+                    <ContentPresenter
+                      Content="{TemplateBinding Content}"
+                      ContentTemplate="{TemplateBinding ContentTemplate}"
+                      HorizontalAlignment="Stretch"
+                      VerticalAlignment="Center"/>
+                  </Border>
+                </ControlTemplate>
+            </Setter>
+        </Style>
+
+        <Style Selector="Border.portItem">
+            <Setter Property="BorderBrush" Value="{StaticResource BorderColor}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Padding" Value="12"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Margin" Value="0,6"/>
+            <Setter Property="Transitions">
+                <Transitions>
+                    <BrushTransition  Property="Background" Duration="0:0:0.15"/>
+                    <BrushTransition  Property="BorderBrush" Duration="0:0:0.15"/>
+                </Transitions>
+            </Setter>
+        </Style>
+
+        <Style Selector="Border.portItem TextBlock">
+            <Setter Property="Foreground" Value="{StaticResource Muted}"/>
+            <Setter Property="FontFamily" Value="avares://PHIL_GUI/Assets/Fonts/SpaceMono-Regular.ttf#Space Mono"/>
+            <Setter Property="Transitions">
+                <Transitions>
+                    <BrushTransition  Property="Background" Duration="0:0:0.15"/>
+                    <BrushTransition  Property="Foreground" Duration="0:0:0.15"/>
+                </Transitions>
+            </Setter>
+        </Style>
+
+        <Style Selector="ListBoxItem:pointerover Border.portItem">
+		    <Setter Property="BorderBrush" Value="{StaticResource Accent}"/>
+        </Style>
+
+        <Style Selector="ListBoxItem:pointerover Border.portItem TextBlock">
+		    <Setter Property="Foreground" Value="{StaticResource Text}"/>	
+        </Style>
+
+        <Style Selector="ListBoxItem:selected Border.portItem">
+            <Setter Property="BorderBrush" Value="{StaticResource Accent}"/>
+            <Setter Property="Background" Value="{StaticResource Accent-Dim}"/>
+        </Style>
+
+        <Style Selector="ListBoxItem:selected Border.portItem TextBlock">
+            <Setter Property="Foreground" Value="{StaticResource Accent}"/>
+        </Style>
+
+        <Style Selector="Button.btn">
+		    <Setter Property="FontFamily" Value="avares://PHIL_GUI/Assets/Fonts/SpaceMono-Regular.ttf#Space Mono"/>
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="Padding" Value="8,6"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="{StaticResource Muted}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource BorderColor}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Transitions">
+                <Transitions>
+                    <BrushTransition  Property="Background" Duration="0:0:0.15"/>
+                    <BrushTransition  Property="BorderBrush" Duration="0:0:0.15"/>
+                    <BrushTransition  Property="Foreground" Duration="0:0:0.15"/>
+                </Transitions>
+            </Setter>
+        </Style>
+
+        <Style Selector="Button.btn:pointerover /template/ ContentPresenter">
+            <Setter Property="BorderBrush" Value="{StaticResource Text}"/>
+            <Setter Property="Foreground" Value="{StaticResource Text}"/>
+        </Style>
+
+        <Style Selector="Button.btn-primary">
+		    <Setter Property="BorderBrush" Value="{StaticResource Accent}"/>
+            <Setter Property="Foreground" Value="{StaticResource Accent}"/>
+            <Setter Property="Background" Value="{StaticResource Accent-Dim}"/>
+        </Style>
+
+        <Style Selector="Button.btn-primary:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="{StaticResource Accent}"/>
+            <Setter Property="Foreground" Value="{StaticResource Bg}"/>
+        </Style>
+
     </Application.Styles>
 </Application>
