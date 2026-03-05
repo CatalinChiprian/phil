@@ -3,246 +3,159 @@
              xmlns:vm="using:PHIL_GUI.ViewModels"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="700"
              x:Class="PHIL_GUI.Views.WellsView"
              x:DataType="vm:WellsViewModel">
 
     <UserControl.Styles>
         <Style Selector="Button.well">
-            <Setter Property="Width" Value="50"/>
-            <Setter Property="Height" Value="50"/>
-            <Setter Property="HorizontalAlignment" Value="Center"/>
-            <Setter Property="HorizontalContentAlignment" Value="Center"/>
-            <Setter Property="VerticalContentAlignment" Value="Center"/>
-            <Setter Property="CornerRadius" Value="25"/>
             <Setter Property="Command" Value="{Binding WellsPositionCommand}"/>
         </Style>
     </UserControl.Styles>
 
-    <DockPanel Margin="20">
-        <!-- Serial Monitor docked to bottom -->
-        <Border BorderBrush="Gray" 
-                BorderThickness="1" 
-                Padding="5"
-                
-                DockPanel.Dock="Bottom">
-            
-            <StackPanel>
-                <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
-                    <TextBlock Text="Serial Monitor" 
-                               FontWeight="Bold" 
-                               FontSize="16"
-                               VerticalAlignment="Center"/>
-                    <Button Content="Clear" 
-                            Command="{Binding ClearMonitorCommand}"
-                            Width="80"
-                            Margin="10,0,0,0"
-                            HorizontalAlignment="Left"/>
-                </StackPanel>
-                
-                
-                <!-- Received Data Display -->
-                <TextBox Text="{Binding ReceivedData}"
-                         IsReadOnly="True"
-                         Height="150"
-                         TextWrapping="Wrap"
-                         AcceptsReturn="True"
-                         FontFamily="Courier New"
-                         Background="#F5F5F5"/>
-                
-                <!-- Send Message Section -->
-                <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
-                    <TextBox Text="{Binding MessageToSend}"
-                             Width="400"
-                             Watermark="Type message to send..."
-                             Margin="0,0,10,0">
-                        <TextBox.KeyBindings>
-                            <KeyBinding Gesture="Enter" Command="{Binding SendMessageCommand}"/>
-                        </TextBox.KeyBindings>
-                    </TextBox>
-                    <Button Content="Send"
-                            Command="{Binding SendMessageCommand}"
-                            Background="#1EEB7E"
-                            Width="100"/>
-                </StackPanel>
-            </StackPanel>
-        </Border>
-        
+    <Panel>
         <!-- Main content -->
-        <ScrollViewer>
-            <StackPanel>
-                <TextBlock Text="Wells" 
-                           FontSize="20"/>
-    
-                <StackPanel Orientation="Horizontal" Margin="0,20,0,0">
-                    <Button Content="Go Back"
-                            Command="{Binding GoBackCommand}"
-                            Width="150"
-                            Margin="0,0,10,0"/>
-        
-                    <Button Content="Continue to pipetting"
-                            Width="200"/>
+        <StackPanel>
+                <Grid Margin="0,0,0,0" HorizontalAlignment="Center">
                     
-                    <Button Content="Go home"
-                            Command="{Binding GoHomeCommand}"
-                            Width="150"
-                            Margin="250,0,0,0"
-                            Background="#1EA1EB"/>
-                    
-                    <Button Content="Emergency stop"
-                            Command="{Binding EmergencyStopCommand}"
-                            Width="150"
-                            Margin="300,0,0,0"
-                            Background="#FF4A24"/>
-                    
-                </StackPanel>
-                
-                 <Grid Margin="0,0,0,0" HorizontalAlignment="Center">
-                    
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="50"/>
-                        <ColumnDefinition Width="50"/>
-                        <ColumnDefinition Width="50"/>
-                        <ColumnDefinition Width="50"/> 
-                        <ColumnDefinition Width="50"/>
-                        <ColumnDefinition Width="50"/>
-                        <ColumnDefinition Width="50"/>
-                        <ColumnDefinition Width="50"/>
-                        <ColumnDefinition Width="50"/>
-                        <ColumnDefinition Width="50"/> 
-                        <ColumnDefinition Width="50"/>
-                        <ColumnDefinition Width="50"/>
-                        <ColumnDefinition Width="50"/>
-                        <ColumnDefinition Width="50"/>
-                        <ColumnDefinition Width="50"/>
-                    </Grid.ColumnDefinitions>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="50"/>
-                        <RowDefinition Height="50"/>
-                        <RowDefinition Height="50"/>
-                        <RowDefinition Height="50"/>
-                        <RowDefinition Height="50"/>
-                        <RowDefinition Height="50"/>
-                        <RowDefinition Height="50"/>
-                        <RowDefinition Height="50"/>
-                        <RowDefinition Height="50"/>
-                    </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="50"/>
+                    <ColumnDefinition Width="50"/>
+                    <ColumnDefinition Width="50"/>
+                    <ColumnDefinition Width="50"/> 
+                    <ColumnDefinition Width="50"/>
+                    <ColumnDefinition Width="50"/>
+                    <ColumnDefinition Width="50"/>
+                    <ColumnDefinition Width="50"/>
+                    <ColumnDefinition Width="50"/>
+                    <ColumnDefinition Width="50"/> 
+                    <ColumnDefinition Width="50"/>
+                    <ColumnDefinition Width="50"/>
+                    <ColumnDefinition Width="50"/>
+                    <ColumnDefinition Width="50"/>
+                    <ColumnDefinition Width="50"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="50"/>
+                    <RowDefinition Height="50"/>
+                    <RowDefinition Height="50"/>
+                    <RowDefinition Height="50"/>
+                    <RowDefinition Height="50"/>
+                    <RowDefinition Height="50"/>
+                    <RowDefinition Height="50"/>
+                    <RowDefinition Height="50"/>
+                    <RowDefinition Height="50"/>
+                </Grid.RowDefinitions>
                      
-                     <Button Content="A1" Classes="well" CommandParameter="A1" Grid.Row="1" Grid.Column="1"/>
-                     <Button Content="A2" Classes="well" CommandParameter="A2" Grid.Row="1" Grid.Column="2"/>
-                     <Button Content="A3" Classes="well" CommandParameter="A3" Grid.Row="1" Grid.Column="3"/>
-                     <Button Content="A4" Classes="well" CommandParameter="A4" Grid.Row="1" Grid.Column="4"/>
-                     <Button Content="A5" Classes="well" CommandParameter="A5" Grid.Row="1" Grid.Column="5"/>
-                     <Button Content="A6" Classes="well" CommandParameter="A6" Grid.Row="1" Grid.Column="6"/>
-                     <Button Content="A7" Classes="well" CommandParameter="A7" Grid.Row="1" Grid.Column="7"/>
-                     <Button Content="A8" Classes="well" CommandParameter="A8" Grid.Row="1" Grid.Column="8"/>
-                     <Button Content="A9" Classes="well" CommandParameter="A9" Grid.Row="1" Grid.Column="9"/>
-                     <Button Content="A10" Classes="well" CommandParameter="A10" Grid.Row="1" Grid.Column="10"/>
-                     <Button Content="A11" Classes="well" CommandParameter="A11" Grid.Row="1" Grid.Column="11"/>
-                     <Button Content="A12" Classes="well" CommandParameter="A12" Grid.Row="1" Grid.Column="12"/>
+                    <Button Content="A1" Classes="well" CommandParameter="A1" Grid.Row="1" Grid.Column="1"/>
+                    <Button Content="A2" Classes="well" CommandParameter="A2" Grid.Row="1" Grid.Column="2"/>
+                    <Button Content="A3" Classes="well" CommandParameter="A3" Grid.Row="1" Grid.Column="3"/>
+                    <Button Content="A4" Classes="well" CommandParameter="A4" Grid.Row="1" Grid.Column="4"/>
+                    <Button Content="A5" Classes="well" CommandParameter="A5" Grid.Row="1" Grid.Column="5"/>
+                    <Button Content="A6" Classes="well" CommandParameter="A6" Grid.Row="1" Grid.Column="6"/>
+                    <Button Content="A7" Classes="well" CommandParameter="A7" Grid.Row="1" Grid.Column="7"/>
+                    <Button Content="A8" Classes="well" CommandParameter="A8" Grid.Row="1" Grid.Column="8"/>
+                    <Button Content="A9" Classes="well" CommandParameter="A9" Grid.Row="1" Grid.Column="9"/>
+                    <Button Content="A10" Classes="well" CommandParameter="A10" Grid.Row="1" Grid.Column="10"/>
+                    <Button Content="A11" Classes="well" CommandParameter="A11" Grid.Row="1" Grid.Column="11"/>
+                    <Button Content="A12" Classes="well" CommandParameter="A12" Grid.Row="1" Grid.Column="12"/>
                      
-                    <Button Content="B1" Classes="well" CommandParameter="B1" Grid.Row="2" Grid.Column="1"/>
-                    <Button Content="B2" Classes="well" CommandParameter="B2" Grid.Row="2" Grid.Column="2"/>
-                    <Button Content="B3" Classes="well" CommandParameter="B3" Grid.Row="2" Grid.Column="3"/>
-                    <Button Content="B4" Classes="well" CommandParameter="B4" Grid.Row="2" Grid.Column="4"/>
-                    <Button Content="B5" Classes="well" CommandParameter="B5" Grid.Row="2" Grid.Column="5"/>
-                    <Button Content="B6" Classes="well" CommandParameter="B6" Grid.Row="2" Grid.Column="6"/>
-                    <Button Content="B7" Classes="well" CommandParameter="B7" Grid.Row="2" Grid.Column="7"/>
-                    <Button Content="B8" Classes="well" CommandParameter="B8" Grid.Row="2" Grid.Column="8"/>
-                    <Button Content="B9" Classes="well" CommandParameter="B9" Grid.Row="2" Grid.Column="9"/>
-                    <Button Content="B10" Classes="well" CommandParameter="B10" Grid.Row="2" Grid.Column="10"/>
-                    <Button Content="B11" Classes="well" CommandParameter="B11" Grid.Row="2" Grid.Column="11"/>
-                    <Button Content="B12" Classes="well" CommandParameter="B12" Grid.Row="2" Grid.Column="12"/>
+                <Button Content="B1" Classes="well" CommandParameter="B1" Grid.Row="2" Grid.Column="1"/>
+                <Button Content="B2" Classes="well" CommandParameter="B2" Grid.Row="2" Grid.Column="2"/>
+                <Button Content="B3" Classes="well" CommandParameter="B3" Grid.Row="2" Grid.Column="3"/>
+                <Button Content="B4" Classes="well" CommandParameter="B4" Grid.Row="2" Grid.Column="4"/>
+                <Button Content="B5" Classes="well" CommandParameter="B5" Grid.Row="2" Grid.Column="5"/>
+                <Button Content="B6" Classes="well" CommandParameter="B6" Grid.Row="2" Grid.Column="6"/>
+                <Button Content="B7" Classes="well" CommandParameter="B7" Grid.Row="2" Grid.Column="7"/>
+                <Button Content="B8" Classes="well" CommandParameter="B8" Grid.Row="2" Grid.Column="8"/>
+                <Button Content="B9" Classes="well" CommandParameter="B9" Grid.Row="2" Grid.Column="9"/>
+                <Button Content="B10" Classes="well" CommandParameter="B10" Grid.Row="2" Grid.Column="10"/>
+                <Button Content="B11" Classes="well" CommandParameter="B11" Grid.Row="2" Grid.Column="11"/>
+                <Button Content="B12" Classes="well" CommandParameter="B12" Grid.Row="2" Grid.Column="12"/>
                      
-                    <Button Content="C1" Classes="well" CommandParameter="C1" Grid.Row="3" Grid.Column="1"/>
-                    <Button Content="C2" Classes="well" CommandParameter="C2" Grid.Row="3" Grid.Column="2"/>
-                    <Button Content="C3" Classes="well" CommandParameter="C3" Grid.Row="3" Grid.Column="3"/>
-                    <Button Content="C4" Classes="well" CommandParameter="C4" Grid.Row="3" Grid.Column="4"/>
-                    <Button Content="C5" Classes="well" CommandParameter="C5" Grid.Row="3" Grid.Column="5"/>
-                    <Button Content="C6" Classes="well" CommandParameter="C6" Grid.Row="3" Grid.Column="6"/>
-                    <Button Content="C7" Classes="well" CommandParameter="C7" Grid.Row="3" Grid.Column="7"/>
-                    <Button Content="C8" Classes="well" CommandParameter="C8" Grid.Row="3" Grid.Column="8"/>
-                    <Button Content="C9" Classes="well" CommandParameter="C9" Grid.Row="3" Grid.Column="9"/>
-                    <Button Content="C10" Classes="well" CommandParameter="C10" Grid.Row="3" Grid.Column="10"/>
-                    <Button Content="C11" Classes="well" CommandParameter="C11" Grid.Row="3" Grid.Column="11"/>
-                    <Button Content="C12" Classes="well" CommandParameter="C12" Grid.Row="3" Grid.Column="12"/>
+                <Button Content="C1" Classes="well" CommandParameter="C1" Grid.Row="3" Grid.Column="1"/>
+                <Button Content="C2" Classes="well" CommandParameter="C2" Grid.Row="3" Grid.Column="2"/>
+                <Button Content="C3" Classes="well" CommandParameter="C3" Grid.Row="3" Grid.Column="3"/>
+                <Button Content="C4" Classes="well" CommandParameter="C4" Grid.Row="3" Grid.Column="4"/>
+                <Button Content="C5" Classes="well" CommandParameter="C5" Grid.Row="3" Grid.Column="5"/>
+                <Button Content="C6" Classes="well" CommandParameter="C6" Grid.Row="3" Grid.Column="6"/>
+                <Button Content="C7" Classes="well" CommandParameter="C7" Grid.Row="3" Grid.Column="7"/>
+                <Button Content="C8" Classes="well" CommandParameter="C8" Grid.Row="3" Grid.Column="8"/>
+                <Button Content="C9" Classes="well" CommandParameter="C9" Grid.Row="3" Grid.Column="9"/>
+                <Button Content="C10" Classes="well" CommandParameter="C10" Grid.Row="3" Grid.Column="10"/>
+                <Button Content="C11" Classes="well" CommandParameter="C11" Grid.Row="3" Grid.Column="11"/>
+                <Button Content="C12" Classes="well" CommandParameter="C12" Grid.Row="3" Grid.Column="12"/>
                      
-                    <Button Content="D1" Classes="well" CommandParameter="D1" Grid.Row="4" Grid.Column="1"/>
-                    <Button Content="D2" Classes="well" CommandParameter="D2" Grid.Row="4" Grid.Column="2"/>
-                    <Button Content="D3" Classes="well" CommandParameter="D3" Grid.Row="4" Grid.Column="3"/>
-                    <Button Content="D4" Classes="well" CommandParameter="D4" Grid.Row="4" Grid.Column="4"/>
-                    <Button Content="D5" Classes="well" CommandParameter="D5" Grid.Row="4" Grid.Column="5"/>
-                    <Button Content="D6" Classes="well" CommandParameter="D6" Grid.Row="4" Grid.Column="6"/>
-                    <Button Content="D7" Classes="well" CommandParameter="D7" Grid.Row="4" Grid.Column="7"/>
-                    <Button Content="D8" Classes="well" CommandParameter="D8" Grid.Row="4" Grid.Column="8"/>
-                    <Button Content="D9" Classes="well" CommandParameter="D9" Grid.Row="4" Grid.Column="9"/>
-                    <Button Content="D10" Classes="well" CommandParameter="D10" Grid.Row="4" Grid.Column="10"/>
-                    <Button Content="D11" Classes="well" CommandParameter="D11" Grid.Row="4" Grid.Column="11"/>
-                    <Button Content="D12" Classes="well" CommandParameter="D12" Grid.Row="4" Grid.Column="12"/>
+                <Button Content="D1" Classes="well" CommandParameter="D1" Grid.Row="4" Grid.Column="1"/>
+                <Button Content="D2" Classes="well" CommandParameter="D2" Grid.Row="4" Grid.Column="2"/>
+                <Button Content="D3" Classes="well" CommandParameter="D3" Grid.Row="4" Grid.Column="3"/>
+                <Button Content="D4" Classes="well" CommandParameter="D4" Grid.Row="4" Grid.Column="4"/>
+                <Button Content="D5" Classes="well" CommandParameter="D5" Grid.Row="4" Grid.Column="5"/>
+                <Button Content="D6" Classes="well" CommandParameter="D6" Grid.Row="4" Grid.Column="6"/>
+                <Button Content="D7" Classes="well" CommandParameter="D7" Grid.Row="4" Grid.Column="7"/>
+                <Button Content="D8" Classes="well" CommandParameter="D8" Grid.Row="4" Grid.Column="8"/>
+                <Button Content="D9" Classes="well" CommandParameter="D9" Grid.Row="4" Grid.Column="9"/>
+                <Button Content="D10" Classes="well" CommandParameter="D10" Grid.Row="4" Grid.Column="10"/>
+                <Button Content="D11" Classes="well" CommandParameter="D11" Grid.Row="4" Grid.Column="11"/>
+                <Button Content="D12" Classes="well" CommandParameter="D12" Grid.Row="4" Grid.Column="12"/>
                      
-                    <Button Content="Up" Command="{Binding MoveUpCommand}" Width="70" Grid.Row="4" Grid.Column="14" Background="#4BB459"/>
+                <Button Content="Up" Command="{Binding MoveUpCommand}" Width="70" Grid.Row="4" Grid.Column="14" Background="#4BB459"/>
                      
-                    <Button Content="E1" Classes="well" CommandParameter="E1" Grid.Row="5" Grid.Column="1"/>
-                    <Button Content="E2" Classes="well" CommandParameter="E2" Grid.Row="5" Grid.Column="2"/>
-                    <Button Content="E3" Classes="well" CommandParameter="E3" Grid.Row="5" Grid.Column="3"/>
-                    <Button Content="E4" Classes="well" CommandParameter="E4" Grid.Row="5" Grid.Column="4"/>
-                    <Button Content="E5" Classes="well" CommandParameter="E5" Grid.Row="5" Grid.Column="5"/>
-                    <Button Content="E6" Classes="well" CommandParameter="E6" Grid.Row="5" Grid.Column="6"/>
-                    <Button Content="E7" Classes="well" CommandParameter="E7" Grid.Row="5" Grid.Column="7"/>
-                    <Button Content="E8" Classes="well" CommandParameter="E8" Grid.Row="5" Grid.Column="8"/>
-                    <Button Content="E9" Classes="well" CommandParameter="E9" Grid.Row="5" Grid.Column="9"/>
-                    <Button Content="E10" Classes="well" CommandParameter="E10" Grid.Row="5" Grid.Column="10"/>
-                    <Button Content="E11" Classes="well" CommandParameter="E11" Grid.Row="5" Grid.Column="11"/>
-                    <Button Content="E12" Classes="well" CommandParameter="E12" Grid.Row="5" Grid.Column="12"/>
+                <Button Content="E1" Classes="well" CommandParameter="E1" Grid.Row="5" Grid.Column="1"/>
+                <Button Content="E2" Classes="well" CommandParameter="E2" Grid.Row="5" Grid.Column="2"/>
+                <Button Content="E3" Classes="well" CommandParameter="E3" Grid.Row="5" Grid.Column="3"/>
+                <Button Content="E4" Classes="well" CommandParameter="E4" Grid.Row="5" Grid.Column="4"/>
+                <Button Content="E5" Classes="well" CommandParameter="E5" Grid.Row="5" Grid.Column="5"/>
+                <Button Content="E6" Classes="well" CommandParameter="E6" Grid.Row="5" Grid.Column="6"/>
+                <Button Content="E7" Classes="well" CommandParameter="E7" Grid.Row="5" Grid.Column="7"/>
+                <Button Content="E8" Classes="well" CommandParameter="E8" Grid.Row="5" Grid.Column="8"/>
+                <Button Content="E9" Classes="well" CommandParameter="E9" Grid.Row="5" Grid.Column="9"/>
+                <Button Content="E10" Classes="well" CommandParameter="E10" Grid.Row="5" Grid.Column="10"/>
+                <Button Content="E11" Classes="well" CommandParameter="E11" Grid.Row="5" Grid.Column="11"/>
+                <Button Content="E12" Classes="well" CommandParameter="E12" Grid.Row="5" Grid.Column="12"/>
                      
-                    <Button Content="Down" Command="{Binding MoveDownCommand}" Width="70" Grid.Row="5" Grid.Column="14" Background="#4BB459"/>
+                <Button Content="Down" Command="{Binding MoveDownCommand}" Width="70" Grid.Row="5" Grid.Column="14" Background="#4BB459"/>
                      
-                    <Button Content="F1" Classes="well" CommandParameter="F1" Grid.Row="6" Grid.Column="1"/>
-                    <Button Content="F2" Classes="well" CommandParameter="F2" Grid.Row="6" Grid.Column="2"/>
-                    <Button Content="F3" Classes="well" CommandParameter="F3" Grid.Row="6" Grid.Column="3"/>
-                    <Button Content="F4" Classes="well" CommandParameter="F4" Grid.Row="6" Grid.Column="4"/>
-                    <Button Content="F5" Classes="well" CommandParameter="F5" Grid.Row="6" Grid.Column="5"/>
-                    <Button Content="F6" Classes="well" CommandParameter="F6" Grid.Row="6" Grid.Column="6"/>
-                    <Button Content="F7" Classes="well" CommandParameter="F7" Grid.Row="6" Grid.Column="7"/>
-                    <Button Content="F8" Classes="well" CommandParameter="F8" Grid.Row="6" Grid.Column="8"/>
-                    <Button Content="F9" Classes="well" CommandParameter="F9" Grid.Row="6" Grid.Column="9"/>
-                    <Button Content="F10" Classes="well" CommandParameter="F10" Grid.Row="6" Grid.Column="10"/>
-                    <Button Content="F11" Classes="well" CommandParameter="F11" Grid.Row="6" Grid.Column="11"/>
-                    <Button Content="F12" Classes="well" CommandParameter="F12" Grid.Row="6" Grid.Column="12"/>
+                <Button Content="F1" Classes="well" CommandParameter="F1" Grid.Row="6" Grid.Column="1"/>
+                <Button Content="F2" Classes="well" CommandParameter="F2" Grid.Row="6" Grid.Column="2"/>
+                <Button Content="F3" Classes="well" CommandParameter="F3" Grid.Row="6" Grid.Column="3"/>
+                <Button Content="F4" Classes="well" CommandParameter="F4" Grid.Row="6" Grid.Column="4"/>
+                <Button Content="F5" Classes="well" CommandParameter="F5" Grid.Row="6" Grid.Column="5"/>
+                <Button Content="F6" Classes="well" CommandParameter="F6" Grid.Row="6" Grid.Column="6"/>
+                <Button Content="F7" Classes="well" CommandParameter="F7" Grid.Row="6" Grid.Column="7"/>
+                <Button Content="F8" Classes="well" CommandParameter="F8" Grid.Row="6" Grid.Column="8"/>
+                <Button Content="F9" Classes="well" CommandParameter="F9" Grid.Row="6" Grid.Column="9"/>
+                <Button Content="F10" Classes="well" CommandParameter="F10" Grid.Row="6" Grid.Column="10"/>
+                <Button Content="F11" Classes="well" CommandParameter="F11" Grid.Row="6" Grid.Column="11"/>
+                <Button Content="F12" Classes="well" CommandParameter="F12" Grid.Row="6" Grid.Column="12"/>
                      
-                    <Button Content="G1" Classes="well" CommandParameter="G1" Grid.Row="7" Grid.Column="1"/>
-                    <Button Content="G2" Classes="well" CommandParameter="G2" Grid.Row="7" Grid.Column="2"/>
-                    <Button Content="G3" Classes="well" CommandParameter="G3" Grid.Row="7" Grid.Column="3"/>
-                    <Button Content="G4" Classes="well" CommandParameter="G4" Grid.Row="7" Grid.Column="4"/>
-                    <Button Content="G5" Classes="well" CommandParameter="G5" Grid.Row="7" Grid.Column="5"/>
-                    <Button Content="G6" Classes="well" CommandParameter="G6" Grid.Row="7" Grid.Column="6"/>
-                    <Button Content="G7" Classes="well" CommandParameter="G7" Grid.Row="7" Grid.Column="7"/>
-                    <Button Content="G8" Classes="well" CommandParameter="G8" Grid.Row="7" Grid.Column="8"/>
-                    <Button Content="G9" Classes="well" CommandParameter="G9" Grid.Row="7" Grid.Column="9"/>
-                    <Button Content="G10" Classes="well" CommandParameter="G10" Grid.Row="7" Grid.Column="10"/>
-                    <Button Content="G11" Classes="well" CommandParameter="G11" Grid.Row="7" Grid.Column="11"/>
-                    <Button Content="G12" Classes="well" CommandParameter="G12" Grid.Row="7" Grid.Column="12"/>
+                <Button Content="G1" Classes="well" CommandParameter="G1" Grid.Row="7" Grid.Column="1"/>
+                <Button Content="G2" Classes="well" CommandParameter="G2" Grid.Row="7" Grid.Column="2"/>
+                <Button Content="G3" Classes="well" CommandParameter="G3" Grid.Row="7" Grid.Column="3"/>
+                <Button Content="G4" Classes="well" CommandParameter="G4" Grid.Row="7" Grid.Column="4"/>
+                <Button Content="G5" Classes="well" CommandParameter="G5" Grid.Row="7" Grid.Column="5"/>
+                <Button Content="G6" Classes="well" CommandParameter="G6" Grid.Row="7" Grid.Column="6"/>
+                <Button Content="G7" Classes="well" CommandParameter="G7" Grid.Row="7" Grid.Column="7"/>
+                <Button Content="G8" Classes="well" CommandParameter="G8" Grid.Row="7" Grid.Column="8"/>
+                <Button Content="G9" Classes="well" CommandParameter="G9" Grid.Row="7" Grid.Column="9"/>
+                <Button Content="G10" Classes="well" CommandParameter="G10" Grid.Row="7" Grid.Column="10"/>
+                <Button Content="G11" Classes="well" CommandParameter="G11" Grid.Row="7" Grid.Column="11"/>
+                <Button Content="G12" Classes="well" CommandParameter="G12" Grid.Row="7" Grid.Column="12"/>
                      
-                    <Button Content="H1" Classes="well" CommandParameter="H1" Grid.Row="8" Grid.Column="1"/>
-                    <Button Content="H2" Classes="well" CommandParameter="H2" Grid.Row="8" Grid.Column="2"/>
-                    <Button Content="H3" Classes="well" CommandParameter="H3" Grid.Row="8" Grid.Column="3"/>
-                    <Button Content="H4" Classes="well" CommandParameter="H4" Grid.Row="8" Grid.Column="4"/>
-                    <Button Content="H5" Classes="well" CommandParameter="H5" Grid.Row="8" Grid.Column="5"/>
-                    <Button Content="H6" Classes="well" CommandParameter="H6" Grid.Row="8" Grid.Column="6"/>
-                    <Button Content="H7" Classes="well" CommandParameter="H7" Grid.Row="8" Grid.Column="7"/>
-                    <Button Content="H8" Classes="well" CommandParameter="H8" Grid.Row="8" Grid.Column="8"/>
-                    <Button Content="H9" Classes="well" CommandParameter="H9" Grid.Row="8" Grid.Column="9"/>
-                    <Button Content="H10" Classes="well" CommandParameter="H10" Grid.Row="8" Grid.Column="10"/>
-                    <Button Content="H11" Classes="well" CommandParameter="H11" Grid.Row="8" Grid.Column="11"/>
-                    <Button Content="H12" Classes="well" CommandParameter="H12" Grid.Row="8" Grid.Column="12"/>
+                <Button Content="H1" Classes="well" CommandParameter="H1" Grid.Row="8" Grid.Column="1"/>
+                <Button Content="H2" Classes="well" CommandParameter="H2" Grid.Row="8" Grid.Column="2"/>
+                <Button Content="H3" Classes="well" CommandParameter="H3" Grid.Row="8" Grid.Column="3"/>
+                <Button Content="H4" Classes="well" CommandParameter="H4" Grid.Row="8" Grid.Column="4"/>
+                <Button Content="H5" Classes="well" CommandParameter="H5" Grid.Row="8" Grid.Column="5"/>
+                <Button Content="H6" Classes="well" CommandParameter="H6" Grid.Row="8" Grid.Column="6"/>
+                <Button Content="H7" Classes="well" CommandParameter="H7" Grid.Row="8" Grid.Column="7"/>
+                <Button Content="H8" Classes="well" CommandParameter="H8" Grid.Row="8" Grid.Column="8"/>
+                <Button Content="H9" Classes="well" CommandParameter="H9" Grid.Row="8" Grid.Column="9"/>
+                <Button Content="H10" Classes="well" CommandParameter="H10" Grid.Row="8" Grid.Column="10"/>
+                <Button Content="H11" Classes="well" CommandParameter="H11" Grid.Row="8" Grid.Column="11"/>
+                <Button Content="H12" Classes="well" CommandParameter="H12" Grid.Row="8" Grid.Column="12"/>
                      
-                     
-                </Grid>
-                
-            </StackPanel>
-            
-            
-        </ScrollViewer>
-    </DockPanel>
-    
+            </Grid>
+        </StackPanel>
+    </Panel>
 </UserControl>

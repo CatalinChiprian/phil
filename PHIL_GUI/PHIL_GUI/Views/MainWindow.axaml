@@ -12,18 +12,61 @@
         Title="PHIL_GUI">
     
     <!-- Main content area that switches between pages -->
-    <Panel>
-        <!-- Basic Controls page content -->
-        <ContentControl Content="{Binding CurrentPage}"
-                        IsVisible="{Binding CurrentPage, Converter={x:Static ObjectConverters.IsNotNull}}">
-            <ContentControl.DataTemplates>
-                <DataTemplate DataType="vm:BasicControlsViewModel">
-                    <views:BasicControlsView />
-                </DataTemplate>
-            </ContentControl.DataTemplates>
-        </ContentControl>
+    <DockPanel>
+        <Border DockPanel.Dock="Top" Classes="topbar">
+            <Grid Margin="20,15"
+                  VerticalAlignment="Stretch">
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                
+                <StackPanel Grid.Column="0"
+                            Orientation="Horizontal">
+
+                    <TextBlock Text="PHIL" 
+                                FontSize="16"
+                                FontWeight="SemiBold"
+                                LetterSpacing="1.5"/>
+                </StackPanel>
+
+                <StackPanel Grid.Column="1"
+                            Orientation="Horizontal"
+                            Spacing="30">
+
+                    <TextBlock Text="CONNECTED"
+                               FontSize="14"
+                               LetterSpacing="0.5"/>
+                    <Button Classes="btn-emergency" Content="Disconnect" Width="100"/>
+                </StackPanel>
+            </Grid>
+
+    
+<!--            <StackPanel Orientation="Horizontal" Margin="0,20,0,0">
+                <Button Content="Go Back"
+                        Command="{Binding GoBackCommand}"
+                        Width="150"
+                        Margin="0,0,10,0"/>
         
-        <!-- Wells  page content -->
+                <Button Content="Continue to pipetting"
+                        Width="200"/>
+                    
+                <Button Content="Go home"
+                        Command="{Binding GoHomeCommand}"
+                        Width="150"
+                        Margin="250,0,0,0"
+                        Background="#1EA1EB"/>
+                    
+                <Button Content="Emergency stop"
+                        Command="{Binding EmergencyStopCommand}"
+                        Width="150"
+                        Margin="300,0,0,0"
+                        Background="#FF4A24"/>
+                    
+            </StackPanel>-->
+        </Border>
+
         <ContentControl Content="{Binding CurrentPage}"
                         IsVisible="{Binding CurrentPage, Converter={x:Static ObjectConverters.IsNotNull}}">
             <ContentControl.DataTemplates>
@@ -35,7 +78,5 @@
                 </DataTemplate>
             </ContentControl.DataTemplates>
         </ContentControl>
-        
-    </Panel>
-    
+    </DockPanel>
 </Window>
