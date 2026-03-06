@@ -74,7 +74,7 @@
 			<StackPanel Orientation="Vertical"
                         Spacing="20" Margin="14,20">
                 <StackPanel Orientation="Vertical">
-                    <TextBlock Text="NAVIGATE" FontSize="9" Foreground="{StaticResource Muted}" LetterSpacing="2"/>
+                    <TextBlock Classes="subtitle" Text="NAVIGATE"  LetterSpacing="2"/>
                     <ListBox Classes="nav"
                              ItemsSource="{Binding Pages}"
                              SelectedItem="{Binding SelectedPage}">

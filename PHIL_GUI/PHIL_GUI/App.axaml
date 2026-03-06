@@ -36,6 +36,11 @@
             <Setter Property="VerticalAlignment" Value="Center"/>
         </Style>
 
+        <Style Selector="TextBlock.subtitle">
+            <Setter Property="FontSize" Value="9"/>
+            <Setter Property="Foreground" Value="{StaticResource Muted}"/>
+        </Style>
+
         <Style Selector="ListBox ListBoxItem /template/ ContentPresenter">
             <Setter Property="Background" Value="Transparent"/>
             <Setter Property="CornerRadius" Value="6"/>
@@ -233,6 +238,31 @@
             <Setter Property="HorizontalContentAlignment" Value="Center"/>
             <Setter Property="VerticalContentAlignment" Value="Center"/>
             <Setter Property="CornerRadius" Value="25"/>
+        </Style>
+
+        <Style Selector="Border.bottombar">
+			<Setter Property="Padding" Value="24,12"/>
+            <Setter Property="Background" Value="{StaticResource Surface}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource BorderColor}"/>
+            <Setter Property="BorderThickness" Value="0,1,0,0"/>
+        </Style>
+
+        <Style Selector="TextBlock.metric-value">
+			<Setter Property="FontSize" Value="12"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Foreground" Value="{StaticResource Text}"/>
+        </Style>
+
+        <Style Selector="TextBlock.metric-value.good">
+			<Setter Property="Foreground" Value="{StaticResource Accent}"/>
+        </Style>
+
+        <Style Selector="TextBlock.metric-value.caution">
+			<Setter Property="Foreground" Value="{StaticResource Warn-Dim}"/>
+        </Style>
+
+        <Style Selector="TextBlock.metric-value.warn">
+            <Setter Property="Foreground" Value="{StaticResource Warn}"/>
         </Style>
     </Application.Styles>
 </Application>
