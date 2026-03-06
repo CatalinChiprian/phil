@@ -70,6 +70,27 @@
             </Grid>
         </Border>
 
+        <Border DockPanel.Dock="Left" Classes="sidebar">
+			<StackPanel Orientation="Vertical"
+                        Spacing="20" Margin="14,20">
+                <StackPanel Orientation="Vertical">
+                    <TextBlock Text="NAVIGATE" FontSize="9" Foreground="{StaticResource Muted}" LetterSpacing="2"/>
+                    <ListBox Classes="nav"
+                             ItemsSource="{Binding Pages}"
+                             SelectedItem="{Binding SelectedPage}">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <TextBlock Text="•"/>
+                                    <TextBlock Text="{Binding Title}"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </StackPanel>
+            </StackPanel>
+        </Border>
+
         <ContentControl Content="{Binding CurrentPage}"
                         IsVisible="{Binding CurrentPage, Converter={x:Static ObjectConverters.IsNotNull}}">
             <ContentControl.DataTemplates>

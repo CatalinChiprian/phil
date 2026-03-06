@@ -14,7 +14,6 @@ public partial class MainWindow : Window
         mainVm.Disconnected += OnDisconnected;
         Closed += (s, e) => mainVm.Disconnected -= OnDisconnected;
 
-        mainVm.GoToWellsView();
         DataContext = mainVm;
     }
 

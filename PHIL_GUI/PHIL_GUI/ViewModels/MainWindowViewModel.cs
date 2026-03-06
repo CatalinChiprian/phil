@@ -3,9 +3,11 @@
 Based on Phillip Dettinger work availible on https://github.com/CSDGroup/PHIL.git */
 
 using System;
+using System.Collections.Generic;
 using System.Windows.Input;
 using Avalonia.Threading;
 using PHIL_GUI.Commands;
+using PHIL_GUI.Models;
 using PHIL_GUI.Services;
 
 namespace PHIL_GUI.ViewModels;
@@ -17,8 +19,20 @@ public class MainWindowViewModel : ViewModelBase
     private readonly SerialPortService _serialPortService;
     private string _receivedData;
     private string _messageToSend;
-    private object _currentPage; 
-    
+    private object _currentPage;
+    private List<PageItem> _pages;
+    public List<PageItem> Pages => _pages;
+    private PageItem _selectedPage;
+    public PageItem SelectedPage
+    {
+        get => _selectedPage;
+        set
+        {
+            if (SetProperty(ref _selectedPage, value))
+                CurrentPage = value.ViewModel;
+        }
+    }       
+
     public string ConnectedPort { get; }
 
     public string ReceivedData
@@ -56,6 +70,15 @@ public class MainWindowViewModel : ViewModelBase
     {
         _serialPortService = serialPortService;
         ConnectedPort = serialPortService.PortName;
+
+        _pages = new List<PageItem>
+        {
+            new PageItem { Title = "Wells", ViewModel = new WellsViewModel(this) },
+            new PageItem { Title = "Calibration", ViewModel = new BasicControlsViewModel(this) }, // Change VM
+            new PageItem { Title = "Medium Exchange", ViewModel = new BasicControlsViewModel(this) } // Change VM
+        };
+
+        SelectedPage = _pages[0]; // Default to first page
 
         _sendMessageCommand = new RelayCommand(SendMessage, CanSendMessage);
         _goToBasicControlsViewCommand = new RelayCommand(GoToBasicControlsView, CanGoToBasicControlsView);

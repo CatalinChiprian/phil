@@ -28,7 +28,8 @@
                      LetterSpacing="0.5"/>
       </StackPanel>
                 
-      <ListBox ItemsSource="{Binding AvailablePorts}"
+      <ListBox Classes="portList"
+               ItemsSource="{Binding AvailablePorts}"
                SelectedItem="{Binding SelectedPort}"
                Height="{Binding PortsHeight}">
 

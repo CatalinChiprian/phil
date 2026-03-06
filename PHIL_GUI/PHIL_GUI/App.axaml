@@ -12,6 +12,7 @@
     <Application.Resources>
         <SolidColorBrush x:Key="Bg">#f4f6f4</SolidColorBrush>
         <SolidColorBrush x:Key="Surface">#ffffff</SolidColorBrush>
+        <SolidColorBrush x:Key="Surface2">#eef1ee</SolidColorBrush>
 	    <SolidColorBrush x:Key="BorderColor">#dde3dd</SolidColorBrush>
         <SolidColorBrush x:Key="Text">#1a1f1a</SolidColorBrush>
         <SolidColorBrush x:Key="Accent">#00a854</SolidColorBrush>
@@ -35,15 +36,19 @@
             <Setter Property="VerticalAlignment" Value="Center"/>
         </Style>
 
-        <Style Selector="ListBox">
+        <Style Selector="ListBox ListBoxItem /template/ ContentPresenter">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="CornerRadius" Value="6"/>
+        </Style>
+
+        <Style Selector="ListBox.portList">
             <Setter Property="Background" Value="Transparent"/>
             <Setter Property="BorderThickness" Value="0"/>
         </Style>
 
         <!-- Replace the ListBoxItem template so items render inside a Border with class 'portItem' -->
-        <Style Selector="ListBoxItem">
+        <Style Selector="ListBox.portList ListBoxItem">
             <Setter Property="Padding" Value="0"/>
-            <Setter Property="Background" Value="Transparent"/>
             <Setter Property="Template">
                 <ControlTemplate>
                   <Border Classes="portItem">
@@ -83,20 +88,20 @@
             </Setter>
         </Style>
 
-        <Style Selector="ListBoxItem:pointerover Border.portItem">
+        <Style Selector="ListBox.portList ListBoxItem:pointerover Border.portItem">
 		    <Setter Property="BorderBrush" Value="{StaticResource Accent}"/>
         </Style>
 
-        <Style Selector="ListBoxItem:pointerover Border.portItem TextBlock">
+        <Style Selector="ListBox.portList ListBoxItem:pointerover Border.portItem TextBlock">
 		    <Setter Property="Foreground" Value="{StaticResource Text}"/>	
         </Style>
 
-        <Style Selector="ListBoxItem:selected Border.portItem">
+        <Style Selector="ListBox.portList ListBoxItem:selected Border.portItem">
             <Setter Property="BorderBrush" Value="{StaticResource Accent}"/>
             <Setter Property="Background" Value="{StaticResource Accent-Dim}"/>
         </Style>
 
-        <Style Selector="ListBoxItem:selected Border.portItem TextBlock">
+        <Style Selector="ListBox.portList ListBoxItem:selected Border.portItem TextBlock">
             <Setter Property="Foreground" Value="{StaticResource Accent}"/>
         </Style>
 
@@ -157,6 +162,56 @@
             <Setter Property="BorderBrush" Value="{StaticResource BorderColor}"/>
             <Setter Property="BorderThickness" Value="0,0,0,1"/>
             <Setter Property="ZIndex" Value="10"/>
+        </Style>
+
+        <Style Selector="Border.sidebar">
+			<Setter Property="Background" Value="{StaticResource Surface}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource BorderColor}"/>
+            <Setter Property="BorderThickness" Value="0,0,1,0"/>
+        </Style>
+
+        <Style Selector="ListBox.nav">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="0"/>
+        </Style>
+
+        <Style Selector="ListBox.nav ListBoxItem">
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="12,8"/>
+            <Setter Property="Margin" Value="0,0,0,2"/>
+            <Setter Property="CornerRadius" Value="6"/>
+            <Setter Property="Transitions">
+                <Transitions>
+                    <BrushTransition  Property="Background" Duration="0:0:0.12"/>
+                    <BrushTransition  Property="BorderBrush" Duration="0:0:0.12"/>
+                    <BrushTransition  Property="Foreground" Duration="0:0:0.12"/>
+                </Transitions>
+            </Setter>
+        </Style>
+
+         <Style Selector="ListBox.nav ListBoxItem TextBlock">
+            <Setter Property="Foreground" Value="{StaticResource Muted}"/>
+        </Style>
+
+        <Style Selector="ListBox.nav ListBoxItem:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="{StaticResource Surface2}"/>
+            <Setter Property="Foreground" Value="{StaticResource Text}"/>
+        </Style>
+
+         <Style Selector="ListBox.nav ListBoxItem:pointerover TextBlock">
+            <Setter Property="Foreground" Value="{StaticResource Text}"/>
+        </Style>
+
+        <Style Selector="ListBox.nav ListBoxItem:selected /template/ ContentPresenter">
+            <Setter Property="Background" Value="{StaticResource Accent-Dim}"/>
+            <Setter Property="Foreground" Value="{StaticResource Accent}"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+        </Style>
+
+        <Style Selector="ListBox.nav ListBoxItem:selected TextBlock">
+            <Setter Property="Foreground" Value="{StaticResource Accent}"/>
         </Style>
 
         <Style Selector="Button.well">
