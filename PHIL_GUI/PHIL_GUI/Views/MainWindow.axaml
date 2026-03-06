@@ -81,7 +81,7 @@
                         <ListBox.ItemTemplate>
                             <DataTemplate>
                                 <StackPanel Orientation="Horizontal" Spacing="8">
-                                    <TextBlock Text="•"/>
+                                    <Ellipse Width="5" Height="5"/>
                                     <TextBlock Text="{Binding Title}"/>
                                 </StackPanel>
                             </DataTemplate>
