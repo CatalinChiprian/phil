@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
-namespace PHIL_GUI.ViewModels;
+namespace PHIL_GUI.ViewModels.Base;
 
 public class ViewModelBase : INotifyPropertyChanged
 {

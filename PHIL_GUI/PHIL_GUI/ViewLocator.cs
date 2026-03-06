@@ -1,7 +1,7 @@
 using System;
 using Avalonia.Controls;
 using Avalonia.Controls.Templates;
-using PHIL_GUI.ViewModels;
+using PHIL_GUI.ViewModels.Base;
 
 namespace PHIL_GUI;
 

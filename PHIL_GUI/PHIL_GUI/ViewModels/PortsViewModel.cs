@@ -1,7 +1,7 @@
 ﻿using PHIL_GUI.Commands;
 using PHIL_GUI.Services;
+using PHIL_GUI.ViewModels.Base;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
 
@@ -49,8 +49,8 @@ namespace PHIL_GUI.ViewModels
         private void GetAvailablePorts()
         {
             AvailablePorts.Clear();
-            foreach (var p in _serialService.GetAvailablePorts())
-                AvailablePorts.Add(p);
+            foreach (string port in _serialService.GetAvailablePorts())
+                AvailablePorts.Add(port);
         }
 
         private bool CanConnect() => !string.IsNullOrWhiteSpace(SelectedPort) && !_serialService.IsConnected;

@@ -1,13 +1,11 @@
-using System;
-using System.Windows.Input;
 using PHIL_GUI.Commands;
+using PHIL_GUI.ViewModels.Base;
+using System.Windows.Input;
 
 namespace PHIL_GUI.ViewModels;
 
-public class BasicControlsViewModel : ViewModelBase, IDisposable
+public class BasicControlsViewModel : CommunicationBase
 {
-    private readonly MainWindowViewModel _mainViewModel;
-    
     public ICommand EmergencyStopCommand { get; }
     public ICommand MoveLeftCommand { get; }
     public ICommand MoveRightCommand { get; }
@@ -16,55 +14,15 @@ public class BasicControlsViewModel : ViewModelBase, IDisposable
     public ICommand MoveUpCommand { get; }
     public ICommand MoveDownCommand { get; }
     
-    public ICommand GoToWellsViewCommand { get; } 
-   
-    public string ReceivedData => _mainViewModel.ReceivedData;
-    public string MessageToSend
+    public BasicControlsViewModel()
     {
-        get => _mainViewModel.MessageToSend;
-        set => _mainViewModel.MessageToSend = value;
-    }
-    
-    public ICommand SendMessageCommand => _mainViewModel.SendMessageCommand;
-    public ICommand ClearMonitorCommand => _mainViewModel.ClearMonitorCommand;
-    
-    public BasicControlsViewModel(MainWindowViewModel mainViewModel)
-    {
-        _mainViewModel = mainViewModel;
-        GoToWellsViewCommand = new RelayCommand(GoToWellsView);
 
-        EmergencyStopCommand = new RelayCommand(() => SendMotorCommand("s"));
-        MoveLeftCommand = new RelayCommand(() => SendMotorCommand("l"));
-        MoveRightCommand = new RelayCommand(() => SendMotorCommand("r"));
-        MoveForwardCommand = new RelayCommand(() => SendMotorCommand("f"));
-        MoveBackwardCommand = new RelayCommand(() => SendMotorCommand("b"));
-        MoveUpCommand = new RelayCommand(() => SendMotorCommand("u"));
-        MoveDownCommand = new RelayCommand(() => SendMotorCommand("d"));
-
-        _mainViewModel.PropertyChanged += OnPropertyChanged;
-    }
-    
-    private void GoToWellsView()
-    {
-        _mainViewModel.GoToWellsView();  
-    }
-    
-    private void SendMotorCommand(string command)
-    {
-        _mainViewModel.SendMotorCommand(command);
-    }
-
-    private void OnPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
-    {
-        if (e.PropertyName == nameof(_mainViewModel.ReceivedData))
-        {
-            OnPropertyChanged(nameof(ReceivedData));
-        }
-    }
-
-    public void Dispose()
-    {
-        if (_mainViewModel == null) return;
-        _mainViewModel.PropertyChanged -= OnPropertyChanged;
+        EmergencyStopCommand = new RelayCommand(() => Send("s"));
+        MoveLeftCommand = new RelayCommand(() => Send("l"));
+        MoveRightCommand = new RelayCommand(() => Send("r"));
+        MoveForwardCommand = new RelayCommand(() => Send("f"));
+        MoveBackwardCommand = new RelayCommand(() => Send("b"));
+        MoveUpCommand = new RelayCommand(() => Send("u"));
+        MoveDownCommand = new RelayCommand(() => Send("d"));
     }
 }
