@@ -9,7 +9,9 @@ public class SerialPortService
 {
     private SerialPort _serialPort;
     private bool _isConnected;
-    
+    public string PortName { get; private set; }
+
+
     public event Action<string> MessageReceived;
     
     public List<string> GetAvailablePorts()
@@ -38,6 +40,8 @@ public class SerialPortService
             _isConnected = false;
             throw new Exception($"Failed to connect: {ex.Message}");
         }
+
+        PortName = portName;
     }
     
     private void OnDataReceived(object sender, SerialDataReceivedEventArgs e)

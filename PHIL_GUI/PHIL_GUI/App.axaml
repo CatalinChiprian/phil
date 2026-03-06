@@ -2,7 +2,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              x:Class="PHIL_GUI.App"
              xmlns:local="using:PHIL_GUI"
-             RequestedThemeVariant="Dark">
+             RequestedThemeVariant="Light">
              <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
 
     <Application.DataTemplates>
@@ -10,15 +10,16 @@
     </Application.DataTemplates>
 
     <Application.Resources>
-        <SolidColorBrush x:Key="Bg">#0d0f0e</SolidColorBrush>
-        <SolidColorBrush x:Key="Surface">#141614</SolidColorBrush>
-	    <SolidColorBrush x:Key="BorderColor">#1e221e</SolidColorBrush>
-        <SolidColorBrush x:Key="Text">#e8ede8</SolidColorBrush>
-        <SolidColorBrush x:Key="Accent">#00e87a</SolidColorBrush>
-        <SolidColorBrush x:Key="Accent-Dim">#2200e87a</SolidColorBrush>
-        <SolidColorBrush x:Key="Muted">#4a544a</SolidColorBrush>
-        <SolidColorBrush x:Key="Warn">#ff4444</SolidColorBrush>
-        <SolidColorBrush x:Key="Warn-Dim">#22ff4444</SolidColorBrush>
+        <SolidColorBrush x:Key="Bg">#f4f6f4</SolidColorBrush>
+        <SolidColorBrush x:Key="Surface">#ffffff</SolidColorBrush>
+	    <SolidColorBrush x:Key="BorderColor">#dde3dd</SolidColorBrush>
+        <SolidColorBrush x:Key="Text">#1a1f1a</SolidColorBrush>
+        <SolidColorBrush x:Key="Accent">#00a854</SolidColorBrush>
+        <SolidColorBrush x:Key="Accent-Dim">#2000a854</SolidColorBrush>
+        <SolidColorBrush x:Key="Accent-Mid">#20a85430</SolidColorBrush>
+        <SolidColorBrush x:Key="Muted">#7a8f7a</SolidColorBrush>
+        <SolidColorBrush x:Key="Warn">#d93025</SolidColorBrush>
+        <SolidColorBrush x:Key="Warn-Dim">#0Cd93025</SolidColorBrush>
     </Application.Resources>
   
     <Application.Styles>
@@ -103,10 +104,8 @@
 		    <Setter Property="FontFamily" Value="avares://PHIL_GUI/Assets/Fonts/SpaceMono-Regular.ttf#Space Mono"/>
             <Setter Property="FontSize" Value="11"/>
             <Setter Property="Padding" Value="8,6"/>
-            <Setter Property="Background" Value="Transparent"/>
-            <Setter Property="Foreground" Value="{StaticResource Muted}"/>
-            <Setter Property="BorderBrush" Value="{StaticResource BorderColor}"/>
             <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="4"/>
             <Setter Property="HorizontalAlignment" Value="Center"/>
             <Setter Property="HorizontalContentAlignment" Value="Center"/>
             <Setter Property="VerticalAlignment" Value="Center"/>
@@ -119,7 +118,14 @@
             </Setter>
         </Style>
 
-        <Style Selector="Button.btn:pointerover /template/ ContentPresenter">
+        <Style Selector="Button.btn-secondary">
+			<Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="{StaticResource Muted}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource BorderColor}"/>
+        </Style>
+
+        <Style Selector="Button.btn-secondary:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="Transparent"/>
             <Setter Property="BorderBrush" Value="{StaticResource Text}"/>
             <Setter Property="Foreground" Value="{StaticResource Text}"/>
         </Style>
@@ -132,38 +138,25 @@
 
         <Style Selector="Button.btn-primary:pointerover /template/ ContentPresenter">
             <Setter Property="Background" Value="{StaticResource Accent}"/>
-            <Setter Property="Foreground" Value="{StaticResource Bg}"/>
+            <Setter Property="Foreground" Value="{StaticResource Surface}"/>
         </Style>
 
         <Style Selector="Button.btn-emergency">
-            <Setter Property="FontFamily" Value="avares://PHIL_GUI/Assets/Fonts/SpaceMono-Regular.ttf#Space Mono"/>
-            <Setter Property="FontSize" Value="11"/>
-            <Setter Property="Padding" Value="8,6"/>
             <Setter Property="Background" Value="{StaticResource Warn-Dim}"/>
             <Setter Property="BorderBrush" Value="{StaticResource Warn}"/>
-            <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="HorizontalAlignment" Value="Center"/>
-            <Setter Property="HorizontalContentAlignment" Value="Center"/>
-            <Setter Property="VerticalAlignment" Value="Center"/>
             <Setter Property="Foreground" Value="{StaticResource Warn}"/>
-            <Setter Property="Transitions">
-                <Transitions>
-                    <BrushTransition  Property="Background" Duration="0:0:0.15"/>
-                    <BrushTransition  Property="BorderBrush" Duration="0:0:0.15"/>
-                    <BrushTransition  Property="Foreground" Duration="0:0:0.15"/>
-                </Transitions>
-            </Setter>
         </Style>
 
         <Style Selector="Button.btn-emergency:pointerover /template/ ContentPresenter">
             <Setter Property="Background" Value="{StaticResource Warn}"/>
-            <Setter Property="Foreground" Value="{StaticResource Text}"/>
+            <Setter Property="Foreground" Value="{StaticResource Surface}"/>
         </Style>
 
         <Style Selector="Border.topbar">
             <Setter Property="Background" Value="{StaticResource Surface}"/>
             <Setter Property="BorderBrush" Value="{StaticResource BorderColor}"/>
             <Setter Property="BorderThickness" Value="0,0,0,1"/>
+            <Setter Property="ZIndex" Value="10"/>
         </Style>
 
         <Style Selector="Button.well">

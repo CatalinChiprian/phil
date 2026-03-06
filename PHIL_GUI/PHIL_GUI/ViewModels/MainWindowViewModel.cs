@@ -12,11 +12,15 @@ namespace PHIL_GUI.ViewModels;
 
 public class MainWindowViewModel : ViewModelBase
 {
+    public Action Disconnected;
+
     private readonly SerialPortService _serialPortService;
     private string _receivedData;
     private string _messageToSend;
     private object _currentPage; 
     
+    public string ConnectedPort { get; }
+
     public string ReceivedData
     {
         get => _receivedData;
@@ -46,15 +50,18 @@ public class MainWindowViewModel : ViewModelBase
     public ICommand GoToBasicControlsViewCommand => _goToBasicControlsViewCommand;
     public ICommand ClearMonitorCommand { get; }
     public ICommand EmergencyStopCommand { get; }
+    public ICommand DisconnectCommand { get; }
 
     public MainWindowViewModel(SerialPortService serialPortService)
     {
         _serialPortService = serialPortService;
+        ConnectedPort = serialPortService.PortName;
 
         _sendMessageCommand = new RelayCommand(SendMessage, CanSendMessage);
         _goToBasicControlsViewCommand = new RelayCommand(GoToBasicControlsView, CanGoToBasicControlsView);
 
         EmergencyStopCommand = new RelayCommand(() => SendMotorCommand("s"));
+        DisconnectCommand = new RelayCommand(Disconnect);
         ClearMonitorCommand = new RelayCommand(ClearMonitor);
         
         ReceivedData = "";
@@ -124,5 +131,11 @@ public class MainWindowViewModel : ViewModelBase
                 ReceivedData += $"{DateTime.Now:HH:mm:ss} [SENT]: {command}\n";
             });
         }
+    }
+
+    public void Disconnect()
+    {
+        _serialPortService.Disconnect();
+        Disconnected?.Invoke();
     }
 }

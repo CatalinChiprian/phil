@@ -1,16 +1,21 @@
-﻿using System;
+﻿using PHIL_GUI.Commands;
+using PHIL_GUI.Services;
+using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
-using PHIL_GUI.Commands;
-using PHIL_GUI.Services;
 
 namespace PHIL_GUI.ViewModels
 {
     public class PortsViewModel : ViewModelBase
     {
-        private readonly SerialPortService _serialService;
+        public event Action Connected;
 
-        public ObservableCollection<string> AvailablePorts { get; } = new();
+        private readonly SerialPortService _serialService;
+        public ObservableCollection<string> AvailablePorts { get; private set; } = new ObservableCollection<string>();
+        public int WindowHeight => 150 + PortsHeight;
+        public int PortsHeight => AvailablePorts.Count * 64;
+
         private string _selectedPort;
 
         public string SelectedPort
@@ -29,11 +34,14 @@ namespace PHIL_GUI.ViewModels
         private RelayCommand _connectCommand;
         public ICommand ConnectCommand => _connectCommand;
 
-        public event Action? Connected;
-
         public PortsViewModel(SerialPortService serialService)
         {
             _serialService = serialService;
+            AvailablePorts.CollectionChanged += (_, _) =>
+            {
+                OnPropertyChanged(nameof(PortsHeight));
+                OnPropertyChanged(nameof(WindowHeight));
+            };
             GetPortsCommand = new RelayCommand(GetAvailablePorts);
             _connectCommand = new RelayCommand(ConnectToSelectedPort, CanConnect);
         }

@@ -21,9 +21,7 @@ public partial class PortsView : Window
 
     private void OnConnected()
     {
-        MainWindowViewModel mainVm = App.Services.GetRequiredService<MainWindowViewModel>();
-        mainVm.GoToWellsView();
-        MainWindow mainWindow = new MainWindow { DataContext = mainVm };
+        MainWindow mainWindow = new MainWindow();
         mainWindow.Show();
 
         Close();

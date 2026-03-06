@@ -4,23 +4,33 @@
         xmlns:vm="using:PHIL_GUI.ViewModels"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="350" d:DesignHeight="250"
+        mc:Ignorable="d" d:DesignWidth="350" d:DesignHeight="150"
         x:Class="PHIL_GUI.PortsView"
         x:DataType="vm:PortsViewModel"
         Icon="/Assets/applied-nanotechnology.ico"
-        Width="350" Height="250"
+        Width="350" Height="{Binding WindowHeight}"
+        MinHeight="150"
         WindowStartupLocation="CenterScreen"
         CanResize="False"
         Title="PHIL_GUI">
 
   <StackPanel Margin="20" Spacing="15">
-      <TextBlock Text="CONNECT TO DEVICE"
-                 FontSize="14"
-                 LetterSpacing="1.3"/>
+      <StackPanel Orientation="Vertical"
+                  Spacing="5    "
+                  VerticalAlignment="Center"
+                  HorizontalAlignment="Left">
+          <TextBlock Text="CONNECT TO DEVICE"
+                     FontSize="14"
+                     LetterSpacing="1.3"/>
+          <TextBlock Text="Select a serial port to connect to PHIL"
+                     Foreground="{StaticResource Muted}"
+                     FontSize="10"
+                     LetterSpacing="0.5"/>
+      </StackPanel>
                 
       <ListBox ItemsSource="{Binding AvailablePorts}"
                SelectedItem="{Binding SelectedPort}"
-               Height="120">
+               Height="{Binding PortsHeight}">
 
           <ListBox.ItemTemplate>
               <DataTemplate>
@@ -33,7 +43,7 @@
                   HorizontalAlignment="Right"
                   Spacing="5">
 
-          <Button Classes="btn"
+          <Button Classes="btn btn-secondary"
                   Content="Scan"
                   Command="{Binding GetPortsCommand}"
                   Width="80"/>

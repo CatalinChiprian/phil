@@ -14,7 +14,7 @@
     <!-- Main content area that switches between pages -->
     <DockPanel>
         <Border DockPanel.Dock="Top" Classes="topbar">
-            <Grid Margin="20,15"
+            <Grid Margin="20,10"
                   VerticalAlignment="Stretch">
 				<Grid.ColumnDefinitions>
 					<ColumnDefinition Width="*"/>
@@ -33,38 +33,41 @@
 
                 <StackPanel Grid.Column="1"
                             Orientation="Horizontal"
-                            Spacing="30">
-
-                    <TextBlock Text="CONNECTED"
-                               FontSize="14"
-                               LetterSpacing="0.5"/>
-                    <Button Classes="btn-emergency" Content="Disconnect" Width="100"/>
+                            Spacing="10">
+                    <Border BorderThickness="1"
+                            CornerRadius="20"
+                            Background="{StaticResource Accent-Dim}"
+                            Padding="12,5"
+                            BorderBrush="{StaticResource Accent-Mid}">
+						<StackPanel Orientation="Horizontal"
+                                    Spacing="5">
+                            <Ellipse Width="6" Height="6" Fill="{StaticResource Accent}">
+                                <Ellipse.Styles>
+                                    <Style Selector="Ellipse">
+                                        <Style.Animations>
+                                            <Animation Duration="0:0:2" IterationCount="INFINITE" Easing="SineEaseInOut">
+                                                <KeyFrame Cue="0%">
+                                                    <Setter Property="Opacity" Value="1"/>
+                                                </KeyFrame>
+                                                <KeyFrame Cue="50%">
+                                                    <Setter Property="Opacity" Value="0.3"/>
+                                                </KeyFrame>
+                                                <KeyFrame Cue="100%">
+                                                    <Setter Property="Opacity" Value="1"/>
+                                                </KeyFrame>
+                                            </Animation>
+                                        </Style.Animations>
+                                    </Style>
+                                </Ellipse.Styles>
+                            </Ellipse>
+                            <TextBlock Text="{Binding ConnectedPort}"
+                                       FontSize="10"
+                                       LetterSpacing="0.5"/>
+                        </StackPanel>
+                    </Border>
+                    <Button Classes="btn btn-emergency" Content="Disconnect" Width="100" Command="{Binding DisconnectCommand}"/>
                 </StackPanel>
             </Grid>
-
-    
-<!--            <StackPanel Orientation="Horizontal" Margin="0,20,0,0">
-                <Button Content="Go Back"
-                        Command="{Binding GoBackCommand}"
-                        Width="150"
-                        Margin="0,0,10,0"/>
-        
-                <Button Content="Continue to pipetting"
-                        Width="200"/>
-                    
-                <Button Content="Go home"
-                        Command="{Binding GoHomeCommand}"
-                        Width="150"
-                        Margin="250,0,0,0"
-                        Background="#1EA1EB"/>
-                    
-                <Button Content="Emergency stop"
-                        Command="{Binding EmergencyStopCommand}"
-                        Width="150"
-                        Margin="300,0,0,0"
-                        Background="#FF4A24"/>
-                    
-            </StackPanel>-->
         </Border>
 
         <ContentControl Content="{Binding CurrentPage}"
