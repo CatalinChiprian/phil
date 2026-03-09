@@ -836,16 +836,82 @@
               moveToWell(20, -25, "D1"); // Motor L, Motor R, Well name
             break;
 
+            case 3: 
+              moveToWell(32.375, -36.625, "D3"); // Motor L, Motor R, Well name
+            break;
+
             case 6:
-              moveToWell(43, -49, "D6"); // Motor L, Motor R, Well name
+              moveToWell(45.25, -49, "D6"); // Motor L, Motor R, Well name
+            break;
+
+            case 9:
+              moveToWell(57, -61, "D9"); // Motor L, Motor R, Well name
             break;
 
             case 12:
-              moveToWell(67, -71.5, "D12"); // Motor L, Motor R, Well name        
+              moveToWell(71.875, -75.875, "D12"); // Motor L, Motor R, Well name        
             break;
 
             default:
             Serial.println("Invalid column for row D");
+            break;
+        }
+        break;
+
+        case 'e' :
+        switch(column) {
+            
+            case 1: 
+              moveToWell(25.625, -19, "E1"); // Motor L, Motor R, Well name
+            break;
+
+            case 3: 
+              moveToWell(34.375, -32.125, "E3"); // Motor L, Motor R, Well name
+            break;
+
+            case 6:
+              moveToWell(46.375, -45.875, "E6"); // Motor L, Motor R, Well name
+            break;
+
+            case 9:
+              moveToWell(58, -57.75, "E9"); // Motor L, Motor R, Well name
+            break;
+
+            case 12:
+              moveToWell(72.25, -72.75, "E12"); // Motor L, Motor R, Well name        
+            break;
+
+            default:
+            Serial.println("Invalid column for row E");
+            break;
+        }
+        break;
+
+        case 'f' :
+        switch(column) {
+            
+            case 1: 
+              moveToWell(29.125, -14.875, "F1"); // Motor L, Motor R, Well name
+            break;
+
+            case 3: 
+              moveToWell(37.5, -29.5, "F3"); // Motor L, Motor R, Well name
+            break;
+
+            case 6:
+              moveToWell(46.375, -45.875, "F6"); // Motor L, Motor R, Well name
+            break;
+
+            case 9:
+              moveToWell(58, -57.75, "F9"); // Motor L, Motor R, Well name
+            break;
+
+            case 12:
+              moveToWell(72.25, -72.75, "F12"); // Motor L, Motor R, Well name        
+            break;
+
+            default:
+            Serial.println("Invalid column for row E");
             break;
         }
         break;
