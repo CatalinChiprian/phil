@@ -15,20 +15,20 @@
     {HIGH,  HIGH,  HIGH}
   };
 
-    const float WELL_DX = 9.0;
-    const float WELL_DY = 9.0;
+  const float WELL_DX = 9.0;
+  const float WELL_DY = 9.0;
 
-    float plateX0 = 0.0;
-    float plateY0 = 0.0;
+  float plateX0 = 0.0;
+  float plateY0 = 0.0;
 
-    const int MAX_CAL = 96;
-    float calX[MAX_CAL], calY[MAX_CAL], calL[MAX_CAL], calR[MAX_CAL];
-    int calCount = 0;
+  const int MAX_CAL = 96;
+  float calX[MAX_CAL], calY[MAX_CAL], calL[MAX_CAL], calR[MAX_CAL];
+  int calCount = 0;
 
-    const int TERMS = 10;
-    float ML[TERMS] = {0};
-    float MR[TERMS] = {0};
-    bool mapReady = false;
+  const int TERMS = 10;
+  float ML[TERMS] = {0};
+  float MR[TERMS] = {0};
+  bool mapReady = false;
 
 
   int MICROoptions[] = {1, 2, 4, 8, 16, 32};
@@ -120,10 +120,10 @@
     stepperL.moveTo(-s + stepperL.currentPosition());
     stepperR.moveTo(s + stepperR.currentPosition());
 
-      while(stepperR.distanceToGo() != 0 || stepperL.distanceToGo() != 0) {
-        stepperL.run();
-        stepperR.run();
-      }
+    while(stepperR.distanceToGo() != 0 || stepperL.distanceToGo() != 0) {
+      stepperL.run();
+      stepperR.run();
+    }
   }
 
   void moveForward() {
@@ -135,10 +135,10 @@
     stepperL.moveTo(s + stepperL.currentPosition());
     stepperR.moveTo(-s + stepperR.currentPosition());
 
-      while(stepperR.distanceToGo() != 0 || stepperL.distanceToGo() != 0) {
-        stepperL.run();
-        stepperR.run();
-      }
+    while(stepperR.distanceToGo() != 0 || stepperL.distanceToGo() != 0) {
+      stepperL.run();
+      stepperR.run();
+    }
   }
 
   void moveLeft() {
@@ -150,10 +150,10 @@
     stepperL.moveTo(-s + stepperL.currentPosition());
     stepperR.moveTo(-s + stepperR.currentPosition());
 
-      while(stepperR.distanceToGo() != 0 || stepperL.distanceToGo() != 0) {
-        stepperL.run();
-        stepperR.run();
-      }
+    while(stepperR.distanceToGo() != 0 || stepperL.distanceToGo() != 0) {
+      stepperL.run();
+      stepperR.run();
+    }
   }
 
   void moveRight() {
@@ -166,10 +166,10 @@
     stepperL.moveTo(s + stepperL.currentPosition());
     stepperR.moveTo(s + stepperR.currentPosition());
 
-      while(stepperR.distanceToGo() != 0 || stepperL.distanceToGo() != 0) {
-        stepperL.run();
-        stepperR.run();
-      }
+    while(stepperR.distanceToGo() != 0 || stepperL.distanceToGo() != 0) {
+      stepperL.run();
+      stepperR.run();
+    }
   }
 
   void moveUp() {
@@ -184,26 +184,27 @@
 
     while (stepperZ1.distanceToGo() != 0 || stepperZ2.distanceToGo() != 0) {
 
-        if (digitalRead(limitSwitchZ1) == LOW) {
-            stepperZ1.stop();
-            z1LimitHit = true;
-        }
-        if (digitalRead(limitSwitchZ2) == LOW) {
-            stepperZ2.stop();
-            z2LimitHit = true;
-        }
+      if (digitalRead(limitSwitchZ1) == LOW) {
+          stepperZ1.stop();
+          z1LimitHit = true;
+      }
+      if (digitalRead(limitSwitchZ2) == LOW) {
+          stepperZ2.stop();
+          z2LimitHit = true;
+      }
 
-        if (z1LimitHit || z2LimitHit) {
-            stepperZ1.stop();
-            stepperZ1.setCurrentPosition(0);
-            stepperZ2.stop();
-            stepperZ2.setCurrentPosition(0);
-            Serial.println("LIMIT_HIT: Z axis limit switch triggered");
-            break;
-        }
+      if (z1LimitHit || z2LimitHit) {
+          stepperZ1.stop();
+          stepperZ1.setCurrentPosition(0);
+          stepperZ2.stop();
+          stepperZ2.setCurrentPosition(0);
+          Serial.print("WARNING:LIMIT_HIT,Z1="); Serial.print(1);
+          Serial.print(",Z2="); Serial.println(1);
+          break;
+      }
 
-        stepperZ1.run();
-        stepperZ2.run();
+      stepperZ1.run();
+      stepperZ2.run();
     }
   }
 
@@ -214,10 +215,10 @@
     stepperZ1.moveTo(-s + stepperZ1.currentPosition());
     stepperZ2.moveTo(-s + stepperZ2.currentPosition());
 
-      while(stepperZ1.distanceToGo() != 0 || stepperZ2.distanceToGo() != 0) {
-        stepperZ1.run();
-        stepperZ2.run();
-      }
+    while(stepperZ1.distanceToGo() != 0 || stepperZ2.distanceToGo() != 0) {
+      stepperZ1.run();
+      stepperZ2.run();
+    }
   }
 
   void loop() {
@@ -229,17 +230,14 @@
     long currentL = stepperL.currentPosition();
     long currentR = stepperR.currentPosition();
 
-    if (currentL != lastL) {
-      Serial.print("Position L:");
-      Serial.println(currentL);
-      lastL = currentL;
-    }
-
-    if (currentR != lastR) {
-      Serial.print("Position R:");
-      Serial.println(currentR);
-      lastR = currentR;
-    }
+    if (currentL != lastL || currentR != lastR) {
+    Serial.print("POS:L="); Serial.print(currentL);
+    Serial.print(",R="); Serial.print(currentR);
+    Serial.print(",Z1="); Serial.print(stepperZ1.currentPosition());
+    Serial.print(",Z2="); Serial.println(stepperZ2.currentPosition());
+    lastL = currentL;
+    lastR = currentR;
+}
   }
 
   void basic_controls() {
@@ -315,8 +313,6 @@
           case 'z':
              // Example commands:
             // z a1
-            // z a12
-            // z h1
             // z solve
             // z print
 
@@ -326,7 +322,7 @@
             else if (received.startsWith("z deleteidx")) {
               int idx = received.substring(12).toInt();
               if (idx < 0 || idx >= calCount) {
-                Serial.println("Invalid index");
+                Serial.println("ERROR:CAL_INDEX,Index out of range");
               } else {
                 Serial.print("Deleting Pt "); Serial.print(idx);
                 Serial.print(": XY("); Serial.print(calX[idx]);
@@ -336,7 +332,8 @@
                   calL[i]=calL[i+1]; calR[i]=calR[i+1];
                 }
                 calCount--;
-                Serial.print(calCount); Serial.println(" points remaining");
+                Serial.print("CAL_DELETED_IDX:"); Serial.print(idx);
+                Serial.print(",remaining="); Serial.println(calCount);
               }
             }
             else if (received.startsWith("z delete")) {
@@ -358,8 +355,7 @@
                     }
                     
                     if (foundIdx == -1) {
-                        Serial.print("Point not found for ");
-                        Serial.print(row); Serial.println(col);
+                        Serial.println("ERROR:CAL_NOT_FOUND,No calibration point at that well");
                     } else {
                         // Shift all points after it down by one
                         for (int i = foundIdx; i < calCount - 1; i++) {
@@ -369,11 +365,8 @@
                             calR[i] = calR[i+1];
                         }
                         calCount--;
-                        Serial.print("Deleted point ");
-                        Serial.print(row); Serial.print(col);
-                        Serial.print(" — "); Serial.print(calCount);
-                        Serial.println(" points remaining");
-                        Serial.println("Run 'z solve' to update the map");
+                        Serial.print("CAL_DELETED:"); Serial.print(row); Serial.print(col);
+                        Serial.print(",remaining="); Serial.println(calCount);
                     }
                 } else {
                     Serial.println("Usage: z delete a1");
@@ -431,7 +424,7 @@
             }
           break;
 
-          case 'w': // Go to well
+          case 'w': // Go to hardcoded well
             if(received.length() >= 3) {
               char row = received.charAt(1);
               String columnStr = received.substring(2);  
@@ -477,14 +470,12 @@
 
           case '+':
             times += 0.10;
-            Serial.print("Increased to: ");
-            Serial.println(times);
+            Serial.print("STEP_SIZE:"); Serial.println(times, 2);
           break;
 
           case '-':
             times -= 0.10;
-            Serial.print("Decreased to: ");
-            Serial.println(times);
+            Serial.print("STEP_SIZE:"); Serial.println(times, 2);
           break;
         }
       }
@@ -500,7 +491,7 @@
     static bool z1WasPressed = false;
     if(digitalRead(limitSwitchZ1) == LOW) {
       if(!z1WasPressed) {  
-        Serial.println("Limit Z1 PRESSED");
+        Serial.println("WARNING:LIMIT_PRESSED,axis=Z1");
         z1WasPressed = true;
       }
       stepperZ1.setCurrentPosition(stepperZ1.currentPosition());
@@ -512,7 +503,7 @@
     static bool z2WasPressed = false;
     if(digitalRead(limitSwitchZ2) == LOW) {
       if(!z2WasPressed) {
-        Serial.println("Limit Z2 PRESSED");
+        Serial.println("WARNING:LIMIT_PRESSED,axis=Z2");
         z2WasPressed = true;
       }
       stepperZ1.setCurrentPosition(stepperZ1.currentPosition());
@@ -525,7 +516,7 @@
     static bool lWasPressed = false;
     if(digitalRead(limitSwitchL) == LOW) {
       if (!lWasPressed) {
-        Serial.println("Limit L PRESSED");
+        Serial.println("WARNING:LIMIT_PRESSED,axis=L");
         lWasPressed = true;
       }
       stepperL.stop();
@@ -538,7 +529,7 @@
     static bool rWasPressed = false;
     if(digitalRead(limitSwitchR) == LOW) {
       if(!rWasPressed) {
-        Serial.println("Limit R PRESSED");
+        Serial.println("WARNING:LIMIT_PRESSED,axis=R");
         rWasPressed = true;
       }
       stepperR.stop();
@@ -553,10 +544,10 @@
     stepperL.moveTo(0); 
     stepperR.moveTo(0); 
     
-      while(stepperR.distanceToGo() != 0 || stepperL.distanceToGo() != 0) {
-        stepperR.run();
-        stepperL.run();
-      }
+    while(stepperR.distanceToGo() != 0 || stepperL.distanceToGo() != 0) {
+      stepperR.run();
+      stepperL.run();
+    }
   }
 
   int home() {
@@ -622,7 +613,7 @@
     }
     
     if(result == -2) {
-    Serial.println("Overall timeout reached - stopping. Homing FAILED, manually move needle to the middle and try to home again.");
+    Serial.println("ERROR:HOME_FAILED,Homing timed out - move needle to center and retry");
     return -2; 
     }
 
@@ -657,7 +648,7 @@
         char c = Serial.read();
         if(c == 's') {
           emergencyStop(); 
-          Serial.println("Homing retry STOPPED by user");
+          Serial.println("ERROR:HOME_ABORTED,Homing stopped by user");
           return -1;
         }
       }
@@ -799,7 +790,6 @@
       default:
         Serial.println("Invalid row");
       break;
-        
     }
 
     while(stepperR.distanceToGo() != 0 || stepperL.distanceToGo() != 0) {
@@ -816,11 +806,9 @@
     }
 
     setNormalSpeed(); 
-
   }
 
   int calibrate() {
-
     if(emergencyStopRequested) {
       emergencyStopRequested = false;  
       return -1;
@@ -847,8 +835,7 @@
     
     unsigned long pushStart = millis();
     while (millis() - pushStart < 2500) {
-
-        stepperL.runSpeed();
+      stepperL.runSpeed();
     }
 
     stepperL.setSpeed(0);
@@ -879,7 +866,6 @@
   }
 
   void moveToWell(long moveL, long moveR, String wellName) {
-
     enableMotors();
 
     stepperL.moveTo(moveL * currentMicrosteps); 
@@ -892,9 +878,7 @@
 
     interruptibleDelay(1000);
     
-    Serial.print("Moved to ");
-    Serial.println(wellName);
-
+    Serial.print("WELL: "); Serial.println(wellName);
   }
 
 
@@ -961,7 +945,7 @@
     motorsCurrentlyEnabled = false;
     lastMotorActivityTime = 0;
     emergencyStopRequested = true;
-    Serial.println("EMERGENCY STOP - Motors disabled");
+    Serial.println("WARNING:EMERGENCY_STOP,Motors disabled by user");
   }
 
   void interruptibleDelay(unsigned long ms) {
@@ -983,7 +967,7 @@
 
     if (digitalRead(faultR) == LOW || digitalRead(faultL) == LOW) {
       if (!faultLatched) {
-        Serial.println("!!! DRIVER FAULT (nFAULT LOW) - stopping motors !!!");
+        Serial.println("ERROR:DRIVER_FAULT,Motor driver nFAULT triggered");
         faultLatched = true;
       }
       emergencyStop();
@@ -993,154 +977,166 @@
   }
 
   void enterHomingMode(int homingSpeedL, int homingSpeedR) {
-  stepperL.stop();
-  stepperR.stop();
+    stepperL.stop();
+    stepperR.stop();
 
-  stepperL.setSpeed(homingSpeedL);
-  stepperR.setSpeed(homingSpeedR);
+    stepperL.setSpeed(homingSpeedL);
+    stepperR.setSpeed(homingSpeedR);
   }
 
   void exitHomingMode() {
-  stepperL.setSpeed(0);
-  stepperR.setSpeed(0);
+    stepperL.setSpeed(0);
+    stepperR.setSpeed(0);
 
-  setNormalSpeed();
+    setNormalSpeed();
   }
 
   void savePositions() {
-  EEPROM.put(0, stepperL.currentPosition());
-  EEPROM.put(4, stepperR.currentPosition());
-  EEPROM.put(8, stepperZ1.currentPosition());
-  EEPROM.put(12, stepperZ2.currentPosition());
+    EEPROM.put(0, stepperL.currentPosition());
+    EEPROM.put(4, stepperR.currentPosition());
+    EEPROM.put(8, stepperZ1.currentPosition());
+    EEPROM.put(12, stepperZ2.currentPosition());
 
-  byte ok = 123;
-  EEPROM.put(16, ok);
+    byte ok = 123;
+    EEPROM.put(16, ok);
 
-  Serial.println("Saved stepper positions to EEPROM");
+    Serial.println("Saved stepper positions to EEPROM");
   }
 
   bool loadPositions() {
-  byte ok;
-  EEPROM.get(16, ok);
+    byte ok;
+    EEPROM.get(16, ok);
 
-  if (ok != 123) {
-    Serial.println("No valid stored positions – doing normal home");
-    return false;
+    if (ok != 123) {
+      Serial.println("No valid stored positions – doing normal home");
+      return false;
+    }
+
+    long L, R, Z1, Z2;
+    EEPROM.get(0, L);
+    EEPROM.get(4, R);
+    EEPROM.get(8, Z1);
+    EEPROM.get(12, Z2);
+
+    stepperL.setCurrentPosition(L);
+    stepperR.setCurrentPosition(R);
+    stepperZ1.setCurrentPosition(Z1);
+    stepperZ2.setCurrentPosition(Z2);
+
+    Serial.print("POS:L="); Serial.print(L);
+    Serial.print(",R="); Serial.print(R);
+    Serial.print(",Z1="); Serial.print(Z1);
+    Serial.print(",Z2="); Serial.println(Z2);
+
+    return true;
   }
 
-  long L, R, Z1, Z2;
-  EEPROM.get(0, L);
-  EEPROM.get(4, R);
-  EEPROM.get(8, Z1);
-  EEPROM.get(12, Z2);
+  void saveCalibration() {
+    int addr = 20;
+    byte magic = 0xCC;
+    EEPROM.put(addr, magic);  addr += sizeof(magic);
 
-  stepperL.setCurrentPosition(L);
-  stepperR.setCurrentPosition(R);
-  stepperZ1.setCurrentPosition(Z1);
-  stepperZ2.setCurrentPosition(Z2);
+    for (int i = 0; i < TERMS; i++) { EEPROM.put(addr, ML[i]); addr += sizeof(float); }
+    for (int i = 0; i < TERMS; i++) { EEPROM.put(addr, MR[i]); addr += sizeof(float); }
 
-  Serial.print("Loaded L=");
-  Serial.print(L);
-  Serial.print(" R=");
-  Serial.print(R);
-  Serial.print(" Z1=");
-  Serial.print(Z1);
-  Serial.print(" Z2=");
-  Serial.println(Z2);
+    EEPROM.put(addr, calCount);  addr += sizeof(int);
 
-  return true;
+    for (int i = 0; i < calCount; i++) {
+      EEPROM.put(addr, calX[i]);  addr += sizeof(float);
+      EEPROM.put(addr, calY[i]);  addr += sizeof(float);
+      EEPROM.put(addr, calL[i]);  addr += sizeof(float);
+      EEPROM.put(addr, calR[i]);  addr += sizeof(float);
+    }
+
+    Serial.println("Calibration saved to EEPROM");
+    Serial.print("Saved "); Serial.print(calCount); Serial.println(" points");
   }
 
-void saveCalibration() {
-  int addr = 20;
-  byte magic = 0xCC;
-  EEPROM.put(addr, magic);  addr += sizeof(magic);
+  bool loadCalibration() {
+    int addr = 20;
+    byte magic;
+    EEPROM.get(addr, magic);  addr += sizeof(magic);
 
-  for (int i = 0; i < TERMS; i++) { EEPROM.put(addr, ML[i]); addr += sizeof(float); }
-  for (int i = 0; i < TERMS; i++) { EEPROM.put(addr, MR[i]); addr += sizeof(float); }
+    if (magic != 0xCC) {
+      Serial.println("No valid calibration in EEPROM");
+      return false;
+    }
 
-  EEPROM.put(addr, calCount);  addr += sizeof(int);
+    for (int i = 0; i < TERMS; i++) { EEPROM.get(addr, ML[i]); addr += sizeof(float); }
+    for (int i = 0; i < TERMS; i++) { EEPROM.get(addr, MR[i]); addr += sizeof(float); }
 
-  for (int i = 0; i < calCount; i++) {
-    EEPROM.put(addr, calX[i]);  addr += sizeof(float);
-    EEPROM.put(addr, calY[i]);  addr += sizeof(float);
-    EEPROM.put(addr, calL[i]);  addr += sizeof(float);
-    EEPROM.put(addr, calR[i]);  addr += sizeof(float);
+    EEPROM.get(addr, calCount);  addr += sizeof(int);
+    if (calCount < 0 || calCount > MAX_CAL) {
+      Serial.println("Corrupt point count in EEPROM");
+      calCount = 0;
+      return false;
+    }
+
+    for (int i = 0; i < calCount; i++) {
+      EEPROM.get(addr, calX[i]);  addr += sizeof(float);
+      EEPROM.get(addr, calY[i]);  addr += sizeof(float);
+      EEPROM.get(addr, calL[i]);  addr += sizeof(float);
+      EEPROM.get(addr, calR[i]);  addr += sizeof(float);
+    }
+
+    mapReady = true;
+    Serial.print("CAL_COUNT:"); Serial.println(calCount);
+    for (int i = 0; i < calCount; i++) {
+      Serial.print("CAL_PT:");
+      Serial.print(i); Serial.print(",");
+      Serial.print(calX[i], 2); Serial.print(",");
+      Serial.print(calY[i], 2); Serial.print(",");
+      Serial.print(calL[i], 2); Serial.print(",");
+      Serial.println(calR[i], 2);
+    }
+    Serial.print("CAL_COEFFS_L:");
+    for (int i = 0; i < TERMS; i++) { 
+      Serial.print(ML[i], 5); 
+      if (i < TERMS-1) Serial.print(","); 
+    }
+    Serial.println();
+    Serial.print("CAL_COEFFS_R:");
+    for (int i = 0; i < TERMS; i++) { 
+      Serial.print(MR[i], 5); 
+      if (i < TERMS-1) Serial.print(","); 
+    }
+    Serial.println();
+    return true;
   }
 
-  Serial.println("Calibration saved to EEPROM");
-  Serial.print("Saved "); Serial.print(calCount); Serial.println(" points");
-}
-
-bool loadCalibration() {
-  int addr = 20;
-  byte magic;
-  EEPROM.get(addr, magic);  addr += sizeof(magic);
-
-  if (magic != 0xCC) {
-    Serial.println("No valid calibration in EEPROM");
-    return false;
-  }
-
-  for (int i = 0; i < TERMS; i++) { EEPROM.get(addr, ML[i]); addr += sizeof(float); }
-  for (int i = 0; i < TERMS; i++) { EEPROM.get(addr, MR[i]); addr += sizeof(float); }
-
-  EEPROM.get(addr, calCount);  addr += sizeof(int);
-  if (calCount < 0 || calCount > MAX_CAL) {
-    Serial.println("Corrupt point count in EEPROM");
-    calCount = 0;
-    return false;
-  }
-
-  for (int i = 0; i < calCount; i++) {
-    EEPROM.get(addr, calX[i]);  addr += sizeof(float);
-    EEPROM.get(addr, calY[i]);  addr += sizeof(float);
-    EEPROM.get(addr, calL[i]);  addr += sizeof(float);
-    EEPROM.get(addr, calR[i]);  addr += sizeof(float);
-  }
-
-  mapReady = true;
-  Serial.print("Calibration loaded: ");
-  Serial.print(calCount);
-  Serial.println(" points");
-  Serial.print("ML: ");
-  for (int i = 0; i < TERMS; i++) { Serial.print(ML[i], 4); Serial.print(" "); }
-  Serial.println();
-  Serial.print("MR: ");
-  for (int i = 0; i < TERMS; i++) { Serial.print(MR[i], 4); Serial.print(" "); }
-  Serial.println();
-  return true;
-}
-
-void wellToXY(char row, int col, float &x, float &y) {
+  void wellToXY(char row, int col, float &x, float &y) {
     row = tolower(row);
+
+    if (col < 1 || col > 12 || row < 'a' || row > 'h') {
+    Serial.print("ERROR:INVALID_WELL,");
+    Serial.print(row); Serial.println(col);
+    return;
+    }
+
     int r = row - 'a';  // a=0, b=1, ... h=7
     
     x = plateX0 + (col - 1) * WELL_DX;
     y = plateY0 + r * WELL_DY;
-
-    Serial.print("X: ");
-    Serial.println(x);
-    Serial.print("Y: ");
-    Serial.println(y);
-}
-
-
-void xyToAngles(float x, float y, float &Ldeg, float &Rdeg) {
-  if (!mapReady) {
-    Serial.println("Angle map not ready!");
-    Ldeg = 0; Rdeg = 0;
-    return;
   }
-  // Basis vector for quadratic model
-  float b[TERMS] = { 1.0f, x, y, x*x, x*y, y*y, x*x*x, x*x*y, x*y*y, y*y*y };
-  Ldeg = dot10(ML, b);
-  Rdeg = dot10(MR, b);
-}
 
-void recordCalibrationPoint(char row, int col) {
+
+  void xyToAngles(float x, float y, float &Ldeg, float &Rdeg) {
+    if (!mapReady) {
+      Serial.println("Angle map not ready!");
+      Ldeg = 0; Rdeg = 0;
+      return;
+    }
+    // Basis vector for quadratic model
+    float b[TERMS] = { 1.0f, x, y, x*x, x*y, y*y, x*x*x, x*x*y, x*y*y, y*y*y };
+    Ldeg = dot10(ML, b);
+    Rdeg = dot10(MR, b);
+  }
+
+  void recordCalibrationPoint(char row, int col) {
     if (calCount >= MAX_CAL) {
-        Serial.println("Already have max calibration points!");
+        Serial.print("ERROR:CAL_FULL,Maximum "); 
+        Serial.print(MAX_CAL); 
+        Serial.println(" calibration points reached");
         return;
     }
 
@@ -1153,155 +1149,163 @@ void recordCalibrationPoint(char row, int col) {
     calL[calCount] = stepsToDegrees(stepperL.currentPosition());
     calR[calCount] = stepsToDegrees(stepperR.currentPosition());
 
-    Serial.print("Recorded ");
-    Serial.print(row);
-    Serial.print(col);
-    Serial.print(": XY=(");
-    Serial.print(x);
-    Serial.print(",");
-    Serial.print(y);
-    Serial.print(")  Angles=(");
-    Serial.print(calL[calCount]);
-    Serial.print(",");
-    Serial.print(calR[calCount]);
-    Serial.println(")");
+    Serial.print("CAL_REC:");
+    Serial.print(row); Serial.print(col); Serial.print(",");
+    //XY
+    Serial.print(x, 2); Serial.print(",");
+    Serial.print(y, 2); Serial.print(",");
+    //Angles
+    Serial.print(calL[calCount-1], 2); Serial.print(",");
+    Serial.println(calR[calCount-1], 2);
+    Serial.print("CAL_COUNT:"); Serial.println(calCount);
 
     calCount++;
-}
-
-
-inline float dot10(const float a[TERMS], const float b[TERMS]) {
-  return a[0]*b[0] + a[1]*b[1] + a[2]*b[2] + a[3]*b[3] + a[4]*b[4]
-       + a[5]*b[5] + a[6]*b[6] + a[7]*b[7] + a[8]*b[8] + a[9]*b[9];
-}
-
-bool solve10(float A[TERMS][TERMS], float b[TERMS], float x[TERMS]) {
-  float M[TERMS][TERMS+1];
-  for (int i=0;i<TERMS;i++){
-    for (int j=0;j<TERMS;j++) M[i][j] = A[i][j];
-    M[i][TERMS] = b[i];
   }
-  for (int col=0; col<TERMS; col++) {
-    int piv = col;
-    float best = fabs(M[piv][col]);
-    for (int r=col+1; r<TERMS; r++) {
-      float v = fabs(M[r][col]);
-      if (v > best) { best = v; piv = r; }
+
+
+  inline float dot10(const float a[TERMS], const float b[TERMS]) {
+    return a[0]*b[0] + a[1]*b[1] + a[2]*b[2] + a[3]*b[3] + a[4]*b[4]
+        + a[5]*b[5] + a[6]*b[6] + a[7]*b[7] + a[8]*b[8] + a[9]*b[9];
+  }
+
+  bool solve10(float A[TERMS][TERMS], float b[TERMS], float x[TERMS]) {
+    float M[TERMS][TERMS+1];
+    for (int i=0;i<TERMS;i++){
+      for (int j=0;j<TERMS;j++) M[i][j] = A[i][j];
+      M[i][TERMS] = b[i];
     }
-    if (best < 1e-9) return false;
-    if (piv != col) {
-      for (int c=col; c<=TERMS; c++) {
-        float tmp = M[col][c];
-        M[col][c] = M[piv][c];
-        M[piv][c] = tmp;
+    for (int col=0; col<TERMS; col++) {
+      int piv = col;
+      float best = fabs(M[piv][col]);
+      for (int r=col+1; r<TERMS; r++) {
+        float v = fabs(M[r][col]);
+        if (v > best) { best = v; piv = r; }
+      }
+      if (best < 1e-9) return false;
+      if (piv != col) {
+        for (int c=col; c<=TERMS; c++) {
+          float tmp = M[col][c];
+          M[col][c] = M[piv][c];
+          M[piv][c] = tmp;
+        }
+      }
+      float div = M[col][col];
+      for (int c=col; c<=TERMS; c++) M[col][c] /= div;
+      for (int r=0; r<TERMS; r++) {
+        if (r == col) continue;
+        float f = M[r][col];
+        for (int c=col; c<=TERMS; c++) M[r][c] -= f * M[col][c];
       }
     }
-    float div = M[col][col];
-    for (int c=col; c<=TERMS; c++) M[col][c] /= div;
-    for (int r=0; r<TERMS; r++) {
-      if (r == col) continue;
-      float f = M[r][col];
-      for (int c=col; c<=TERMS; c++) M[r][c] -= f * M[col][c];
+    for (int i=0;i<TERMS;i++) x[i] = M[i][TERMS];
+    return true;
+  }
+
+  bool solveMapping() {
+    if (calCount < TERMS) {
+      Serial.print("ERROR:SOLVE_INSUFFICIENT,Need at least ");
+      Serial.print(TERMS);
+      Serial.println(" calibration points");
+      return false;
     }
-  }
-  for (int i=0;i<TERMS;i++) x[i] = M[i][TERMS];
-  return true;
-}
 
-bool solveMapping() {
-  if (calCount < TERMS) { // need at least 6 points for 6 unknowns
-    Serial.println("Need at least 6 calibration points for quadratic fit");
-    return false;
-  }
+    // Normal equations: (A^T A) c = (A^T y)
+    // A rows are basis b = [1, x, y, x^2, x*y, y^2]
+    float ATA[TERMS][TERMS] = {0};
+    float ATyL[TERMS] = {0};
+    float ATyR[TERMS] = {0};
 
-  // Normal equations: (A^T A) c = (A^T y)
-  // A rows are basis b = [1, x, y, x^2, x*y, y^2]
-  float ATA[TERMS][TERMS] = {0};
-  float ATyL[TERMS] = {0};
-  float ATyR[TERMS] = {0};
+    for (int i=0; i<calCount; i++) {
+      float x = calX[i], y = calY[i];
+      float b[TERMS] = { 1.0f, x, y, x*x, x*y, y*y, x*x*x, x*x*y, x*y*y, y*y*y };
+      float L = calL[i];
+      float R = calR[i];
 
-  for (int i=0; i<calCount; i++) {
-    float x = calX[i], y = calY[i];
-    float b[TERMS] = { 1.0f, x, y, x*x, x*y, y*y, x*x*x, x*x*y, x*y*y, y*y*y };
-    float L = calL[i];
-    float R = calR[i];
-
-    // Accumulate ATA = Σ b*b^T
-    for (int r=0; r<TERMS; r++) {
-      for (int c=0; c<TERMS; c++) {
-        ATA[r][c] += b[r]*b[c];
+      // Accumulate ATA = Σ b*b^T
+      for (int r=0; r<TERMS; r++) {
+        for (int c=0; c<TERMS; c++) {
+          ATA[r][c] += b[r]*b[c];
+        }
+      }
+      // Accumulate ATy = Σ b*y
+      for (int k=0; k<TERMS; k++) {
+        ATyL[k] += b[k]*L;
+        ATyR[k] += b[k]*R;
       }
     }
-    // Accumulate ATy = Σ b*y
-    for (int k=0; k<TERMS; k++) {
-      ATyL[k] += b[k]*L;
-      ATyR[k] += b[k]*R;
+
+    float MLtmp[TERMS], MRtmp[TERMS];
+    bool okL = solve10(ATA, ATyL, MLtmp);
+    bool okR = solve10(ATA, ATyR, MRtmp);
+
+    if (!okL || !okR) {
+      Serial.println("ERROR:SOLVE_SINGULAR,Calibration matrix singular - add more spread-out points");
+      mapReady = false;
+      return false;
     }
+
+    // Commit
+    for (int i=0;i<TERMS;i++) { ML[i] = MLtmp[i]; MR[i] = MRtmp[i]; }
+    mapReady = true;
+    saveCalibration();
+
+    Serial.println("=== MAPPING SOLVED (quadratic least-squares) ===");
+    Serial.print("Points used: "); Serial.println(calCount);
+
+    Serial.println("ML (Ldeg) coefficients [1, x, y, x^2, x*y, y^2]:");
+    for (int i=0;i<TERMS;i++) { Serial.print(ML[i], 5); Serial.print(i<TERMS-1?' ':'\n'); }
+
+    Serial.println("MR (Rdeg) coefficients [1, x, y, x^2, x*y, y^2]:");
+    for (int i=0;i<TERMS;i++) { Serial.print(MR[i], 5); Serial.print(i<TERMS-1?' ':'\n'); }
+
+    // Residuals to assess fit quality
+    Serial.println("--- Residuals (deg) ---");
+    float maxErrL = 0, maxErrR = 0, rmsL = 0, rmsR = 0;
+    for (int i=0; i<calCount; i++) {
+      float x = calX[i], y = calY[i];
+      float b[TERMS] = { 1.0f, x, y, x*x, x*y, y*y, x*x*x, x*x*y, x*y*y, y*y*y };
+      float predL = dot10(ML, b);
+      float predR = dot10(MR, b);
+      float errL  = calL[i] - predL;
+      float errR  = calR[i] - predR;
+      rmsL += errL*errL; rmsR += errR*errR;
+      if (fabs(errL) > maxErrL) maxErrL = fabs(errL);
+      if (fabs(errR) > maxErrR) maxErrR = fabs(errR);
+      Serial.print("CAL_ERR:");
+      Serial.print(i); Serial.print(",");
+      Serial.print(calX[i], 2); Serial.print(",");
+      Serial.print(calY[i], 2); Serial.print(",");
+      Serial.print(errL, 3); Serial.print(",");
+      Serial.println(errR, 3);
+    }
+    rmsL = sqrtf(rmsL / calCount);
+    rmsR = sqrtf(rmsR / calCount);
+
+    Serial.print("RMS:L="); Serial.print(rmsL, 3);
+    Serial.print(",R="); Serial.print(rmsR, 3);
+    Serial.print(",MAX_L="); Serial.print(maxErrL, 3);
+    Serial.print(",MAX_R="); Serial.println(maxErrR, 3);
+
+    return true;
   }
 
-  float MLtmp[TERMS], MRtmp[TERMS];
-  bool okL = solve10(ATA, ATyL, MLtmp);
-  bool okR = solve10(ATA, ATyR, MRtmp);
-
-  if (!okL || !okR) {
-    Serial.println("solveMapping: normal matrix singular — choose non-collinear, well-spread points");
-    mapReady = false;
-    return false;
+  long degToSteps(float deg) {
+    float stepsPerRev = 200.0 * currentMicrosteps;
+    return (long)(deg * (stepsPerRev / 360.0));
   }
 
-  // Commit
-  for (int i=0;i<TERMS;i++) { ML[i] = MLtmp[i]; MR[i] = MRtmp[i]; }
-  mapReady = true;
-  saveCalibration();
-
-  Serial.println("=== MAPPING SOLVED (quadratic least-squares) ===");
-  Serial.print("Points used: "); Serial.println(calCount);
-
-  Serial.println("ML (Ldeg) coefficients [1, x, y, x^2, x*y, y^2]:");
-  for (int i=0;i<TERMS;i++) { Serial.print(ML[i], 5); Serial.print(i<TERMS-1?' ':'\n'); }
-
-  Serial.println("MR (Rdeg) coefficients [1, x, y, x^2, x*y, y^2]:");
-  for (int i=0;i<TERMS;i++) { Serial.print(MR[i], 5); Serial.print(i<TERMS-1?' ':'\n'); }
-
-  // Residuals to assess fit quality
-  Serial.println("--- Residuals (deg) ---");
-  float maxErrL = 0, maxErrR = 0, rmsL = 0, rmsR = 0;
-  for (int i=0; i<calCount; i++) {
-    float x = calX[i], y = calY[i];
-    float b[TERMS] = { 1.0f, x, y, x*x, x*y, y*y, x*x*x, x*x*y, x*y*y, y*y*y };
-    float predL = dot10(ML, b);
-    float predR = dot10(MR, b);
-    float errL  = calL[i] - predL;
-    float errR  = calR[i] - predR;
-    rmsL += errL*errL; rmsR += errR*errR;
-    if (fabs(errL) > maxErrL) maxErrL = fabs(errL);
-    if (fabs(errR) > maxErrR) maxErrR = fabs(errR);
-    Serial.print("Pt "); Serial.print(i);
-    Serial.print(": errL="); Serial.print(errL, 3);
-    Serial.print("  errR="); Serial.println(errR, 3);
-  }
-  rmsL = sqrtf(rmsL / calCount);
-  rmsR = sqrtf(rmsR / calCount);
-  Serial.print("Max |err| L="); Serial.print(maxErrL,3);
-  Serial.print("  R=");         Serial.print(maxErrR,3);
-  Serial.print("   RMS L=");    Serial.print(rmsL,3);
-  Serial.print("  R=");         Serial.println(rmsR,3);
-
-  return true;
-}
-
-long degToSteps(float deg) {
-  float stepsPerRev = 200.0 * currentMicrosteps;
-  return (long)(deg * (stepsPerRev / 360.0));
-}
-
-float stepsToDegrees(long steps) {
+  float stepsToDegrees(long steps) {
     float stepsPerRev = 200.0f * currentMicrosteps;
     return (float)steps * (360.0f / stepsPerRev);
-}
+  }
 
-void goToWell(char row, int col) {
-  enableMotors();
+  void goToWell(char row, int col) {
+    if (!mapReady) {
+      Serial.println("ERROR:MAP_NOT_READY,Run z solve before moving to wells");
+      return;
+    }
+
+    enableMotors();
 
     float x, y;
     wellToXY(row, col, x, y);
@@ -1309,10 +1313,11 @@ void goToWell(char row, int col) {
     float Ldeg, Rdeg;
     xyToAngles(x, y, Ldeg, Rdeg);
 
-    Serial.print("L deg");
-    Serial.println(Ldeg);
-    Serial.print("R deg");
-    Serial.println(Rdeg);
+    Serial.print("WELL:"); Serial.print(row); Serial.print(col);
+    Serial.print(",X="); Serial.print(x, 2);
+    Serial.print(",Y="); Serial.print(y, 2);
+    Serial.print(",L="); Serial.print(Ldeg, 2);
+    Serial.print(",R="); Serial.println(Rdeg, 2);
 
     long Lsteps = degToSteps(Ldeg);
     long Rsteps = degToSteps(Rdeg);
@@ -1324,8 +1329,4 @@ void goToWell(char row, int col) {
         stepperL.run();
         stepperR.run();
     }
-
-    Serial.print("Moved to well ");
-    Serial.print(row);
-    Serial.println(col);
-}
+  }
