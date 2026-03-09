@@ -19,15 +19,49 @@
 				<StackPanel Orientation="Horizontal" Spacing="20">
                     <StackPanel>
                         <TextBlock Classes="subtitle" LetterSpacing="1.5" Text="CALIBRATION RMS"/>
-						<TextBlock Classes="metric-value" Text="L 0.57°  R 0.83°"/>
+						<TextBlock Classes="metric-value" 
+                                   Text="{Binding RmsDisplayText}" 
+                                   Foreground="{Binding RmsColor}"/>
                     </StackPanel>
 
                     <StackPanel>
                         <TextBlock Classes="subtitle" LetterSpacing="1.5" Text="CAL. POINTS"/>
-						<TextBlock Classes="metric-value" Text="L 0.57°  R 0.83°"/>
+						<TextBlock Classes="metric-value" 
+                                   Text="{Binding CalPointsText}"
+                                   Foreground="{Binding CalPointsColor}"/>
+                    </StackPanel>
+
+                    <StackPanel>
+                        <TextBlock Classes="subtitle" LetterSpacing="1.5" Text="MICROSTEPS"/>
+						<TextBlock Classes="metric-value"
+                                   Text="{Binding MicrostepsText}"/>
                     </StackPanel>
                 </StackPanel>
             </StackPanel>
+        </Border>
+
+        <Border DockPanel.Dock="Top" Classes="toolbar">
+            <DockPanel>
+                <StackPanel Orientation="Horizontal" DockPanel.Dock="Left">
+					<Button Classes="btn btn-primary" Content="Go Home"/>
+                </StackPanel>
+
+                <StackPanel Orientation="Horizontal" DockPanel.Dock="Right" 
+                            HorizontalAlignment="Right"
+                            Spacing="0">
+					<Button Classes="toggle-btn active"
+                            CornerRadius="4 0 0 4"
+                            Content="96-Well"
+                            Command="{Binding SelectPlateTypeCommand}"
+                            CommandParameter="96"/>
+
+					<Button Classes="toggle-btn"
+                            CornerRadius="0 4 4 0"
+                            Content="Heart-on-Chip"
+                            Command="{Binding SelectPlateTypeCommand}"
+                            CommandParameter="hoc"/>
+                </StackPanel>
+            </DockPanel>
         </Border>
         <!-- Wells -->
         <ItemsControl ItemsSource="{Binding Wells}">

@@ -264,5 +264,48 @@
         <Style Selector="TextBlock.metric-value.warn">
             <Setter Property="Foreground" Value="{StaticResource Warn}"/>
         </Style>
+
+        <Style Selector="Border.toolbar">
+			<Setter Property="Padding" Value="24,12"/>
+            <Setter Property="Background" Value="{StaticResource Surface}"/>
+            <Setter Property="BorderThickness" Value="0,0,0,1"/>
+            <Setter Property="BorderBrush" Value="{StaticResource BorderColor}"/>
+        </Style>
+
+        <Style Selector="Button.toggle-btn">
+		    <Setter Property="FontFamily" Value="avares://PHIL_GUI/Assets/Fonts/SpaceMono-Regular.ttf#Space Mono"/>
+            <Setter Property="FontSize" Value="10"/>
+            <Setter Property="Padding" Value="14,6"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="CornerRadius" Value="4"/>
+            <Setter Property="Foreground" Value="{StaticResource Muted}"/>
+            <Setter Property="Background" Value="{StaticResource Surface2}"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Transitions">
+                <Transitions>
+                    <BrushTransition  Property="Background" Duration="0:0:0.12"/>
+                    <BrushTransition  Property="BorderBrush" Duration="0:0:0.12"/>
+                    <BrushTransition  Property="Foreground" Duration="0:0:0.12"/>
+                </Transitions>
+            </Setter>
+        </Style>
+
+        <Style Selector="Button.toggle-btn:pointerover /template/ ContentPresenter">
+            <Setter Property="Foreground" Value="{StaticResource Muted}"/>
+            <Setter Property="Background" Value="{StaticResource Surface2}"/>
+        </Style>
+
+
+        <Style Selector="Button.toggle-btn.active">
+            <Setter Property="Background" Value="{StaticResource Accent}"/>
+            <Setter Property="Foreground" Value="{StaticResource Surface}"/>
+        </Style>
+
+        <Style Selector="Button.toggle-btn.active:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="{StaticResource Accent}"/>
+            <Setter Property="Foreground" Value="{StaticResource Surface}"/>
+        </Style>
     </Application.Styles>
 </Application>

@@ -138,13 +138,14 @@ namespace PHIL_GUI.ViewModels.Base
         //        LatestAlert = Alerts[0];
         //    });
 
-            //public enum AlertLevel { Info, Warning, Error }
+        //public enum AlertLevel { Info, Warning, Error }
 
-            //public class RobotAlert
-            //{
-            //    public AlertLevel Level { get; set; }
-            //    public string Code { get; set; }  // e.g. "LIMIT_HIT"
-            //    public string Message { get; set; }
-            //    public DateTime Time { get; set; } = DateTime.Now;
-            //}
-        }
+        //public class RobotAlert
+        //{
+        //    public AlertLevel Level { get; set; }
+        //    public string Code { get; set; }  // e.g. "LIMIT_HIT"
+        //    public string Message { get; set; }
+        //    public DateTime Time { get; set; } = DateTime.Now;
+        //}
+    }
+}

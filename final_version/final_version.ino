@@ -111,8 +111,23 @@
     systemInitialized = true;
   }
 
+  void stopMotors() {
+    stepperL.stop();
+    stepperR.stop();
+    // Run until fully decelerated
+    while (stepperL.distanceToGo() != 0 || stepperR.distanceToGo() != 0) {
+        stepperL.run();
+        stepperR.run();
+    }
+    // Force zero speed so no residual velocity
+    stepperL.setCurrentPosition(stepperL.currentPosition());
+    stepperR.setCurrentPosition(stepperR.currentPosition());
+  }
+
   void moveBackward() {
     enableMotors();
+
+    stopMotors();
 
     // stepperL.move(-4 * currentMicrosteps);
     // stepperR.move(5 * currentMicrosteps);
@@ -129,6 +144,8 @@
   void moveForward() {
     enableMotors();
 
+    stopMotors();
+
     // stepperL.move(4 * currentMicrosteps);
     // stepperR.move(-5 * currentMicrosteps);
     long s = steps * times;
@@ -144,6 +161,8 @@
   void moveLeft() {
     enableMotors();
 
+    stopMotors();
+
     // stepperL.move(-4 * times * currentMicrosteps);
     // stepperR.move(-3 * times * currentMicrosteps);
     long s = steps * times;
@@ -158,6 +177,8 @@
 
   void moveRight() {
     enableMotors();
+
+    stopMotors();
 
     // stepperL.move(4 * times * currentMicrosteps);
     // stepperR.move(3 * times * currentMicrosteps);
@@ -728,8 +749,16 @@
               moveToWell(12, -40.25, "A1"); // Motor L, Motor R, Well name
             break;
 
+            case 3: 
+              moveToWell(23.875, -46.875, "A3"); // Motor L, Motor R, Well name
+            break;
+
             case 6:
-              moveToWell(37.3, -57.5, "A6"); // Motor L, Motor R, Well name
+              moveToWell(38.125, -57.375, "A6"); // Motor L, Motor R, Well name
+            break;
+
+            case 9:
+              moveToWell(51, -67.75, "A9"); // Motor L, Motor R, Well name
             break;
 
             case 12:
@@ -740,7 +769,64 @@
             Serial.println("Invalid column for row A");
             break;
           } 
-          
+        break;
+
+        case 'b':
+          switch(column) {
+            
+            case 1: 
+              moveToWell(14, -34.75, "B1"); // Motor L, Motor R, Well name
+            break;
+
+            case 3: 
+              moveToWell(26.375, -43.375, "B3"); // Motor L, Motor R, Well name
+            break;
+
+            case 6:
+              moveToWell(40.25, -54.25, "B6"); // Motor L, Motor R, Well name
+            break;
+
+            case 9:
+              moveToWell(52.75, -65.25, "B9"); // Motor L, Motor R, Well name
+            break;
+
+            case 12:
+              moveToWell(67.75, -80, "B12"); // Motor L, Motor R, Well name
+            break;
+
+            default:
+            Serial.println("Invalid column for row B");
+            break;
+          } 
+        break;
+
+        case 'c':
+          switch(column) {
+            
+            case 1: 
+              moveToWell(17.375, -29.125, "C1"); // Motor L, Motor R, Well name
+            break;
+
+            case 3: 
+              moveToWell(29, -39.5, "C3"); // Motor L, Motor R, Well name
+            break;
+
+            case 6:
+              moveToWell(42.125, -51.35, "C6"); // Motor L, Motor R, Well name
+            break;
+
+            case 9:
+              moveToWell(54, -63, "C9"); // Motor L, Motor R, Well name
+            break;
+
+            case 12:
+              moveToWell(69, -77.25, "C12"); // Motor L, Motor R, Well name
+            break;
+
+            default:
+            Serial.println("Invalid column for row B");
+            break;
+          } 
         break;
 
         case 'd' :
@@ -762,7 +848,6 @@
             Serial.println("Invalid column for row D");
             break;
         }
-
         break;
 
         case 'h' :
@@ -782,7 +867,6 @@
             default:
             Serial.println("Invalid column for row H");
             break;
-
         }
 
         break;  
@@ -878,7 +962,7 @@
 
     interruptibleDelay(1000);
     
-    Serial.print("WELL: "); Serial.println(wellName);
+    Serial.print("WELL:"); Serial.println(wellName);
   }
 
 
