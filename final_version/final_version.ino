@@ -68,25 +68,18 @@
 
   unsigned long lastMotorActivityTime = 0;
   bool motorsCurrentlyEnabled = false;
-  const unsigned long MOTOR_TIMEOUT = 5000;  // 5 seconds
+  const unsigned long MOTOR_TIMEOUT = 5000;
   bool emergencyStopRequested = false;
 
   void setup() {
     Serial.begin(9600);
 
-    Serial.println("Hello from Arduino!");
-    interruptibleDelay(1000);
-
     enableMotors();
 
-    //digitalWrite(limitSwitchL, HIGH);
     pinMode(limitSwitchL, INPUT_PULLUP);
     pinMode(limitSwitchR, INPUT_PULLUP);
-    //digitalWrite(limitSwitchR, HIGH);
     pinMode(limitSwitchZ1, INPUT_PULLUP);
-    //digitalWrite(limitSwitchZ1, HIGH);
     pinMode(limitSwitchZ2, INPUT_PULLUP);
-    //digitalWrite(limitSwitchZ2, HIGH);
 
     pinMode(faultR, INPUT_PULLUP);
     pinMode(faultL, INPUT_PULLUP);
@@ -107,11 +100,6 @@
     stepperR.setAcceleration(500 * currentMicrosteps);
     stepperZ1.setAcceleration(500 * currentMicrosteps);
     stepperZ2.setAcceleration(500 * currentMicrosteps);
-
-    Serial.println("System starting - performing initial home...");
-    interruptibleDelay(1000);
-
-
   
     if (!loadPositions()) {
       home();
@@ -121,13 +109,6 @@
 
     emergencyStopRequested = false; 
     systemInitialized = true;
-    Serial.println("System ready!");
-
-    Serial.print("Post-home positions - L: ");
-    Serial.print(stepperL.currentPosition());
-    Serial.print(" | R: ");
-    Serial.println(stepperR.currentPosition());
-
   }
 
   void moveBackward() {
@@ -191,6 +172,54 @@
       }
   }
 
+  void moveUp() {
+    enableMotors();
+    
+    bool z1LimitHit = false;
+    bool z2LimitHit = false;
+
+    long s = steps;
+    stepperZ1.moveTo(s + stepperZ1.currentPosition());
+    stepperZ2.moveTo(s + stepperZ2.currentPosition());
+
+    while (stepperZ1.distanceToGo() != 0 || stepperZ2.distanceToGo() != 0) {
+
+        if (digitalRead(limitSwitchZ1) == LOW) {
+            stepperZ1.stop();
+            z1LimitHit = true;
+        }
+        if (digitalRead(limitSwitchZ2) == LOW) {
+            stepperZ2.stop();
+            z2LimitHit = true;
+        }
+
+        if (z1LimitHit || z2LimitHit) {
+            stepperZ1.stop();
+            stepperZ1.setCurrentPosition(0);
+            stepperZ2.stop();
+            stepperZ2.setCurrentPosition(0);
+            Serial.println("LIMIT_HIT: Z axis limit switch triggered");
+            break;
+        }
+
+        stepperZ1.run();
+        stepperZ2.run();
+    }
+  }
+
+  void moveDown() {
+    enableMotors();
+
+    long s = steps;
+    stepperZ1.moveTo(-s + stepperZ1.currentPosition());
+    stepperZ2.moveTo(-s + stepperZ2.currentPosition());
+
+      while(stepperZ1.distanceToGo() != 0 || stepperZ2.distanceToGo() != 0) {
+        stepperZ1.run();
+        stepperZ2.run();
+      }
+  }
+
   void loop() {
     checkFaults();
     basic_controls(); 
@@ -225,42 +254,38 @@
         char cmd = received.charAt(0); 
         
         switch (cmd) {
-          case 'b': // backward
+          case 'b':
             moveBackward();
             Serial.print("PHIL moved backward \n");
             savePositions();
           break;
       
-          case 'f': // forward
+          case 'f':
             moveForward();
             Serial.print("PHIL moved forward \n");
             savePositions();
           break;
       
-          case 'l': // left
+          case 'l':
             moveLeft();
             Serial.print("PHIL moved left \n");
             savePositions();
           break;
       
-          case 'r': // right
+          case 'r':
             moveRight();
             Serial.print("PHIL moved right \n");
             savePositions();
           break;
       
-          case 'u': // Up
-            enableMotors();
-            stepperZ1.move(6 * currentMicrosteps);
-            stepperZ2.move(6 * currentMicrosteps);
+          case 'u':
+            moveUp();
             Serial.print("PHIL moved up \n");
             savePositions();
           break;
       
-          case 'd': // Down
-            enableMotors();
-            stepperZ1.move(-6 * currentMicrosteps);
-            stepperZ2.move(-6 * currentMicrosteps);
+          case 'd':
+            moveDown();
             Serial.print("PHIL moved down \n");
             savePositions();
           break;
@@ -1028,17 +1053,14 @@
 
 void saveCalibration() {
   int addr = 20;
-  byte magic = 0xCC;  // bump magic byte so old saves are invalidated
+  byte magic = 0xCC;
   EEPROM.put(addr, magic);  addr += sizeof(magic);
 
-  // Save coefficients
   for (int i = 0; i < TERMS; i++) { EEPROM.put(addr, ML[i]); addr += sizeof(float); }
   for (int i = 0; i < TERMS; i++) { EEPROM.put(addr, MR[i]); addr += sizeof(float); }
 
-  // Save point count
   EEPROM.put(addr, calCount);  addr += sizeof(int);
 
-  // Save each point
   for (int i = 0; i < calCount; i++) {
     EEPROM.put(addr, calX[i]);  addr += sizeof(float);
     EEPROM.put(addr, calY[i]);  addr += sizeof(float);
@@ -1056,15 +1078,13 @@ bool loadCalibration() {
   EEPROM.get(addr, magic);  addr += sizeof(magic);
 
   if (magic != 0xCC) {
-    Serial.println("No valid calibration in EEPROM (or old format)");
+    Serial.println("No valid calibration in EEPROM");
     return false;
   }
 
-  // Load coefficients
   for (int i = 0; i < TERMS; i++) { EEPROM.get(addr, ML[i]); addr += sizeof(float); }
   for (int i = 0; i < TERMS; i++) { EEPROM.get(addr, MR[i]); addr += sizeof(float); }
 
-  // Load point count
   EEPROM.get(addr, calCount);  addr += sizeof(int);
   if (calCount < 0 || calCount > MAX_CAL) {
     Serial.println("Corrupt point count in EEPROM");
@@ -1072,7 +1092,6 @@ bool loadCalibration() {
     return false;
   }
 
-  // Load each point
   for (int i = 0; i < calCount; i++) {
     EEPROM.get(addr, calX[i]);  addr += sizeof(float);
     EEPROM.get(addr, calY[i]);  addr += sizeof(float);
@@ -1272,9 +1291,13 @@ bool solveMapping() {
 }
 
 long degToSteps(float deg) {
-  // Adjust for your microstepping + gearbox if you have one
-  float stepsPerRev = 200.0 * currentMicrosteps;   // Example: 16x microstepping
+  float stepsPerRev = 200.0 * currentMicrosteps;
   return (long)(deg * (stepsPerRev / 360.0));
+}
+
+float stepsToDegrees(long steps) {
+    float stepsPerRev = 200.0f * currentMicrosteps;
+    return (float)steps * (360.0f / stepsPerRev);
 }
 
 void goToWell(char row, int col) {
@@ -1305,14 +1328,4 @@ void goToWell(char row, int col) {
     Serial.print("Moved to well ");
     Serial.print(row);
     Serial.println(col);
-}
-
-float stepsToDegrees(long steps) {
-    float stepsPerRev = 200.0f * currentMicrosteps;
-    return (float)steps * (360.0f / stepsPerRev);
-}
-
-long degToStepsCurrent(float deg) {
-  const float stepsPerRev = 200.0f * currentMicrosteps;
-  return (long)(deg * (stepsPerRev / 360.0f));
 }
