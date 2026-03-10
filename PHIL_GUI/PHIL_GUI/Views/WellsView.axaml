@@ -42,8 +42,9 @@
 
         <Border DockPanel.Dock="Top" Classes="toolbar">
             <DockPanel>
-                <StackPanel Orientation="Horizontal" DockPanel.Dock="Left">
+                <StackPanel Orientation="Horizontal" DockPanel.Dock="Left" Spacing="8">
 					<Button Classes="btn btn-primary" Content="Go Home"/>
+                    <Button Classes="btn btn-emergency" Content="EMERGENCY STOP" FontWeight="SemiBold"/>
                 </StackPanel>
 
                 <StackPanel Orientation="Horizontal" DockPanel.Dock="Right" 

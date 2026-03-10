@@ -70,9 +70,9 @@
             </Grid>
         </Border>
 
-        <Border DockPanel.Dock="Left" Classes="sidebar">
+        <Border DockPanel.Dock="Left" Classes="sidebar" Padding="15,20" Width="200">
 			<StackPanel Orientation="Vertical"
-                        Spacing="20" Margin="14,20">
+                        Spacing="15" >
                 <StackPanel Orientation="Vertical">
                     <TextBlock Classes="subtitle" Text="NAVIGATE"  LetterSpacing="2"/>
                     <ListBox Classes="nav"
@@ -87,6 +87,35 @@
                             </DataTemplate>
                         </ListBox.ItemTemplate>
                     </ListBox>
+                </StackPanel>
+
+                <Border Height="1" Background="{StaticResource BorderColor}"/>
+
+                <StackPanel Orientation="Vertical">
+					<TextBlock Classes="subtitle" Text="POSITION"  LetterSpacing="2"/>
+                    <Border Margin="5,14" Padding="14" Background="{StaticResource Surface2}" 
+                            BorderThickness="1" BorderBrush="{StaticResource BorderColor}" CornerRadius="8">
+                        <StackPanel Orientation="Vertical">
+							<TextBlock Classes="subtitle" Text="CURRENT WELL" LetterSpacing="1.5"/>
+                            <TextBlock Text="D6" FontSize="26" FontWeight="SemiBold" Margin="0,0,0,2"/>
+                            <StackPanel Orientation="Vertical">
+								<TextBlock Classes="subtitle" Text="X: 45"/>
+                                <TextBlock Classes="subtitle" Text="Y: 27"/>
+                                <TextBlock Classes="subtitle" Text="L: 70.07"/>
+                                <TextBlock Classes="subtitle" Text="R: -88.87"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+                
+                <Border Height="1" Background="{StaticResource BorderColor}"/>
+
+                <StackPanel Orientation="Vertical" Spacing="5">
+					<TextBlock Classes="subtitle" Text="Z AXIS"  LetterSpacing="2"/>
+                    <StackPanel Orientation="Horizontal" Spacing="6">
+                        <Button Classes="btn btn-primary" Content="↑ Up" Padding="24,6"/>
+                        <Button Classes="btn btn-secondary" Content="↓ Down" Padding="18,6"/>
+                    </StackPanel>
                 </StackPanel>
             </StackPanel>
         </Border>
