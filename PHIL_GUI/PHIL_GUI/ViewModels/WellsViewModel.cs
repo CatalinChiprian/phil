@@ -3,7 +3,9 @@ using Avalonia.Media;
 using CommunityToolkit.Mvvm.Input;
 using PHIL_GUI.ViewModels.Base;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Windows.Input;
 using RelayCommand = PHIL_GUI.Commands.RelayCommand;
 
@@ -20,6 +22,8 @@ public class WellsViewModel : CommunicationBase
 
     public ObservableCollection<string> Wells { get; } = new();
     public int WellsCount { get; set; } = 12;
+    public List<string> ColHeaders { get; } = Enumerable.Range(1, 12).Select(i => i.ToString()).ToList();
+    public List<string> RowHeaders { get; } = new() { "A", "B", "C", "D", "E", "F", "G", "H" };
 
     public double RmsL = 0.57;
     public double RmsR = 0.8;
@@ -58,9 +62,7 @@ public class WellsViewModel : CommunicationBase
         MoveDownCommand = new RelayCommand(() => Send("d"));
         WellsPositionCommand = new RelayCommand<string>(w => Send($"w{w?.ToLower()}"));
 
-        var rows = new[] { "A", "B", "C", "D", "E", "F", "G", "H" };
-
-        foreach (var row in rows)
+        foreach (var row in RowHeaders)
         {
             for (int col = 1; col <= WellsCount; col++)
             {

@@ -21,6 +21,8 @@
         <SolidColorBrush x:Key="Muted">#7a8f7a</SolidColorBrush>
         <SolidColorBrush x:Key="Warn">#d93025</SolidColorBrush>
         <SolidColorBrush x:Key="Warn-Dim">#0Cd93025</SolidColorBrush>
+        <SolidColorBrush x:Key="Well-Idle">#e8ede8</SolidColorBrush>
+        <SolidColorBrush x:Key="Well-Border">#cdd6cd</SolidColorBrush>
     </Application.Resources>
   
     <Application.Styles>
@@ -34,6 +36,10 @@
             <Setter Property="FontFamily" Value="avares://PHIL_GUI/Assets/Fonts/SpaceMono-Regular.ttf#Space Mono"/>
             <Setter Property="Foreground" Value="{StaticResource Accent}"/>
             <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+
+        <Style Selector="Button">
+            <Setter Property="FontFamily" Value="avares://PHIL_GUI/Assets/Fonts/SpaceMono-Regular.ttf#Space Mono"/>
         </Style>
 
         <Style Selector="TextBlock.subtitle">
@@ -169,6 +175,14 @@
             <Setter Property="ZIndex" Value="10"/>
         </Style>
 
+        <Style Selector="Border.badge">
+            <Setter Property="Background" Value="{StaticResource Accent-Dim}"/>
+			<Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="BorderBrush" Value="{StaticResource Accent-Mid}"/>
+            <Setter Property="Padding" Value="12,5"/>
+            <Setter Property="CornerRadius" Value="20"/>
+        </Style>
+
         <Style Selector="Border.sidebar">
 			<Setter Property="Background" Value="{StaticResource Surface}"/>
             <Setter Property="BorderBrush" Value="{StaticResource BorderColor}"/>
@@ -231,15 +245,6 @@
 			<Setter Property="Fill" Value="{StaticResource Accent}"/>
         </Style>
 
-        <Style Selector="Button.well">
-            <Setter Property="Width" Value="50"/>
-            <Setter Property="Height" Value="50"/>
-            <Setter Property="HorizontalAlignment" Value="Center"/>
-            <Setter Property="HorizontalContentAlignment" Value="Center"/>
-            <Setter Property="VerticalContentAlignment" Value="Center"/>
-            <Setter Property="CornerRadius" Value="25"/>
-        </Style>
-
         <Style Selector="Border.bottombar">
 			<Setter Property="Padding" Value="24,12"/>
             <Setter Property="Background" Value="{StaticResource Surface}"/>
@@ -297,7 +302,6 @@
             <Setter Property="Background" Value="{StaticResource Surface2}"/>
         </Style>
 
-
         <Style Selector="Button.toggle-btn.active">
             <Setter Property="Background" Value="{StaticResource Accent}"/>
             <Setter Property="Foreground" Value="{StaticResource Surface}"/>
@@ -306,6 +310,39 @@
         <Style Selector="Button.toggle-btn.active:pointerover /template/ ContentPresenter">
             <Setter Property="Background" Value="{StaticResource Accent}"/>
             <Setter Property="Foreground" Value="{StaticResource Surface}"/>
+        </Style>
+
+        <Style Selector="Button.well">
+            <Setter Property="Width" Value="40"/>
+            <Setter Property="Height" Value="40"/>
+            <Setter Property="Background" Value="{StaticResource Well-Idle}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource Well-Border}"/>
+            <Setter Property="Foreground" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="1.5"/>
+            <Setter Property="FontSize" Value="7"/>
+            <Setter Property="Margin" Value="2"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="CornerRadius" Value="50"/>
+            <Setter Property="Transitions">
+                <Transitions>
+                    <BrushTransition  Property="Background" Duration="0:0:0.1"/>
+                    <BrushTransition  Property="BorderBrush" Duration="0:0:0.1"/>
+                    <BrushTransition  Property="Foreground" Duration="0:0:0.1"/>
+                </Transitions>
+            </Setter>
+        </Style>
+
+        <Style Selector="Button.well:pointerover">
+            <Setter Property="Background" Value="{StaticResource Accent-Mid}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource Accent}"/>
+            <Setter Property="Foreground" Value="{StaticResource Accent}"/>
+            <Setter Property="RenderTransform">
+				<ScaleTransform ScaleX="1.12" ScaleY="1.12"/>
+            </Setter>
+            <Setter Property="ZIndex" Value="10"/>
+            <Setter Property="BorderThickness" Value="1.7"/>
         </Style>
     </Application.Styles>
 </Application>

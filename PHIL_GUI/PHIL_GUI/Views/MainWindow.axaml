@@ -34,11 +34,7 @@
                 <StackPanel Grid.Column="1"
                             Orientation="Horizontal"
                             Spacing="10">
-                    <Border BorderThickness="1"
-                            CornerRadius="20"
-                            Background="{StaticResource Accent-Dim}"
-                            Padding="12,5"
-                            BorderBrush="{StaticResource Accent-Mid}">
+                    <Border Classes="badge">
 						<StackPanel Orientation="Horizontal"
                                     Spacing="5">
                             <Ellipse Width="6" Height="6" Fill="{StaticResource Accent}">

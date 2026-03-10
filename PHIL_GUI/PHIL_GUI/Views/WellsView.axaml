@@ -7,12 +7,6 @@
              x:Class="PHIL_GUI.Views.WellsView"
              x:DataType="vm:WellsViewModel">
 
-    <UserControl.Styles>
-        <Style Selector="Button.well">
-            <Setter Property="Command" Value="{Binding WellsPositionCommand}"/>
-        </Style>
-    </UserControl.Styles>
-
     <DockPanel>
         <Border DockPanel.Dock="Bottom" Classes="bottombar">
 			<StackPanel Orientation="Horizontal">
@@ -64,20 +58,70 @@
                 </StackPanel>
             </DockPanel>
         </Border>
-        <!-- Wells -->
-        <ItemsControl ItemsSource="{Binding Wells}">
-            <ItemsControl.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <UniformGrid Rows="8" Columns="12"/>
-                </ItemsPanelTemplate>
-            </ItemsControl.ItemsPanel>
-            <ItemsControl.ItemTemplate>
-                <DataTemplate>
-                    <Button Content="{Binding}"
-                            Classes="well"
-                            CommandParameter="{Binding}"/>
-                </DataTemplate>
-            </ItemsControl.ItemTemplate>
-        </ItemsControl>
+
+        <Border DockPanel.Dock="Top" Background="{StaticResource Accent-Dim}" 
+                Padding="30,10" BorderThickness="0,0,0,1" BorderBrush="{StaticResource Accent-Mid}">
+			<TextBlock Text="Moved to D6"/>
+        </Border>
+
+		<Border Background="{StaticResource Bg}" Padding="60,40">
+            <Grid RowDefinitions="Auto, Auto, *" ColumnDefinitions="Auto, *">
+
+               <StackPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" 
+                            Orientation="Horizontal" Spacing="10" Margin="0,0,0,16">
+                    <TextBlock Classes="subtitle" Text="96-WELL PLATE" FontSize="10" LetterSpacing="1.5"/>
+                    <Border Classes="badge" Padding="8,3">
+                        <TextBlock Text="8 × 12" FontSize="9"/>
+                    </Border>
+                </StackPanel>
+
+               <ItemsControl Grid.Row="1" Grid.Column="1" ItemsSource="{Binding ColHeaders}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <UniformGrid Rows="1" Columns="12"/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Classes="subtitle" Text="{Binding}" 
+                                       HorizontalAlignment="Center" Margin="0,0,0,6"/>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+                <ItemsControl Grid.Row="2" Grid.Column="0" ItemsSource="{Binding RowHeaders}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <UniformGrid Rows="8" Columns="1"/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Classes="subtitle" Text="{Binding}" 
+                                       VerticalAlignment="Center" Margin="0,0,10,0"/>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+                <Border Grid.Row="2" Grid.Column="1">
+                    <!-- Wells -->
+                    <ItemsControl ItemsSource="{Binding Wells}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <UniformGrid Rows="8" Columns="12"/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Button Content="{Binding}"
+                                        Classes="well"
+                                        CommandParameter="{Binding}"/>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </Border>
+            </Grid>
+
+        </Border>
     </DockPanel>
 </UserControl>
