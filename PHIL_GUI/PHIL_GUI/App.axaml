@@ -335,14 +335,22 @@
         </Style>
 
         <Style Selector="Button.well:pointerover">
-            <Setter Property="Background" Value="{StaticResource Accent-Mid}"/>
+            <Setter Property="ZIndex" Value="10"/>     
+            <Setter Property="RenderTransform">
+                <ScaleTransform ScaleX="1.12" ScaleY="1.12"/>
+            </Setter>
+        </Style>
+
+        <Style Selector="Button.well:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="{StaticResource Accent-Dim}"/>
             <Setter Property="BorderBrush" Value="{StaticResource Accent}"/>
             <Setter Property="Foreground" Value="{StaticResource Accent}"/>
-            <Setter Property="RenderTransform">
-				<ScaleTransform ScaleX="1.12" ScaleY="1.12"/>
-            </Setter>
-            <Setter Property="ZIndex" Value="10"/>
-            <Setter Property="BorderThickness" Value="1.7"/>
+        </Style>
+
+        <Style Selector="Button.well.active">
+			<Setter Property="Background" Value="{StaticResource Accent}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource Accent}"/>
+            <Setter Property="Foreground" Value="{StaticResource Surface}"/>
         </Style>
     </Application.Styles>
 </Application>
