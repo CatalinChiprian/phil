@@ -17,8 +17,6 @@ public class WellsViewModel : CommunicationBase
     public ICommand GoHomeCommand { get; }
     public ICommand SelectPlateTypeCommand { get; }
     public ICommand WellsPositionCommand { get; }
-    public ICommand MoveUpCommand { get; }
-    public ICommand MoveDownCommand { get; }
 
     public ObservableCollection<string> Wells { get; } = new();
     public int WellsCount { get; set; } = 12;
@@ -57,10 +55,8 @@ public class WellsViewModel : CommunicationBase
     public WellsViewModel()
     {
         EmergencyStopCommand = new RelayCommand(() => Send("s"));
-        GoHomeCommand = new RelayCommand(() => Send("h"));
-        MoveUpCommand = new RelayCommand(() => Send("u"));
-        MoveDownCommand = new RelayCommand(() => Send("d"));
-        WellsPositionCommand = new RelayCommand<string>(w => Send($"w{w?.ToLower()}"));
+        GoHomeCommand = new RelayCommand(GoHome);
+        WellsPositionCommand = new RelayCommand<string>(w => GoToWell(w));
 
         foreach (var row in RowHeaders)
         {
@@ -69,5 +65,19 @@ public class WellsViewModel : CommunicationBase
                 Wells.Add($"{row}{col}");
             }
         }
+    }
+
+    void GoHome()
+    {
+        RobotState.CurrentWell.IsHome = true;
+        RobotState.CurrentWell.Name = "Home";
+        Send("h");
+    }
+
+    void GoToWell(string well)
+    {
+        RobotState.CurrentWell.IsHome = false;
+        RobotState.CurrentWell.Name = well;
+        Send($"w{well.ToLower()}");
     }
 }

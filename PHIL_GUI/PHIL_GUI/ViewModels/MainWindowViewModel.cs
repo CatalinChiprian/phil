@@ -14,9 +14,9 @@ namespace PHIL_GUI.ViewModels;
 public class MainWindowViewModel : CommunicationBase
 {
     public Action Disconnected;
-
-    public ICommand EmergencyStopCommand { get; }
     public ICommand DisconnectCommand { get; }
+    public ICommand MoveUpCommand { get; }
+    public ICommand MoveDownCommand { get; }
 
     private object _currentPage;
     private List<PageItem> _pages;
@@ -30,7 +30,7 @@ public class MainWindowViewModel : CommunicationBase
             if (SetProperty(ref _selectedPage, value))
                 CurrentPage = value.ViewModel;
         }
-    }       
+    }
 
     public string ConnectedPort { get; }
     public object CurrentPage
@@ -38,6 +38,8 @@ public class MainWindowViewModel : CommunicationBase
         get => _currentPage;
         set => SetProperty(ref _currentPage, value);
     }
+
+    public Well CurrentWell => RobotState.CurrentWell;
 
     public MainWindowViewModel()
     {
@@ -52,8 +54,9 @@ public class MainWindowViewModel : CommunicationBase
 
         SelectedPage = _pages[0];
 
-        EmergencyStopCommand = new RelayCommand(() => Send("s"));
         DisconnectCommand = new RelayCommand(Disconnect);
+        MoveUpCommand = new RelayCommand(() => Send("u"));
+        MoveDownCommand = new RelayCommand(() => Send("d"));
     }
 
     public void Disconnect()

@@ -1,9 +1,9 @@
 ﻿using Avalonia.Threading;
+using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.Extensions.DependencyInjection;
 using PHIL_GUI.Services;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 
 namespace PHIL_GUI.ViewModels.Base
@@ -11,6 +11,7 @@ namespace PHIL_GUI.ViewModels.Base
     public abstract class CommunicationBase : ViewModelBase
     {
         protected readonly SerialPortService SerialService;
+        protected readonly RobotStateService RobotState;
 
         private string _receivedData = "";
         public string ReceivedData
@@ -19,9 +20,10 @@ namespace PHIL_GUI.ViewModels.Base
             private set => SetProperty(ref _receivedData, value);
         }
 
-        protected CommunicationBase()
+        protected CommunicationBase()   
         {
             SerialService = App.Services.GetRequiredService<SerialPortService>();
+            RobotState = App.Services.GetRequiredService<RobotStateService>();
             SerialService.MessageReceived += OnMessageReceived;
         }
 
@@ -34,6 +36,7 @@ namespace PHIL_GUI.ViewModels.Base
 
             //AppendLog();
 
+            if (message.StartsWith("WELL:")) ParseWellArrival(message);
             //if (message.StartsWith("POS:")) ParsePosition(message);
             //else if (message.StartsWith("CAL_COUNT:")) ParseCalCount(message);
             //else if (message.StartsWith("CAL_PT:")) ParseCalPoint(message);
@@ -42,7 +45,6 @@ namespace PHIL_GUI.ViewModels.Base
             //else if (message.StartsWith("CAL_COEFFS_L:")) ParseCoeffsL(message);
             //else if (message.StartsWith("CAL_COEFFS_R:")) ParseCoeffsR(message);
             //else if (message.StartsWith("RMS:")) ParseRms(message);
-            //else if (message.StartsWith("WELL:")) ParseWellArrival(message);
             //else if (message.StartsWith("LIMIT:")) ParseLimit(message);
             //else if (message.StartsWith("WARNING:")) ParseAlert(message, AlertLevel.Warning);
             //else if (message.StartsWith("ERROR:"))   ParseAlert(message, AlertLevel.Error);
@@ -52,15 +54,32 @@ namespace PHIL_GUI.ViewModels.Base
         {
             SerialService.SendMessage(command);
         }
+        private Dictionary<string, string> ParseKV(string msg, string prefix)
+        {
+            return msg.Substring(prefix.Length)
+                      .Split(',')
+                      .Select(p => p.Split('='))
+                      .Where(p => p.Length == 2)
+                      .ToDictionary(p => p[0], p => p[1]);
+        }
 
-        //private Dictionary<string, string> ParseKV(string msg, string prefix)
-        //{
-        //    return msg.Substring(prefix.Length)
-        //              .Split(',')
-        //              .Select(p => p.Split('='))
-        //              .Where(p => p.Length == 2)
-        //              .ToDictionary(p => p[0], p => p[1]);
-        //}
+        private void ParseWellArrival(string msg)
+        {
+            string content = msg.Substring("WELL:".Length);
+            string[] parts = content.Split(',');
+
+            var kv = parts.Skip(1)
+              .Select(p => p.Split('='))
+              .Where(p => p.Length == 2)
+              .ToDictionary(p => p[0], p => p[1]);
+
+            RobotState.CurrentWell.IsHome = false;
+            RobotState.CurrentWell.Name = parts[0].ToUpper();
+            RobotState.CurrentWell.X = kv["X"];
+            RobotState.CurrentWell.Y = kv["Y"];
+            RobotState.CurrentWell.AngleL = kv["L"];
+            RobotState.CurrentWell.AngleR = kv["R"].Trim();
+        }
 
         //private void ParsePosition(string msg)
         //{

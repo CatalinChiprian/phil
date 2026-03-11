@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using PHIL_GUI.Models;
+using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
 namespace PHIL_GUI.ViewModels.Base;

@@ -30,6 +30,9 @@
   float MR[TERMS] = {0};
   bool mapReady = false;
 
+  const int WELL_NAME_ADDR = 500;
+  const int WELL_NAME_MAX = 5;
+
 
   int MICROoptions[] = {1, 2, 4, 8, 16, 32};
 
@@ -104,6 +107,8 @@
     if (!loadPositions()) {
       home();
     }
+
+    loadCurrentWell();
 
     loadCalibration();
 
@@ -569,6 +574,8 @@
       stepperR.run();
       stepperL.run();
     }
+
+    saveCurrentWell("HOME");
   }
 
   int home() {
@@ -735,34 +742,29 @@
     }
 
     enableMotors();
-    
-    Serial.print("Row: ");
-    Serial.print(row);
-    Serial.print(" | Column: ");
-    Serial.println(column);
  
     switch(row) {
         case 'a':
           switch(column) {
             
             case 1: 
-              moveToWell(5.125, -38.625, "A1"); // Motor L, Motor R, Well name
+              moveToWell(5.125, -38.625, "a1"); // Motor L, Motor R, Well name
             break;
 
             case 3: 
-              moveToWell(17, -46.25, "A3"); // Motor L, Motor R, Well name
+              moveToWell(17, -46.25, "a3"); // Motor L, Motor R, Well name
             break;
 
             case 6:
-              moveToWell(31.25, -56.5, "A6"); // Motor L, Motor R, Well name
+              moveToWell(31.25, -56.5, "a6"); // Motor L, Motor R, Well name
             break;
 
             case 9:
-              moveToWell(44.125, -66.875, "A9"); // Motor L, Motor R, Well name
+              moveToWell(44.125, -66.875, "a9"); // Motor L, Motor R, Well name
             break;
 
             case 12:
-              moveToWell(59.5, -81.5, "A12"); // Motor L, Motor R, Well name
+              moveToWell(59.5, -81.5, "a12"); // Motor L, Motor R, Well name
             break;
 
             default:
@@ -775,23 +777,23 @@
           switch(column) {
             
             case 1: 
-              moveToWell(7.375, -32.625, "B1"); // Motor L, Motor R, Well name
+              moveToWell(7.375, -32.625, "b1"); // Motor L, Motor R, Well name
             break;
 
             case 3: 
-              moveToWell(19.75, -42, "B3"); // Motor L, Motor R, Well name
+              moveToWell(19.75, -42, "b3"); // Motor L, Motor R, Well name
             break;
 
             case 6:
-              moveToWell(33.25, -53.25, "B6"); // Motor L, Motor R, Well name
+              moveToWell(33.25, -53.25, "b6"); // Motor L, Motor R, Well name
             break;
 
             case 9:
-              moveToWell(46, -64.5, "B9"); // Motor L, Motor R, Well name
+              moveToWell(46, -64.5, "b9"); // Motor L, Motor R, Well name
             break;
 
             case 12:
-              moveToWell(60.625, -78.375, "B12"); // Motor L, Motor R, Well name
+              moveToWell(60.625, -78.375, "b12"); // Motor L, Motor R, Well name
             break;
 
             default:
@@ -804,27 +806,27 @@
           switch(column) {
             
             case 1: 
-              moveToWell(11.875, -28.875, "C1"); // Motor L, Motor R, Well name
+              moveToWell(11.875, -28.875, "c1"); // Motor L, Motor R, Well name
             break;
 
             case 3: 
-              moveToWell(23.125, -38.625, "C3"); // Motor L, Motor R, Well name
+              moveToWell(23.125, -38.625, "c3"); // Motor L, Motor R, Well name
             break;
 
             case 6:
-              moveToWell(36.625, -50.625, "C6"); // Motor L, Motor R, Well name
+              moveToWell(36.625, -50.625, "c6"); // Motor L, Motor R, Well name
             break;
 
             case 9:
-              moveToWell(48.25, -62.25, "C9"); // Motor L, Motor R, Well name
+              moveToWell(48.25, -62.25, "c9"); // Motor L, Motor R, Well name
             break;
 
             case 12:
-              moveToWell(64.75, -77.25, "C12"); // Motor L, Motor R, Well name
+              moveToWell(64.75, -77.25, "c12"); // Motor L, Motor R, Well name
             break;
 
             default:
-            Serial.println("Invalid column for row B");
+            Serial.println("Invalid column for row C");
             break;
           } 
         break;
@@ -833,23 +835,23 @@
         switch(column) {
             
             case 1: 
-              moveToWell(15.5, -23.25, "D1"); // Motor L, Motor R, Well name
+              moveToWell(15.5, -23.25, "d1"); // Motor L, Motor R, Well name
             break;
 
             case 3: 
-              moveToWell(26.75, -35.25, "D3"); // Motor L, Motor R, Well name
+              moveToWell(26.75, -35.25, "d3"); // Motor L, Motor R, Well name
             break;
 
             case 6:
-              moveToWell(39.5, -48, "D6"); // Motor L, Motor R, Well name
+              moveToWell(39.5, -48, "d6"); // Motor L, Motor R, Well name
             break;
 
             case 9:
-              moveToWell(51.125, -59.625, "D9"); // Motor L, Motor R, Well name
+              moveToWell(51.125, -59.625, "d9"); // Motor L, Motor R, Well name
             break;
 
             case 12:
-              moveToWell(65.375, -74.625, "D12"); // Motor L, Motor R, Well name        
+              moveToWell(65.375, -74.625, "d12"); // Motor L, Motor R, Well name        
             break;
 
             default:
@@ -862,23 +864,23 @@
         switch(column) {
             
             case 1: 
-              moveToWell(21.125, -17.375, "E1"); // Motor L, Motor R, Well name
+              moveToWell(21.125, -17.375, "e1"); // Motor L, Motor R, Well name
             break;
 
             case 3: 
-              moveToWell(30.125, -30.875, "E3"); // Motor L, Motor R, Well name
+              moveToWell(30.125, -30.875, "e3"); // Motor L, Motor R, Well name
             break;
 
             case 6:
-              moveToWell(42.5, -44.75, "E6"); // Motor L, Motor R, Well name
+              moveToWell(42.5, -44.75, "e6"); // Motor L, Motor R, Well name
             break;
 
             case 9:
-              moveToWell(53.75, -56.75, "E9"); // Motor L, Motor R, Well name
+              moveToWell(53.75, -56.75, "e9"); // Motor L, Motor R, Well name
             break;
 
             case 12:
-              moveToWell(68, -71, "E12"); // Motor L, Motor R, Well name        
+              moveToWell(68, -71, "e12"); // Motor L, Motor R, Well name        
             break;
 
             default:
@@ -891,23 +893,23 @@
         switch(column) {
             
             case 1: 
-              moveToWell(24.75, -13, "F1"); // Motor L, Motor R, Well name
+              moveToWell(24.75, -13, "f1"); // Motor L, Motor R, Well name
             break;
 
             case 3: 
-              moveToWell(34.125, -27.625, "F3"); // Motor L, Motor R, Well name
+              moveToWell(34.125, -27.625, "f3"); // Motor L, Motor R, Well name
             break;
 
             case 6:
-              moveToWell(45, -42.25, "F6"); // Motor L, Motor R, Well name
+              moveToWell(45, -42.25, "f6"); // Motor L, Motor R, Well name
             break;
 
             case 9:
-              moveToWell(55.875, -54.625, "F9"); // Motor L, Motor R, Well name
+              moveToWell(55.875, -54.625, "f9"); // Motor L, Motor R, Well name
             break;
 
             case 12:
-              moveToWell(70.875, -69.625, "F12"); // Motor L, Motor R, Well name        
+              moveToWell(70.875, -69.625, "f12"); // Motor L, Motor R, Well name        
             break;
 
             default:
@@ -920,23 +922,23 @@
         switch(column) {
             
             case 1: 
-              moveToWell(30, -9.25, "G1"); // Motor L, Motor R, Well name
+              moveToWell(30, -9.25, "g1"); // Motor L, Motor R, Well name
             break;
 
             case 3: 
-              moveToWell(37.5, -24.75, "G3"); // Motor L, Motor R, Well name
+              moveToWell(37.5, -24.75, "g3"); // Motor L, Motor R, Well name
             break;
 
             case 6:
-              moveToWell(48.375, -40.125, "G6"); // Motor L, Motor R, Well name
+              moveToWell(48.375, -40.125, "g6"); // Motor L, Motor R, Well name
             break;
 
             case 9:
-              moveToWell(58.875, -53.625, "G9"); // Motor L, Motor R, Well name
+              moveToWell(58.875, -53.625, "g9"); // Motor L, Motor R, Well name
             break;
 
             case 12:
-              moveToWell(73.875, -67.875, "G12"); // Motor L, Motor R, Well name        
+              moveToWell(73.875, -67.875, "g12"); // Motor L, Motor R, Well name        
             break;
 
             default:
@@ -948,23 +950,23 @@
         case 'h' :
         switch(column) {
             case 1:
-              moveToWell(35.25, -7.5, "H1"); // Motor L, Motor R, Well name
+              moveToWell(35.25, -7.5, "h1"); // Motor L, Motor R, Well name
             break;
 
             case 3:
-              moveToWell(42.125, -22.375, "H3"); // Motor L, Motor R, Well name
+              moveToWell(42.125, -22.375, "h3"); // Motor L, Motor R, Well name
             break;
 
             case 6:
-              moveToWell(50.75, -38.5, "H6"); // Motor L, Motor R, Well name
+              moveToWell(50.75, -38.5, "h6"); // Motor L, Motor R, Well name
             break;
 
             case 9:
-              moveToWell(62, -52, "H9"); // Motor L, Motor R, Well name
+              moveToWell(62, -52, "h9"); // Motor L, Motor R, Well name
             break;
 
             case 12:
-              moveToWell(77.75, -67.75, "H12"); // Motor L, Motor R, Well name
+              moveToWell(77.75, -67.75, "h12"); // Motor L, Motor R, Well name
             break;
 
             default:
@@ -1049,6 +1051,8 @@
     stepperR.setCurrentPosition(0);
     stepperL.setCurrentPosition(0);
 
+    saveCurrentWell("HOME");
+
     return 1;
   }
 
@@ -1065,7 +1069,23 @@
 
     interruptibleDelay(1000);
     
-    Serial.print("WELL:"); Serial.println(wellName);
+    char row = wellName.charAt(0);
+    String columnStr = wellName.substring(1);  
+    int col = columnStr.toInt();
+
+    float x, y;
+    wellToXY(row, col, x, y);
+
+    float Ldeg = stepsToDegrees(stepperL.currentPosition());
+    float Rdeg = stepsToDegrees(stepperR.currentPosition());
+
+    Serial.print("WELL:"); Serial.print(row); Serial.print(col);
+    Serial.print(",X="); Serial.print(x, 2);
+    Serial.print(",Y="); Serial.print(y, 2);
+    Serial.print(",L="); Serial.print(Ldeg, 2);
+    Serial.print(",R="); Serial.println(Rdeg, 2);
+
+    saveCurrentWell(wellName);
   }
 
 
@@ -1186,8 +1206,6 @@
 
     byte ok = 123;
     EEPROM.put(16, ok);
-
-    Serial.println("Saved stepper positions to EEPROM");
   }
 
   bool loadPositions() {
@@ -1516,4 +1534,38 @@
         stepperL.run();
         stepperR.run();
     }
+
+    saveCurrentWell(String(row) + String(col));
+  }
+
+  void saveCurrentWell(String wellName) {
+    for (int i = 0; i < WELL_NAME_MAX; i++) {
+        EEPROM.put(WELL_NAME_ADDR + i, i < wellName.length() ? wellName.charAt(i) : '\0');
+    }
+  }
+
+  void loadCurrentWell() {
+    char name[WELL_NAME_MAX];
+    for (int i = 0; i < WELL_NAME_MAX; i++) {
+        EEPROM.get(WELL_NAME_ADDR + i, name[i]);
+    }
+    name[WELL_NAME_MAX - 1] = '\0';
+
+    if (name[0] < 'a' || name[0] > 'h') return;
+
+    char row = name[0];
+    int col = String(name + 1).toInt();
+    if (col < 1 || col > 12) return;
+
+    float x, y;
+    wellToXY(row, col, x, y);
+
+    float Ldeg = stepsToDegrees(stepperL.currentPosition());
+    float Rdeg = stepsToDegrees(stepperR.currentPosition());
+
+    Serial.print("WELL:"); Serial.print(row); Serial.print(col);
+    Serial.print(",X="); Serial.print(x, 2);
+    Serial.print(",Y="); Serial.print(y, 2);
+    Serial.print(",L="); Serial.print(Ldeg, 2);
+    Serial.print(",R="); Serial.println(Rdeg, 2);
   }

@@ -94,12 +94,12 @@
                             BorderThickness="1" BorderBrush="{StaticResource BorderColor}" CornerRadius="8">
                         <StackPanel Orientation="Vertical">
 							<TextBlock Classes="subtitle" Text="CURRENT WELL" LetterSpacing="1.5"/>
-                            <TextBlock Text="D6" FontSize="26" FontWeight="SemiBold" Margin="0,0,0,2"/>
-                            <StackPanel Orientation="Vertical">
-								<TextBlock Classes="subtitle" Text="X: 45"/>
-                                <TextBlock Classes="subtitle" Text="Y: 27"/>
-                                <TextBlock Classes="subtitle" Text="L: 70.07"/>
-                                <TextBlock Classes="subtitle" Text="R: -88.87"/>
+                            <TextBlock Text="{Binding CurrentWell.Name}" FontSize="26" FontWeight="SemiBold" Margin="0,0,0,2"/>
+                            <StackPanel Orientation="Vertical" IsVisible="{Binding CurrentWell.IsHome, Converter={x:Static BoolConverters.Not}}">
+                                <TextBlock Classes="subtitle" Text="{Binding CurrentWell.X, StringFormat='X: {0:F2}'}"/>
+                                <TextBlock Classes="subtitle" Text="{Binding CurrentWell.Y, StringFormat='Y: {0:F2}'}"/>
+                                <TextBlock Classes="subtitle" Text="{Binding CurrentWell.AngleL, StringFormat='L: {0:F2}°'}"/>
+                                <TextBlock Classes="subtitle" Text="{Binding CurrentWell.AngleR, StringFormat='R: {0:F2}°'}"/>
                             </StackPanel>
                         </StackPanel>
                     </Border>
@@ -110,8 +110,10 @@
                 <StackPanel Orientation="Vertical" Spacing="5">
 					<TextBlock Classes="subtitle" Text="Z AXIS"  LetterSpacing="2"/>
                     <StackPanel Orientation="Horizontal" Spacing="6">
-                        <Button Classes="btn btn-primary" Content="↑ Up" Padding="24,6"/>
-                        <Button Classes="btn btn-secondary" Content="↓ Down" Padding="18,6"/>
+                        <Button Classes="btn btn-primary" Content="↑ Up" Padding="24,6"
+                                Command="{Binding MoveUpCommand}"/>
+                        <Button Classes="btn btn-secondary" Content="↓ Down" Padding="18,6"
+                                Command="{Binding MoveDownCommand}"/>
                     </StackPanel>
                 </StackPanel>
             </StackPanel>
