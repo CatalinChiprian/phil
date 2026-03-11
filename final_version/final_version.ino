@@ -746,23 +746,23 @@
           switch(column) {
             
             case 1: 
-              moveToWell(12, -40.25, "A1"); // Motor L, Motor R, Well name
+              moveToWell(5.125, -38.625, "A1"); // Motor L, Motor R, Well name
             break;
 
             case 3: 
-              moveToWell(23.875, -46.875, "A3"); // Motor L, Motor R, Well name
+              moveToWell(17, -46.25, "A3"); // Motor L, Motor R, Well name
             break;
 
             case 6:
-              moveToWell(38.125, -57.375, "A6"); // Motor L, Motor R, Well name
+              moveToWell(31.25, -56.5, "A6"); // Motor L, Motor R, Well name
             break;
 
             case 9:
-              moveToWell(51, -67.75, "A9"); // Motor L, Motor R, Well name
+              moveToWell(44.125, -66.875, "A9"); // Motor L, Motor R, Well name
             break;
 
             case 12:
-              moveToWell(66.7, -83.5, "A12"); // Motor L, Motor R, Well name
+              moveToWell(59.5, -81.5, "A12"); // Motor L, Motor R, Well name
             break;
 
             default:
@@ -775,23 +775,23 @@
           switch(column) {
             
             case 1: 
-              moveToWell(14, -34.75, "B1"); // Motor L, Motor R, Well name
+              moveToWell(7.375, -32.625, "B1"); // Motor L, Motor R, Well name
             break;
 
             case 3: 
-              moveToWell(26.375, -43.375, "B3"); // Motor L, Motor R, Well name
+              moveToWell(19.75, -42, "B3"); // Motor L, Motor R, Well name
             break;
 
             case 6:
-              moveToWell(40.25, -54.25, "B6"); // Motor L, Motor R, Well name
+              moveToWell(33.25, -53.25, "B6"); // Motor L, Motor R, Well name
             break;
 
             case 9:
-              moveToWell(52.75, -65.25, "B9"); // Motor L, Motor R, Well name
+              moveToWell(46, -64.5, "B9"); // Motor L, Motor R, Well name
             break;
 
             case 12:
-              moveToWell(67.75, -80, "B12"); // Motor L, Motor R, Well name
+              moveToWell(60.625, -78.375, "B12"); // Motor L, Motor R, Well name
             break;
 
             default:
@@ -804,23 +804,23 @@
           switch(column) {
             
             case 1: 
-              moveToWell(17.375, -29.125, "C1"); // Motor L, Motor R, Well name
+              moveToWell(11.875, -28.875, "C1"); // Motor L, Motor R, Well name
             break;
 
             case 3: 
-              moveToWell(29, -39.5, "C3"); // Motor L, Motor R, Well name
+              moveToWell(23.125, -38.625, "C3"); // Motor L, Motor R, Well name
             break;
 
             case 6:
-              moveToWell(42.125, -51.35, "C6"); // Motor L, Motor R, Well name
+              moveToWell(36.625, -50.625, "C6"); // Motor L, Motor R, Well name
             break;
 
             case 9:
-              moveToWell(54, -63, "C9"); // Motor L, Motor R, Well name
+              moveToWell(48.25, -62.25, "C9"); // Motor L, Motor R, Well name
             break;
 
             case 12:
-              moveToWell(69, -77.25, "C12"); // Motor L, Motor R, Well name
+              moveToWell(64.75, -77.25, "C12"); // Motor L, Motor R, Well name
             break;
 
             default:
@@ -833,23 +833,23 @@
         switch(column) {
             
             case 1: 
-              moveToWell(20, -25, "D1"); // Motor L, Motor R, Well name
+              moveToWell(15.5, -23.25, "D1"); // Motor L, Motor R, Well name
             break;
 
             case 3: 
-              moveToWell(32.375, -36.625, "D3"); // Motor L, Motor R, Well name
+              moveToWell(26.75, -35.25, "D3"); // Motor L, Motor R, Well name
             break;
 
             case 6:
-              moveToWell(45.25, -49, "D6"); // Motor L, Motor R, Well name
+              moveToWell(39.5, -48, "D6"); // Motor L, Motor R, Well name
             break;
 
             case 9:
-              moveToWell(57, -61, "D9"); // Motor L, Motor R, Well name
+              moveToWell(51.125, -59.625, "D9"); // Motor L, Motor R, Well name
             break;
 
             case 12:
-              moveToWell(71.875, -75.875, "D12"); // Motor L, Motor R, Well name        
+              moveToWell(65.375, -74.625, "D12"); // Motor L, Motor R, Well name        
             break;
 
             default:
@@ -862,23 +862,23 @@
         switch(column) {
             
             case 1: 
-              moveToWell(25.625, -19, "E1"); // Motor L, Motor R, Well name
+              moveToWell(21.125, -17.375, "E1"); // Motor L, Motor R, Well name
             break;
 
             case 3: 
-              moveToWell(34.375, -32.125, "E3"); // Motor L, Motor R, Well name
+              moveToWell(30.125, -30.875, "E3"); // Motor L, Motor R, Well name
             break;
 
             case 6:
-              moveToWell(46.375, -45.875, "E6"); // Motor L, Motor R, Well name
+              moveToWell(42.5, -44.75, "E6"); // Motor L, Motor R, Well name
             break;
 
             case 9:
-              moveToWell(58, -57.75, "E9"); // Motor L, Motor R, Well name
+              moveToWell(53.75, -56.75, "E9"); // Motor L, Motor R, Well name
             break;
 
             case 12:
-              moveToWell(72.25, -72.75, "E12"); // Motor L, Motor R, Well name        
+              moveToWell(68, -71, "E12"); // Motor L, Motor R, Well name        
             break;
 
             default:
@@ -891,27 +891,56 @@
         switch(column) {
             
             case 1: 
-              moveToWell(29.125, -14.875, "F1"); // Motor L, Motor R, Well name
+              moveToWell(24.75, -13, "F1"); // Motor L, Motor R, Well name
             break;
 
             case 3: 
-              moveToWell(37.5, -29.5, "F3"); // Motor L, Motor R, Well name
+              moveToWell(34.125, -27.625, "F3"); // Motor L, Motor R, Well name
             break;
 
             case 6:
-              moveToWell(46.375, -45.875, "F6"); // Motor L, Motor R, Well name
+              moveToWell(45, -42.25, "F6"); // Motor L, Motor R, Well name
             break;
 
             case 9:
-              moveToWell(58, -57.75, "F9"); // Motor L, Motor R, Well name
+              moveToWell(55.875, -54.625, "F9"); // Motor L, Motor R, Well name
             break;
 
             case 12:
-              moveToWell(72.25, -72.75, "F12"); // Motor L, Motor R, Well name        
+              moveToWell(70.875, -69.625, "F12"); // Motor L, Motor R, Well name        
             break;
 
             default:
-            Serial.println("Invalid column for row E");
+            Serial.println("Invalid column for row F");
+            break;
+        }
+        break;
+
+        case 'g' :
+        switch(column) {
+            
+            case 1: 
+              moveToWell(30, -9.25, "G1"); // Motor L, Motor R, Well name
+            break;
+
+            case 3: 
+              moveToWell(37.5, -24.75, "G3"); // Motor L, Motor R, Well name
+            break;
+
+            case 6:
+              moveToWell(48.375, -40.125, "G6"); // Motor L, Motor R, Well name
+            break;
+
+            case 9:
+              moveToWell(58.875, -53.625, "G9"); // Motor L, Motor R, Well name
+            break;
+
+            case 12:
+              moveToWell(73.875, -67.875, "G12"); // Motor L, Motor R, Well name        
+            break;
+
+            default:
+            Serial.println("Invalid column for row G");
             break;
         }
         break;
@@ -919,15 +948,23 @@
         case 'h' :
         switch(column) {
             case 1:
-              moveToWell(39.875, -8.5, "H1"); // Motor L, Motor R, Well name
+              moveToWell(35.25, -7.5, "H1"); // Motor L, Motor R, Well name
+            break;
+
+            case 3:
+              moveToWell(42.125, -22.375, "H3"); // Motor L, Motor R, Well name
             break;
 
             case 6:
-            moveToWell(55.5, -38.5, "H6"); // Motor L, Motor R, Well name
+              moveToWell(50.75, -38.5, "H6"); // Motor L, Motor R, Well name
+            break;
+
+            case 9:
+              moveToWell(62, -52, "H9"); // Motor L, Motor R, Well name
             break;
 
             case 12:
-              moveToWell(80.5, -67.5, "H12"); // Motor L, Motor R, Well name
+              moveToWell(77.75, -67.75, "H12"); // Motor L, Motor R, Well name
             break;
 
             default:
@@ -1001,8 +1038,8 @@
     interruptibleDelay(500);
     enableMotors();
 
-    stepperR.moveTo(stepperR.currentPosition() - 23.8 * currentMicrosteps);
-    stepperL.moveTo(stepperL.currentPosition() - 62.8 * currentMicrosteps);
+    stepperR.moveTo(stepperR.currentPosition() - 22 * currentMicrosteps);
+    stepperL.moveTo(stepperL.currentPosition() - 57 * currentMicrosteps);
 
     while(stepperR.distanceToGo() != 0 || stepperL.distanceToGo() != 0) {
       stepperR.run();
