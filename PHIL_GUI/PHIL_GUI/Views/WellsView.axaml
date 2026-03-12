@@ -46,17 +46,17 @@
                 <StackPanel Orientation="Horizontal" DockPanel.Dock="Right" 
                             HorizontalAlignment="Right"
                             Spacing="0">
-					<Button Classes="toggle-btn active"
+					<Button Classes="toggle-btn"
+                            Classes.active="{Binding Is96Well}"
                             CornerRadius="4 0 0 4"
                             Content="96-Well"
-                            Command="{Binding SelectPlateTypeCommand}"
-                            CommandParameter="96"/>
+                            Command="{Binding SelectWell96Command}"/>
 
 					<Button Classes="toggle-btn"
+                            Classes.active="{Binding Is96Well, Converter={x:Static BoolConverters.Not}}"
                             CornerRadius="0 4 4 0"
                             Content="Heart-on-Chip"
-                            Command="{Binding SelectPlateTypeCommand}"
-                            CommandParameter="hoc"/>
+                            Command="{Binding SelectHeartOnChipCommand}"/>
                 </StackPanel>
             </DockPanel>
         </Border>
@@ -131,10 +131,11 @@
                             </ItemsControl.ItemsPanel>
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
-                                    <Button Content="{Binding}"
+                                    <Button Content="{Binding Name}"
                                             Classes="well"
+                                            Classes.active="{Binding IsSelected}"
                                             Command="{Binding $parent[ItemsControl].((vm:WellsViewModel)DataContext).WellsPositionCommand}"
-                                            CommandParameter="{Binding}"/>
+                                            CommandParameter="{Binding Name}"/>
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>

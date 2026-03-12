@@ -10,7 +10,7 @@ namespace PHIL_GUI.Models
     }
     public class Well : ObservableObject
     {
-        WellType type;
+        private WellType type;
         public WellType Type
         {
             get => type;
@@ -19,35 +19,35 @@ namespace PHIL_GUI.Models
 
         public bool IsStandard => Type == WellType.Standard;
 
-        string name;
+        private string name;
         public string Name
         {
             get => name;
             set => SetProperty(ref name, value);
         }
 
-        string x;
+        private string x;
         public string X
         {
             get => x;
             set => SetProperty(ref x, value);
         }
 
-        string y;
+        private string y;
         public string Y
         {
             get => y;
             set => SetProperty(ref y, value);
         }
 
-        string angleL;
+        private string angleL;
         public string AngleL
         {
             get => angleL;
             set => SetProperty(ref angleL, value);
         }
 
-        string angleR;
+        private string angleR;
         public string AngleR
         {
             get => angleR;

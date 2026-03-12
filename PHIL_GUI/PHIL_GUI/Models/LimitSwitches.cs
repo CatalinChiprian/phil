@@ -4,7 +4,7 @@ namespace PHIL_GUI.Models
 {
     public class LimitSwitches : ObservableObject
     {
-        bool z1;
+        private bool z1;
         public bool Z1 
         { 
             get => z1;
@@ -15,7 +15,7 @@ namespace PHIL_GUI.Models
             }
         }
 
-        bool z2;
+        private bool z2;
         public bool Z2 
         { 
             get => z2;
@@ -26,14 +26,14 @@ namespace PHIL_GUI.Models
             }
         }
 
-        bool l;
+        private bool l;
         public bool L 
         { 
             get => l; 
             set => SetProperty(ref l, value);
         }
 
-        bool r;
+        private bool r;
         public bool R 
         { 
             get => r; 

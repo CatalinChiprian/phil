@@ -352,5 +352,11 @@
             <Setter Property="BorderBrush" Value="{StaticResource Accent}"/>
             <Setter Property="Foreground" Value="{StaticResource Surface}"/>
         </Style>
+
+        <Style Selector="Button.well.active:pointerover /template/ ContentPresenter">
+			<Setter Property="Background" Value="{StaticResource Accent}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource Accent}"/>
+            <Setter Property="Foreground" Value="{StaticResource Surface}"/>
+        </Style>
     </Application.Styles>
 </Application>

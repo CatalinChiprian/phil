@@ -1,6 +1,7 @@
 using Avalonia;
 using Avalonia.Media;
 using CommunityToolkit.Mvvm.Input;
+using PHIL_GUI.Models;
 using PHIL_GUI.Services;
 using PHIL_GUI.ViewModels.Base;
 using System;
@@ -12,14 +13,40 @@ using RelayCommand = PHIL_GUI.Commands.RelayCommand;
 
 namespace PHIL_GUI.ViewModels;
 
+public enum PlateType
+{
+    Well96,
+    HeartOnChip
+};
+
 public class WellsViewModel : CommunicationBase
 { 
     public ICommand EmergencyStopCommand { get; }
     public ICommand GoHomeCommand { get; }
-    public ICommand SelectPlateTypeCommand { get; }
+    public ICommand SelectWell96Command { get; }
+    public ICommand SelectHeartOnChipCommand { get; }
     public ICommand WellsPositionCommand { get; }
 
-    public ObservableCollection<string> Wells { get; } = new();
+
+    private PlateType selectedPlateType;
+    public PlateType SelectedPlateType
+    {
+        get => selectedPlateType;
+        set
+        {
+            SetProperty(ref selectedPlateType, value);
+            OnPropertyChanged(nameof(Is96Well));
+        }
+    }
+    public bool Is96Well => SelectedPlateType == PlateType.Well96;
+    public ObservableCollection<WellItem> Wells { get; } = new ObservableCollection<WellItem>();
+    private WellItem activeWell;
+    public WellItem ActiveWell
+    {
+        get => activeWell;
+        private set => activeWell = value;
+    }
+
     public int WellsCount { get; set; } = 12;
     public List<string> ColHeaders { get; } = Enumerable.Range(1, 12).Select(i => i.ToString()).ToList();
     public List<string> RowHeaders { get; } = new() { "A", "B", "C", "D", "E", "F", "G", "H" };
@@ -41,10 +68,10 @@ public class WellsViewModel : CommunicationBase
             if (RobotState.State == MoveState.Moving)
                 return $"Moving to {RobotState.CurrentWell.Name}...";
 
-            if (RobotState.CurrentWell.Type == Models.WellType.Standard)
+            if (RobotState.CurrentWell.Type == WellType.Standard)
                 return $"Moved to {RobotState.CurrentWell.Name} (L: {RobotState.CurrentWell.AngleL}°, R: {RobotState.CurrentWell.AngleR}°)";
 
-            if (RobotState.CurrentWell.Type == Models.WellType.Home)
+            if (RobotState.CurrentWell.Type == WellType.Home)
                 return $"Moved to Home (L: {RobotState.Position.L}, R: {RobotState.Position.R})";
 
             return $"Stopped — L: {RobotState.Position.L}, R: {RobotState.Position.R}";
@@ -78,6 +105,8 @@ public class WellsViewModel : CommunicationBase
         EmergencyStopCommand = new RelayCommand(Stop);
         GoHomeCommand = new RelayCommand(GoHome);
         WellsPositionCommand = new RelayCommand<string>(w => GoToWell(w));
+        SelectWell96Command = new RelayCommand(() => SelectedPlateType = PlateType.Well96);
+        SelectHeartOnChipCommand = new RelayCommand(() => SelectedPlateType = PlateType.HeartOnChip);
 
         RobotState.PropertyChanged += (s, e) =>
         {
@@ -89,31 +118,43 @@ public class WellsViewModel : CommunicationBase
         {
             for (int col = 1; col <= WellsCount; col++)
             {
-                Wells.Add($"{row}{col}");
+                Wells.Add(new WellItem($"{row}{col}"));
             }
         }
     }
 
     void GoHome()
     {
-        RobotState.CurrentWell.Type = Models.WellType.Home;
+        RobotState.CurrentWell.Type = WellType.Home;
         RobotState.CurrentWell.Name = "Home";
+        if (activeWell != null) activeWell.IsSelected = false;
         Send("h");
         RobotState.State = MoveState.Moving;
     }
 
     void GoToWell(string well)
     {
-        RobotState.CurrentWell.Type = Models.WellType.Standard;
+        RobotState.CurrentWell.Type = WellType.Standard;
         RobotState.CurrentWell.Name = well;
-        Send($"w{well.ToLower()}");
+        SelectWell(well);
+        Send($"q{well.ToLower()}");
         RobotState.State = MoveState.Moving;
+    }
+
+    private void SelectWell(string name)
+    {
+        if (activeWell != null) activeWell.IsSelected = false;
+        var found = Wells.FirstOrDefault(w => w.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
+        if (found != null) found.IsSelected = true;
+
+        ActiveWell = found;
     }
 
     void Stop()
     {
         RobotState.CurrentWell.Name = "-";
-        RobotState.CurrentWell.Type = Models.WellType.Unknown;
+        if (activeWell != null) activeWell.IsSelected = false;
+        RobotState.CurrentWell.Type = WellType.Unknown;
         RobotState.State = MoveState.EmergencyStopped;
         Send("s");
     }
