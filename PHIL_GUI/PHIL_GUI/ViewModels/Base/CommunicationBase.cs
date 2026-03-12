@@ -1,5 +1,4 @@
 ﻿using Avalonia.Threading;
-using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.Extensions.DependencyInjection;
 using PHIL_GUI.Services;
 using System;
@@ -37,7 +36,7 @@ namespace PHIL_GUI.ViewModels.Base
             //AppendLog();
 
             if (message.StartsWith("WELL:")) ParseWellArrival(message);
-            //if (message.StartsWith("POS:")) ParsePosition(message);
+            else if (message.StartsWith("POS:")) ParsePosition(message);
             //else if (message.StartsWith("CAL_COUNT:")) ParseCalCount(message);
             //else if (message.StartsWith("CAL_PT:")) ParseCalPoint(message);
             //else if (message.StartsWith("CAL_REC:")) ParseCalRecorded(message);
@@ -73,24 +72,30 @@ namespace PHIL_GUI.ViewModels.Base
               .Where(p => p.Length == 2)
               .ToDictionary(p => p[0], p => p[1]);
 
-            RobotState.CurrentWell.IsHome = false;
+            RobotState.CurrentWell.Type = Models.WellType.Standard;
             RobotState.CurrentWell.Name = parts[0].ToUpper();
             RobotState.CurrentWell.X = kv["X"];
             RobotState.CurrentWell.Y = kv["Y"];
             RobotState.CurrentWell.AngleL = kv["L"];
             RobotState.CurrentWell.AngleR = kv["R"].Trim();
+
+            RobotState.State = Services.RobotState.Idle;
         }
 
-        //private void ParsePosition(string msg)
-        //{
-        //    var d = ParseKV(msg, "POS:");
-        //    Dispatcher.UIThread.Post(() => {
-        //        PositionL = long.Parse(d["L"]);
-        //        PositionR = long.Parse(d["R"]);
-        //        PositionZ1 = long.Parse(d["Z1"]);
-        //        PositionZ2 = long.Parse(d["Z2"]);
-        //    });
-        //}
+        private void ParsePosition(string msg)
+        {
+            var d = ParseKV(msg, "POS:");
+
+            RobotState.Position.L = d["L"];
+            RobotState.Position.R = d["R"];
+            RobotState.Position.Z1 = d["Z1"];
+            RobotState.Position.Z2 = d["Z2"].Trim();
+
+            if (RobotState.State == Services.RobotState.EmergencyStopped) return;
+
+            // If we're getting position updates, we must be moving (unless we e-stopped)
+            RobotState.State = Services.RobotState.Idle;
+        }
 
         //private void ParseRms(string msg)
         //{

@@ -2,14 +2,22 @@
 
 namespace PHIL_GUI.Models
 {
+    public enum WellType
+    {
+        Home,
+        Standard,
+        Unknown
+    }
     public class Well : ObservableObject
     {
-        bool isHome;
-        public bool IsHome
+        WellType type;
+        public WellType Type
         {
-            get => isHome;
-            set => SetProperty(ref isHome, value);
+            get => type;
+            set => SetProperty(ref type, value);
         }
+
+        public bool IsStandard => Type == WellType.Standard;
 
         string name;
         public string Name
@@ -48,7 +56,6 @@ namespace PHIL_GUI.Models
 
         public Well()
         {
-            IsHome = true;
             Name = "Home";
         }
     }

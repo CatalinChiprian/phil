@@ -3,8 +3,28 @@ using PHIL_GUI.Models;
 
 namespace PHIL_GUI.Services
 {
+    public enum RobotState
+    {
+        Idle,
+        Moving,
+        EmergencyStopped,
+    }
     public class RobotStateService : ObservableObject
     {
+        private RobotState state;
+        public RobotState State
+        {
+            get => state;
+            set => SetProperty(ref state, value);
+        }
+
+        private Position position;
+        public Position Position
+        {
+            get => position;
+            set => SetProperty(ref position, value);
+        }
+
         private Well currentWell = new Well();
         public Well CurrentWell
         {

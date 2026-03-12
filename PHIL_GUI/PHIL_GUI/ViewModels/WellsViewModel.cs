@@ -1,6 +1,7 @@
 using Avalonia;
 using Avalonia.Media;
 using CommunityToolkit.Mvvm.Input;
+using PHIL_GUI.Services;
 using PHIL_GUI.ViewModels.Base;
 using System;
 using System.Collections.Generic;
@@ -23,12 +24,32 @@ public class WellsViewModel : CommunicationBase
     public List<string> ColHeaders { get; } = Enumerable.Range(1, 12).Select(i => i.ToString()).ToList();
     public List<string> RowHeaders { get; } = new() { "A", "B", "C", "D", "E", "F", "G", "H" };
 
+    //Take this from RobotState when implemented
     public double RmsL = 0.57;
     public double RmsR = 0.8;
     public double CalCount = 40;
     public double CalMax = 40;
     public int Microsteps = 8;
 
+    public string TopNotificationText
+    {
+        get
+        {
+            if (RobotState.State == Services.RobotState.EmergencyStopped)
+                return $"Emergency stop — L: {RobotState.Position.L}, R: {RobotState.Position.R}";
+
+            if (RobotState.State == Services.RobotState.Moving)
+                return $"Moving to {RobotState.CurrentWell.Name}...";
+
+            if (RobotState.CurrentWell.Type == Models.WellType.Standard)
+                return $"Moved to {RobotState.CurrentWell.Name} (L: {RobotState.CurrentWell.AngleL}°, R: {RobotState.CurrentWell.AngleR}°)";
+
+            if (RobotState.CurrentWell.Type == Models.WellType.Home)
+                return "At home position";
+
+            return $"Stopped — L: {RobotState.Position.L}, R: {RobotState.Position.R}";
+        }
+    }
     public string RmsDisplayText => $"L {RmsL:F2}°  R {RmsR:F2}°";
     public IBrush RmsColor
     {
@@ -54,9 +75,15 @@ public class WellsViewModel : CommunicationBase
     
     public WellsViewModel()
     {
-        EmergencyStopCommand = new RelayCommand(() => Send("s"));
+        EmergencyStopCommand = new RelayCommand(Stop);
         GoHomeCommand = new RelayCommand(GoHome);
         WellsPositionCommand = new RelayCommand<string>(w => GoToWell(w));
+
+        RobotState.PropertyChanged += (s, e) =>
+        {
+            if (e.PropertyName == nameof(RobotStateService.State))
+                OnPropertyChanged(nameof(TopNotificationText));
+        };
 
         foreach (var row in RowHeaders)
         {
@@ -69,15 +96,25 @@ public class WellsViewModel : CommunicationBase
 
     void GoHome()
     {
-        RobotState.CurrentWell.IsHome = true;
+        RobotState.CurrentWell.Type = Models.WellType.Home;
         RobotState.CurrentWell.Name = "Home";
         Send("h");
+        RobotState.State = Services.RobotState.Moving;
     }
 
     void GoToWell(string well)
     {
-        RobotState.CurrentWell.IsHome = false;
+        RobotState.CurrentWell.Type = Models.WellType.Standard;
         RobotState.CurrentWell.Name = well;
         Send($"w{well.ToLower()}");
+        RobotState.State = Services.RobotState.Moving;
+    }
+
+    void Stop()
+    {
+        RobotState.CurrentWell.Name = "-";
+        RobotState.CurrentWell.Type = Models.WellType.Unknown;
+        RobotState.State = Services.RobotState.EmergencyStopped;
+        Send("s");
     }
 }

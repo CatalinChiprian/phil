@@ -95,7 +95,7 @@
                         <StackPanel Orientation="Vertical">
 							<TextBlock Classes="subtitle" Text="CURRENT WELL" LetterSpacing="1.5"/>
                             <TextBlock Text="{Binding CurrentWell.Name}" FontSize="26" FontWeight="SemiBold" Margin="0,0,0,2"/>
-                            <StackPanel Orientation="Vertical" IsVisible="{Binding CurrentWell.IsHome, Converter={x:Static BoolConverters.Not}}">
+                            <StackPanel Orientation="Vertical" IsVisible="{Binding CurrentWell.IsStandard}">
                                 <TextBlock Classes="subtitle" Text="{Binding CurrentWell.X, StringFormat='X: {0:F2}'}"/>
                                 <TextBlock Classes="subtitle" Text="{Binding CurrentWell.Y, StringFormat='Y: {0:F2}'}"/>
                                 <TextBlock Classes="subtitle" Text="{Binding CurrentWell.AngleL, StringFormat='L: {0:F2}°'}"/>

@@ -63,7 +63,10 @@
 
         <Border DockPanel.Dock="Top" Background="{StaticResource Accent-Dim}" 
                 Padding="30,10" BorderThickness="0,0,0,1" BorderBrush="{StaticResource Accent-Mid}">
-			<TextBlock Text="Moved to D6"/>
+            <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+				<Ellipse Width="6" Height="6" Fill="{StaticResource Accent}" VerticalAlignment="Center"/>
+                <TextBlock Text="{Binding TopNotificationText}" VerticalAlignment="Center"/>
+            </StackPanel>
         </Border>
 
 		<Border Background="{StaticResource Bg}" Padding="60,40">
