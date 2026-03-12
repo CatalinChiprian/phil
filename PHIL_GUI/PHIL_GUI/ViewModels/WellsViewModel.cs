@@ -54,8 +54,6 @@ public class WellsViewModel : CommunicationBase
     //Take this from RobotState when implemented
     public double RmsL = 0.57;
     public double RmsR = 0.8;
-    public double CalCount = 40;
-    public double CalMax = 40;
     public int Microsteps = 8;
 
     public string TopNotificationText
@@ -83,19 +81,19 @@ public class WellsViewModel : CommunicationBase
         get
         {
             double worst = Math.Max(RmsL, RmsR);
-            if (worst > 1.5) return Application.Current.Resources["Warn"] as IBrush ?? Brushes.Red;
-            if (worst > 1.0) return Application.Current.Resources["Caution"] as IBrush ?? Brushes.Orange;
-            return Application.Current.Resources["Accent"] as IBrush ?? Brushes.Green;
+            if (worst > 1.5) return Application.Current.Resources["Warn"] as IBrush;
+            if (worst > 1.0) return Application.Current.Resources["Caution"] as IBrush;
+            return Application.Current.Resources["Accent"] as IBrush;
         }
     }
-    public string CalPointsText => $"{CalCount}/{CalMax}";
+    public string CalPointsText => $"{RobotState.Calibration.Count}/{Calibration.MaxCount}";
     public IBrush CalPointsColor
     {
         get
         {
-            if (CalCount < 10) return Application.Current.Resources["Warn"] as IBrush ?? Brushes.Red;
-            if (CalCount < 20) return Application.Current.Resources["Caution"] as IBrush ?? Brushes.Orange;
-            return Application.Current.Resources["Accent"] as IBrush ?? Brushes.Green;
+            if (RobotState.Calibration.Count < 10) return Application.Current.Resources["Warn"] as IBrush;
+            if (RobotState.Calibration.Count < 20) return Application.Current.Resources["Caution"] as IBrush;
+            return Application.Current.Resources["Accent"] as IBrush;
         }
     }
     public string MicrostepsText => $"1/{Microsteps}";

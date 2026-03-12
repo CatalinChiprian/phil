@@ -9,6 +9,10 @@ namespace PHIL_GUI.ViewModels.Base
 {
     public abstract class CommunicationBase : ViewModelBase
     {
+        const string WELL_PREFIX = "WELL:";
+        const string POS_PREFIX = "POS:";
+        const string CAL_COUNT_PREFIX = "CAL_COUNT:";
+
         protected readonly SerialPortService SerialService;
         protected readonly RobotStateService RobotState;
 
@@ -35,9 +39,9 @@ namespace PHIL_GUI.ViewModels.Base
 
             //AppendLog();
 
-            if (message.StartsWith("WELL:")) ParseWellArrival(message);
-            else if (message.StartsWith("POS:")) ParsePosition(message);
-            //else if (message.StartsWith("CAL_COUNT:")) ParseCalCount(message);
+            if (message.StartsWith(WELL_PREFIX)) ParseWellArrival(message);
+            else if (message.StartsWith(POS_PREFIX)) ParsePosition(message);
+            else if (message.StartsWith(CAL_COUNT_PREFIX)) ParseCalCount(message);
             //else if (message.StartsWith("CAL_PT:")) ParseCalPoint(message);
             //else if (message.StartsWith("CAL_REC:")) ParseCalRecorded(message);
             //else if (message.StartsWith("CAL_ERR:")) ParseCalError(message);
@@ -64,7 +68,7 @@ namespace PHIL_GUI.ViewModels.Base
 
         private void ParseWellArrival(string msg)
         {
-            string content = msg.Substring("WELL:".Length);
+            string content = msg.Substring(WELL_PREFIX.Length);
             string[] parts = content.Split(',');
 
             var kv = parts.Skip(1)
@@ -84,7 +88,7 @@ namespace PHIL_GUI.ViewModels.Base
 
         private void ParsePosition(string msg)
         {
-            var d = ParseKV(msg, "POS:");
+            var d = ParseKV(msg, POS_PREFIX);
 
             RobotState.Position.L = d["L"];
             RobotState.Position.R = d["R"];
@@ -95,6 +99,16 @@ namespace PHIL_GUI.ViewModels.Base
 
             // If we're getting position updates, we must be moving (unless we e-stopped)
             RobotState.State = MoveState.Idle;
+        }
+
+        private void ParseCalCount(string msg)
+        {
+            var parts = msg.Substring(CAL_COUNT_PREFIX.Length);
+
+            if (!int.TryParse(parts, out int count)) return;
+
+            RobotState.Calibration.Count = count;
+
         }
 
         //private void ParseRms(string msg)

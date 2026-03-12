@@ -19,9 +19,8 @@ namespace PHIL_GUI.Services
         }
 
         public Position Position { get; } = new Position();
-
         public LimitSwitches Limit { get; } = new LimitSwitches();
-
+        public Calibration Calibration { get; } = new Calibration();
         public Well CurrentWell { get; } = new Well();
 
         private double rmsL, rmsR;
