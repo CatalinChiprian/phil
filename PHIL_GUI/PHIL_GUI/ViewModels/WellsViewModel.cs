@@ -35,17 +35,17 @@ public class WellsViewModel : CommunicationBase
     {
         get
         {
-            if (RobotState.State == Services.RobotState.EmergencyStopped)
+            if (RobotState.State == MoveState.EmergencyStopped)
                 return $"Emergency stop — L: {RobotState.Position.L}, R: {RobotState.Position.R}";
 
-            if (RobotState.State == Services.RobotState.Moving)
+            if (RobotState.State == MoveState.Moving)
                 return $"Moving to {RobotState.CurrentWell.Name}...";
 
             if (RobotState.CurrentWell.Type == Models.WellType.Standard)
                 return $"Moved to {RobotState.CurrentWell.Name} (L: {RobotState.CurrentWell.AngleL}°, R: {RobotState.CurrentWell.AngleR}°)";
 
             if (RobotState.CurrentWell.Type == Models.WellType.Home)
-                return "At home position";
+                return $"Moved to Home (L: {RobotState.Position.L}, R: {RobotState.Position.R})";
 
             return $"Stopped — L: {RobotState.Position.L}, R: {RobotState.Position.R}";
         }
@@ -99,7 +99,7 @@ public class WellsViewModel : CommunicationBase
         RobotState.CurrentWell.Type = Models.WellType.Home;
         RobotState.CurrentWell.Name = "Home";
         Send("h");
-        RobotState.State = Services.RobotState.Moving;
+        RobotState.State = MoveState.Moving;
     }
 
     void GoToWell(string well)
@@ -107,14 +107,14 @@ public class WellsViewModel : CommunicationBase
         RobotState.CurrentWell.Type = Models.WellType.Standard;
         RobotState.CurrentWell.Name = well;
         Send($"w{well.ToLower()}");
-        RobotState.State = Services.RobotState.Moving;
+        RobotState.State = MoveState.Moving;
     }
 
     void Stop()
     {
         RobotState.CurrentWell.Name = "-";
         RobotState.CurrentWell.Type = Models.WellType.Unknown;
-        RobotState.State = Services.RobotState.EmergencyStopped;
+        RobotState.State = MoveState.EmergencyStopped;
         Send("s");
     }
 }

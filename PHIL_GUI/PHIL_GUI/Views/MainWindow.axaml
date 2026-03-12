@@ -111,7 +111,8 @@
 					<TextBlock Classes="subtitle" Text="Z AXIS"  LetterSpacing="2"/>
                     <StackPanel Orientation="Horizontal" Spacing="6">
                         <Button Classes="btn btn-primary" Content="↑ Up" Padding="24,6"
-                                Command="{Binding MoveUpCommand}"/>
+                                Command="{Binding MoveUpCommand}"
+                                IsEnabled="{Binding Limit.CanMoveUp}"/>
                         <Button Classes="btn btn-secondary" Content="↓ Down" Padding="18,6"
                                 Command="{Binding MoveDownCommand}"/>
                     </StackPanel>

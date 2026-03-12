@@ -79,7 +79,7 @@ namespace PHIL_GUI.ViewModels.Base
             RobotState.CurrentWell.AngleL = kv["L"];
             RobotState.CurrentWell.AngleR = kv["R"].Trim();
 
-            RobotState.State = Services.RobotState.Idle;
+            RobotState.State = MoveState.Idle;
         }
 
         private void ParsePosition(string msg)
@@ -91,10 +91,10 @@ namespace PHIL_GUI.ViewModels.Base
             RobotState.Position.Z1 = d["Z1"];
             RobotState.Position.Z2 = d["Z2"].Trim();
 
-            if (RobotState.State == Services.RobotState.EmergencyStopped) return;
+            if (RobotState.State == MoveState.EmergencyStopped) return;
 
             // If we're getting position updates, we must be moving (unless we e-stopped)
-            RobotState.State = Services.RobotState.Idle;
+            RobotState.State = MoveState.Idle;
         }
 
         //private void ParseRms(string msg)

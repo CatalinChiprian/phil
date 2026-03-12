@@ -3,7 +3,7 @@ using PHIL_GUI.Models;
 
 namespace PHIL_GUI.Services
 {
-    public enum RobotState
+    public enum MoveState
     {
         Idle,
         Moving,
@@ -11,33 +11,18 @@ namespace PHIL_GUI.Services
     }
     public class RobotStateService : ObservableObject
     {
-        private RobotState state;
-        public RobotState State
+        private MoveState state;
+        public MoveState State
         {
             get => state;
             set => SetProperty(ref state, value);
         }
 
-        private Position position;
-        public Position Position
-        {
-            get => position;
-            set => SetProperty(ref position, value);
-        }
+        public Position Position { get; } = new Position();
 
-        private Well currentWell = new Well();
-        public Well CurrentWell
-        {
-            get => currentWell;
-            set => SetProperty(ref currentWell, value);
-        }
+        public LimitSwitches Limit { get; } = new LimitSwitches();
 
-        private bool isZLimitReached;
-        public bool IsZLimitReached 
-        { 
-            get => isZLimitReached;
-            set => SetProperty(ref isZLimitReached, value);
-        }
+        public Well CurrentWell { get; } = new Well();
 
         private double rmsL, rmsR;
         public double RmsL { get => rmsL; set => SetProperty(ref rmsL, value); }

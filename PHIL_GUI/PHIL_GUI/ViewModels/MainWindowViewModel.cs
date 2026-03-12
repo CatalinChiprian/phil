@@ -40,6 +40,7 @@ public class MainWindowViewModel : CommunicationBase
     }
 
     public Well CurrentWell => RobotState.CurrentWell;
+    public LimitSwitches Limit => RobotState.Limit;
 
     public MainWindowViewModel()
     {
