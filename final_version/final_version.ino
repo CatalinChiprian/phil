@@ -224,8 +224,6 @@
           stepperZ1.setCurrentPosition(0);
           stepperZ2.stop();
           stepperZ2.setCurrentPosition(0);
-          Serial.print("WARNING:LIMIT_HIT,Z1="); Serial.print(1);
-          Serial.print(",Z2="); Serial.println(1);
           break;
       }
 
@@ -517,51 +515,63 @@
     static bool z1WasPressed = false;
     if(digitalRead(limitSwitchZ1) == LOW) {
       if(!z1WasPressed) {  
-        Serial.println("WARNING:LIMIT_PRESSED,axis=Z1");
+        Serial.println("LIMIT_PRESSED:AXIS=Z1");
         z1WasPressed = true;
       }
       stepperZ1.setCurrentPosition(stepperZ1.currentPosition());
       stepperZ2.setCurrentPosition(stepperZ2.currentPosition());
     } else {
-      z1WasPressed = false; 
+      if (z1WasPressed) {
+          Serial.println("LIMIT_RELEASED:AXIS=Z1");
+          z1WasPressed = false;
+      }
     }
 
     static bool z2WasPressed = false;
     if(digitalRead(limitSwitchZ2) == LOW) {
       if(!z2WasPressed) {
-        Serial.println("WARNING:LIMIT_PRESSED,axis=Z2");
+        Serial.println("LIMIT_PRESSED:AXIS=Z2");
         z2WasPressed = true;
       }
       stepperZ1.setCurrentPosition(stepperZ1.currentPosition());
       stepperZ2.setCurrentPosition(stepperZ2.currentPosition());
     } else {
-      z2WasPressed = false;
+      if (z2WasPressed) {
+          Serial.println("LIMIT_RELEASED:AXIS=Z2");
+          z2WasPressed = false;
+      }
     }
     
     
     static bool lWasPressed = false;
     if(digitalRead(limitSwitchL) == LOW) {
       if (!lWasPressed) {
-        Serial.println("WARNING:LIMIT_PRESSED,axis=L");
+        Serial.println("LIMIT_PRESSED:AXIS=L");
         lWasPressed = true;
       }
       stepperL.stop();
       stepperL.setCurrentPosition(stepperL.currentPosition());
     }
     else {
-      lWasPressed = false;
+      if (lWasPressed) {
+          Serial.println("LIMIT_RELEASED:AXIS=L");
+          lWasPressed = false;
+      }
     }
     
     static bool rWasPressed = false;
     if(digitalRead(limitSwitchR) == LOW) {
       if(!rWasPressed) {
-        Serial.println("WARNING:LIMIT_PRESSED,axis=R");
+        Serial.println("LIMIT_PRESSED:AXIS=R");
         rWasPressed = true;
       }
       stepperR.stop();
       stepperR.setCurrentPosition(stepperR.currentPosition());
     } else {
-      rWasPressed = false;
+      if (rWasPressed) {
+          Serial.println("LIMIT_RELEASED:AXIS=R");
+          rWasPressed = false;
+      }
     }
   }
   
@@ -1362,9 +1372,7 @@
     //Angles
     Serial.print(calL[calCount-1], 2); Serial.print(",");
     Serial.println(calR[calCount-1], 2);
-    Serial.print("CAL_COUNT:"); Serial.println(calCount);
-
-    calCount++;
+    Serial.print("CAL_COUNT:"); Serial.println(++calCount);
   }
 
 

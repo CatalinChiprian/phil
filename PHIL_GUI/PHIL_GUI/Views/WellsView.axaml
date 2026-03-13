@@ -55,8 +55,8 @@
 					<Button Classes="toggle-btn"
                             Classes.active="{Binding Is96Well, Converter={x:Static BoolConverters.Not}}"
                             CornerRadius="0 4 4 0"
-                            Content="Heart-on-Chip"
-                            Command="{Binding SelectHeartOnChipCommand}"/>
+                            Content="Organ-on-Chip"
+                            Command="{Binding SelectOrganOnChipCommand}"/>
                 </StackPanel>
             </DockPanel>
         </Border>

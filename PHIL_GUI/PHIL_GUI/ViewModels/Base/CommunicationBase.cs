@@ -7,11 +7,18 @@ using System.Linq;
 
 namespace PHIL_GUI.ViewModels.Base
 {
+    enum LimitType
+    {
+        Released,
+        Pressed
+    }
     public abstract class CommunicationBase : ViewModelBase
     {
         const string WELL_PREFIX = "WELL:";
         const string POS_PREFIX = "POS:";
         const string CAL_COUNT_PREFIX = "CAL_COUNT:";
+        const string LIMIT_PRESSED_PREFIX = "LIMIT_PRESSED:";
+        const string LIMIT_RELEASED_PREFIX = "LIMIT_RELEASED:";
 
         protected readonly SerialPortService SerialService;
         protected readonly RobotStateService RobotState;
@@ -42,6 +49,8 @@ namespace PHIL_GUI.ViewModels.Base
             if (message.StartsWith(WELL_PREFIX)) ParseWellArrival(message);
             else if (message.StartsWith(POS_PREFIX)) ParsePosition(message);
             else if (message.StartsWith(CAL_COUNT_PREFIX)) ParseCalCount(message);
+            else if (message.StartsWith(LIMIT_PRESSED_PREFIX)) ParseLimit(message, LimitType.Pressed);
+            else if (message.StartsWith(LIMIT_RELEASED_PREFIX)) ParseLimit(message, LimitType.Released);
             //else if (message.StartsWith("CAL_PT:")) ParseCalPoint(message);
             //else if (message.StartsWith("CAL_REC:")) ParseCalRecorded(message);
             //else if (message.StartsWith("CAL_ERR:")) ParseCalError(message);
@@ -49,7 +58,6 @@ namespace PHIL_GUI.ViewModels.Base
             //else if (message.StartsWith("CAL_COEFFS_R:")) ParseCoeffsR(message);
             //else if (message.StartsWith("RMS:")) ParseRms(message);
             //else if (message.StartsWith("LIMIT:")) ParseLimit(message);
-            //else if (message.StartsWith("WARNING:")) ParseAlert(message, AlertLevel.Warning);
             //else if (message.StartsWith("ERROR:"))   ParseAlert(message, AlertLevel.Error);
         }
 
@@ -108,7 +116,20 @@ namespace PHIL_GUI.ViewModels.Base
             if (!int.TryParse(parts, out int count)) return;
 
             RobotState.Calibration.Count = count;
+        }
 
+        private void ParseLimit(string msg, LimitType type)
+        {
+            string prefix = type == LimitType.Pressed ? LIMIT_PRESSED_PREFIX : LIMIT_RELEASED_PREFIX;
+            bool state = type == LimitType.Pressed;
+
+            var d = ParseKV(msg, prefix);
+            var axis = d["AXIS"].Trim();
+
+            if (axis == "Z1") RobotState.Limit.Z1 = state;
+            else if (axis == "Z2") RobotState.Limit.Z2 = state;
+            else if (axis == "L") RobotState.Limit.L = state;
+            else if (axis == "R") RobotState.Limit.R = state;
         }
 
         //private void ParseRms(string msg)

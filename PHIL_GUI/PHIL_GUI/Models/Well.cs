@@ -14,7 +14,11 @@ namespace PHIL_GUI.Models
         public WellType Type
         {
             get => type;
-            set => SetProperty(ref type, value);
+            set
+            {
+                SetProperty(ref type, value);
+                OnPropertyChanged(nameof(IsStandard));
+            }
         }
 
         public bool IsStandard => Type == WellType.Standard;

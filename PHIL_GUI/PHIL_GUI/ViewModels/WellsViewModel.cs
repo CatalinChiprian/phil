@@ -16,7 +16,7 @@ namespace PHIL_GUI.ViewModels;
 public enum PlateType
 {
     Well96,
-    HeartOnChip
+    OrganOnChip
 };
 
 public class WellsViewModel : CommunicationBase
@@ -24,7 +24,7 @@ public class WellsViewModel : CommunicationBase
     public ICommand EmergencyStopCommand { get; }
     public ICommand GoHomeCommand { get; }
     public ICommand SelectWell96Command { get; }
-    public ICommand SelectHeartOnChipCommand { get; }
+    public ICommand SelectOrganOnChipCommand { get; }
     public ICommand WellsPositionCommand { get; }
 
 
@@ -104,7 +104,7 @@ public class WellsViewModel : CommunicationBase
         GoHomeCommand = new RelayCommand(GoHome);
         WellsPositionCommand = new RelayCommand<string>(w => GoToWell(w));
         SelectWell96Command = new RelayCommand(() => SelectedPlateType = PlateType.Well96);
-        SelectHeartOnChipCommand = new RelayCommand(() => SelectedPlateType = PlateType.HeartOnChip);
+        SelectOrganOnChipCommand = new RelayCommand(() => SelectedPlateType = PlateType.OrganOnChip);
 
         RobotState.PropertyChanged += (s, e) =>
         {
