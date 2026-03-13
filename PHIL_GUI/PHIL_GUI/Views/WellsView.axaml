@@ -75,7 +75,7 @@
 
                    <StackPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" 
                                 Orientation="Horizontal" Spacing="10" Margin="0,0,0,16">
-                        <TextBlock Classes="subtitle" Text="96-WELL PLATE" FontSize="10" LetterSpacing="1.5"/>
+                        <TextBlock Classes="subtitle" Text="{Binding WellTypeText}" FontSize="10" LetterSpacing="1.5"/>
                         <Border Classes="badge" Padding="8,3">
                             <TextBlock Text="8 × 12" FontSize="9"/>
                         </Border>
@@ -134,6 +134,7 @@
                                     <Button Content="{Binding Name}"
                                             Classes="well"
                                             Classes.active="{Binding IsSelected}"
+                                            IsVisible="{Binding IsVisible}"
                                             Command="{Binding $parent[ItemsControl].((vm:WellsViewModel)DataContext).WellsPositionCommand}"
                                             CommandParameter="{Binding Name}"/>
                                 </DataTemplate>

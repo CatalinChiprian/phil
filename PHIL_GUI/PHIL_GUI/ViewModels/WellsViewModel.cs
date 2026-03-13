@@ -20,7 +20,11 @@ public enum PlateType
 };
 
 public class WellsViewModel : CommunicationBase
-{ 
+{
+    const int WELLSCOUNT = 12;
+    public List<string> ColHeaders { get; } = Enumerable.Range(1, WELLSCOUNT).Select(i => i.ToString()).ToList();
+    public List<char> RowHeaders { get; } = new() { 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H' };
+
     public ICommand EmergencyStopCommand { get; }
     public ICommand GoHomeCommand { get; }
     public ICommand SelectWell96Command { get; }
@@ -35,7 +39,16 @@ public class WellsViewModel : CommunicationBase
         set
         {
             SetProperty(ref selectedPlateType, value);
+
+            foreach (var well in Wells)
+            {
+                if (value == PlateType.Well96)
+                    well.IsVisible = true;
+                else
+                    well.IsVisible = (well.Row % 2 != 0) == (well.Column % 2 != 0);
+            }
             OnPropertyChanged(nameof(Is96Well));
+            OnPropertyChanged(nameof(WellTypeText));
         }
     }
     public bool Is96Well => SelectedPlateType == PlateType.Well96;
@@ -46,10 +59,6 @@ public class WellsViewModel : CommunicationBase
         get => activeWell;
         private set => activeWell = value;
     }
-
-    public int WellsCount { get; set; } = 12;
-    public List<string> ColHeaders { get; } = Enumerable.Range(1, 12).Select(i => i.ToString()).ToList();
-    public List<string> RowHeaders { get; } = new() { "A", "B", "C", "D", "E", "F", "G", "H" };
 
     //Take this from RobotState when implemented
     public double RmsL = 0.57;
@@ -73,6 +82,15 @@ public class WellsViewModel : CommunicationBase
                 return $"Moved to Home (L: {RobotState.Position.L}, R: {RobotState.Position.R})";
 
             return $"Stopped — L: {RobotState.Position.L}, R: {RobotState.Position.R}";
+        }
+    }
+
+    public string WellTypeText
+    {
+        get
+        {
+            if (Is96Well) return "96-WELL PLATE";
+            else return "ORGAN-ON-CHIP PLATE";
         }
     }
     public string RmsDisplayText => $"L {RmsL:F2}°  R {RmsR:F2}°";
@@ -114,9 +132,9 @@ public class WellsViewModel : CommunicationBase
 
         foreach (var row in RowHeaders)
         {
-            for (int col = 1; col <= WellsCount; col++)
+            for (int col = 1; col <= WELLSCOUNT; col++)
             {
-                Wells.Add(new WellItem($"{row}{col}"));
+                Wells.Add(new WellItem(row, col));
             }
         }
     }
