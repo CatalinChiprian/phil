@@ -150,11 +150,14 @@
         <ContentControl Content="{Binding CurrentPage}"
                         IsVisible="{Binding CurrentPage, Converter={x:Static ObjectConverters.IsNotNull}}">
             <ContentControl.DataTemplates>
+                <DataTemplate DataType="vm:WellsViewModel">
+                    <views:WellsView />
+                </DataTemplate>
                 <DataTemplate DataType="vm:BasicControlsViewModel">
                     <views:BasicControlsView />
                 </DataTemplate>
-                <DataTemplate DataType="vm:WellsViewModel">
-                    <views:WellsView />
+                <DataTemplate DataType="vm:CalibrationViewModel">
+                    <views:CalibrationView />
                 </DataTemplate>
             </ContentControl.DataTemplates>
         </ContentControl>

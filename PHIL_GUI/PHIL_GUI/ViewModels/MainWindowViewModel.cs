@@ -54,7 +54,7 @@ public class MainWindowViewModel : CommunicationBase
         _pages = new List<PageItem>
         {
             new PageItem { Title = "Wells", ViewModel = new WellsViewModel() },
-            new PageItem { Title = "Calibration", ViewModel = new BasicControlsViewModel() }, // Change VM
+            new PageItem { Title = "Calibration", ViewModel = new CalibrationViewModel() }, // Change VM
             new PageItem { Title = "Medium Exchange", ViewModel = new BasicControlsViewModel() } // Change VM
         };
 

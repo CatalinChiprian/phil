@@ -1,0 +1,91 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:PHIL_GUI.ViewModels"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="900" d:DesignHeight="700"
+             x:Class="PHIL_GUI.Views.CalibrationView"
+             x:DataType="vm:WellsViewModel">
+
+    <DockPanel>
+        <Border Classes="toolbar" DockPanel.Dock="Top">
+		    <DockPanel>
+			    <StackPanel Orientation="Horizontal" DockPanel.Dock="Left" Spacing="15" VerticalAlignment="Center">
+					<TextBlock Classes="subtitle" LetterSpacing="2" Text="BASIC MOVEMENT" VerticalAlignment="Center"/>
+                    <Grid Width="98" Height="98">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="32"/>
+                            <RowDefinition Height="2"/>
+                            <RowDefinition Height="32"/>
+                            <RowDefinition Height="2"/>
+                            <RowDefinition Height="32"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="32"/>
+                            <ColumnDefinition Width="2"/>
+                            <ColumnDefinition Width="32"/>
+                            <ColumnDefinition Width="2"/>
+                            <ColumnDefinition Width="32"/>
+                        </Grid.ColumnDefinitions>
+
+                        <!-- Up -->
+                        <Button Grid.Row="0" Grid.Column="2" Classes="btn btn-dpad"
+                                Command="{Binding}">
+                            <Path Data="M6 8L2 8L2 6L8 5.24536e-07L14 6L14 8L10 8L10 16L6 16L6 8Z"
+                                  Stretch="Fill"
+                                  Width="9"
+                                  Height="9"/>
+                        </Button>
+                        <!-- Left -->
+                        <Button Grid.Row="2" Grid.Column="0" Classes="btn btn-dpad"
+                                Command="{Binding}">
+                            <Path Data="M6 8L2 8L2 6L8 5.24536e-07L14 6L14 8L10 8L10 16L6 16L6 8Z"
+                                  Stretch="Fill"
+                                  Width="9"
+                                  Height="9">
+                                <Path.RenderTransform>
+                                    <RotateTransform Angle="270"/>
+                                </Path.RenderTransform>
+                            </Path>
+                        </Button>
+                        <!-- Right -->
+                        <Button Grid.Row="2" Grid.Column="4" Classes="btn btn-dpad"
+                                Command="{Binding}">
+                            <Path Data="M6 8L2 8L2 6L8 5.24536e-07L14 6L14 8L10 8L10 16L6 16L6 8Z"
+                                  Stretch="Fill"
+                                  Width="9"
+                                  Height="9">
+                                <Path.RenderTransform>
+                                    <RotateTransform Angle="90"/>
+                                </Path.RenderTransform>
+                            </Path>
+                        </Button>
+                        <!-- Down -->
+                        <Button Grid.Row="4" Grid.Column="2" Classes="btn btn-dpad"
+                                Command="{Binding}">
+                            <Path Data="M6 8L2 8L2 6L8 5.24536e-07L14 6L14 8L10 8L10 16L6 16L6 8Z"
+                                  Stretch="Fill"
+                                  Width="9"
+                                  Height="9">
+                                <Path.RenderTransform>
+                                    <RotateTransform Angle="180"/>
+                                </Path.RenderTransform>
+                            </Path>
+                        </Button>
+                    </Grid>
+
+                    <Border Width="1" Height="40" Background="{StaticResource BorderColor}"/>
+
+                    <TextBlock Classes="subtitle" LetterSpacing="2" Text="RECORD" VerticalAlignment="Center"/>
+
+                    <Button Classes="btn btn-primary">● Record position</Button>
+                    <Button Classes="btn btn-secondary">Solve</Button>
+                </StackPanel>
+                
+                <StackPanel Orientation="Horizontal" DockPanel.Dock="Right" VerticalAlignment="Center" Spacing="5">
+                </StackPanel>
+            </DockPanel>
+        </Border>
+
+    </DockPanel>
+</UserControl>

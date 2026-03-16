@@ -359,5 +359,27 @@
             <Setter Property="BorderBrush" Value="{StaticResource Accent}"/>
             <Setter Property="Foreground" Value="{StaticResource Surface}"/>
         </Style>
+
+        <Style Selector="Button.btn-dpad">
+			<Setter Property="Width" Value="32"/>
+            <Setter Property="Height" Value="32"/>
+            <Setter Property="BorderBrush" Value="{StaticResource BorderColor}"/>
+            <Setter Property="Background" Value="{StaticResource Surface2}"/>
+            <Setter Property="Foreground" Value="{StaticResource Muted}"/>
+        </Style>
+
+        <Style Selector="Button.btn-dpad Path">
+            <Setter Property="Fill" Value="{DynamicResource Muted}" />
+        </Style>
+
+        <Style Selector="Button.btn-dpad:pointerover /template/ ContentPresenter">
+			<Setter Property="BorderBrush" Value="{StaticResource Accent}"/>
+            <Setter Property="Foreground" Value="{StaticResource Accent}"/>
+            <Setter Property="Background" Value="{StaticResource Accent-Dim}"/>
+        </Style>
+
+        <Style Selector="Button.btn-dpad:pointerover Path">
+            <Setter Property="Fill" Value="{DynamicResource Accent}" />
+        </Style>
     </Application.Styles>
 </Application>
