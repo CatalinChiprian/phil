@@ -34,33 +34,6 @@
             </StackPanel>
         </Border>
 
-        <Border DockPanel.Dock="Top" Classes="toolbar">
-            <DockPanel>
-                <StackPanel Orientation="Horizontal" DockPanel.Dock="Left" Spacing="8">
-					<Button Classes="btn btn-primary" Content="Go Home"
-                            Command="{Binding GoHomeCommand}"/>
-                    <Button Classes="btn btn-emergency" Content="EMERGENCY STOP" FontWeight="SemiBold"
-                            Command="{Binding EmergencyStopCommand}"/>
-                </StackPanel>
-
-                <StackPanel Orientation="Horizontal" DockPanel.Dock="Right" 
-                            HorizontalAlignment="Right"
-                            Spacing="0">
-					<Button Classes="toggle-btn"
-                            Classes.active="{Binding Is96Well}"
-                            CornerRadius="4 0 0 4"
-                            Content="96-Well"
-                            Command="{Binding SelectWell96Command}"/>
-
-					<Button Classes="toggle-btn"
-                            Classes.active="{Binding Is96Well, Converter={x:Static BoolConverters.Not}}"
-                            CornerRadius="0 4 4 0"
-                            Content="Organ-on-Chip"
-                            Command="{Binding SelectOrganOnChipCommand}"/>
-                </StackPanel>
-            </DockPanel>
-        </Border>
-
         <Border DockPanel.Dock="Top" Background="{StaticResource Accent-Dim}" 
                 Padding="30,10" BorderThickness="0,0,0,1" BorderBrush="{StaticResource Accent-Mid}">
             <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">

@@ -17,6 +17,8 @@ namespace PHIL_GUI.Models
             set
             {
                 SetProperty(ref type, value);
+                if (type == WellType.Home) Name = "Home";
+                if (type == WellType.Unknown) Name = "Unknown";
                 OnPropertyChanged(nameof(IsStandard));
             }
         }

@@ -1,5 +1,6 @@
 ﻿using Avalonia.Threading;
 using Microsoft.Extensions.DependencyInjection;
+using PHIL_GUI.Models;
 using PHIL_GUI.Services;
 using System;
 using System.Collections.Generic;
@@ -65,6 +66,19 @@ namespace PHIL_GUI.ViewModels.Base
         {
             SerialService.SendMessage(command);
         }
+
+        protected void GoHome()
+        {
+            RobotState.CurrentWell.Type = WellType.Home;
+            RobotState.Settings.State = MoveState.Moving;
+            Send("h");
+        }
+        protected void EmergencyStop()
+        {
+            RobotState.CurrentWell.Type = WellType.Unknown;
+            RobotState.Settings.State = MoveState.EmergencyStopped;
+            Send("s");
+        }
         private Dictionary<string, string> ParseKV(string msg, string prefix)
         {
             return msg.Substring(prefix.Length)
@@ -91,7 +105,7 @@ namespace PHIL_GUI.ViewModels.Base
             RobotState.CurrentWell.AngleL = kv["L"];
             RobotState.CurrentWell.AngleR = kv["R"].Trim();
 
-            RobotState.State = MoveState.Idle;
+            RobotState.Settings.State = MoveState.Idle;
         }
 
         private void ParsePosition(string msg)
@@ -103,10 +117,10 @@ namespace PHIL_GUI.ViewModels.Base
             RobotState.Position.Z1 = d["Z1"];
             RobotState.Position.Z2 = d["Z2"].Trim();
 
-            if (RobotState.State == MoveState.EmergencyStopped) return;
+            if (RobotState.Settings.State == MoveState.EmergencyStopped) return;
 
             // If we're getting position updates, we must be moving (unless we e-stopped)
-            RobotState.State = MoveState.Idle;
+            RobotState.Settings.State = MoveState.Idle;
         }
 
         private void ParseCalCount(string msg)

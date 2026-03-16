@@ -9,15 +9,8 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows.Input;
-using RelayCommand = PHIL_GUI.Commands.RelayCommand;
 
 namespace PHIL_GUI.ViewModels;
-
-public enum PlateType
-{
-    Well96,
-    OrganOnChip
-};
 
 public class WellsViewModel : CommunicationBase
 {
@@ -25,40 +18,9 @@ public class WellsViewModel : CommunicationBase
     public List<string> ColHeaders { get; } = Enumerable.Range(1, WELLSCOUNT).Select(i => i.ToString()).ToList();
     public List<char> RowHeaders { get; } = new() { 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H' };
 
-    public ICommand EmergencyStopCommand { get; }
-    public ICommand GoHomeCommand { get; }
-    public ICommand SelectWell96Command { get; }
-    public ICommand SelectOrganOnChipCommand { get; }
     public ICommand WellsPositionCommand { get; }
 
-
-    private PlateType selectedPlateType;
-    public PlateType SelectedPlateType
-    {
-        get => selectedPlateType;
-        set
-        {
-            SetProperty(ref selectedPlateType, value);
-
-            foreach (var well in Wells)
-            {
-                if (value == PlateType.Well96)
-                    well.IsVisible = true;
-                else
-                    well.IsVisible = (well.Row % 2 != 0) == (well.Column % 2 != 0);
-            }
-            OnPropertyChanged(nameof(Is96Well));
-            OnPropertyChanged(nameof(WellTypeText));
-        }
-    }
-    public bool Is96Well => SelectedPlateType == PlateType.Well96;
     public ObservableCollection<WellItem> Wells { get; } = new ObservableCollection<WellItem>();
-    private WellItem activeWell;
-    public WellItem ActiveWell
-    {
-        get => activeWell;
-        private set => activeWell = value;
-    }
 
     //Take this from RobotState when implemented
     public double RmsL = 0.57;
@@ -69,10 +31,10 @@ public class WellsViewModel : CommunicationBase
     {
         get
         {
-            if (RobotState.State == MoveState.EmergencyStopped)
-                return $"Emergency stop — L: {RobotState.Position.L}, R: {RobotState.Position.R}";
+            if (RobotState.Settings.State == MoveState.EmergencyStopped)
+                return $"Emergency stop - L: {RobotState.Position.L}, R: {RobotState.Position.R}";
 
-            if (RobotState.State == MoveState.Moving)
+            if (RobotState.Settings.State == MoveState.Moving)
                 return $"Moving to {RobotState.CurrentWell.Name}...";
 
             if (RobotState.CurrentWell.Type == WellType.Standard)
@@ -81,7 +43,7 @@ public class WellsViewModel : CommunicationBase
             if (RobotState.CurrentWell.Type == WellType.Home)
                 return $"Moved to Home (L: {RobotState.Position.L}, R: {RobotState.Position.R})";
 
-            return $"Stopped — L: {RobotState.Position.L}, R: {RobotState.Position.R}";
+            return $"Stopped - L: {RobotState.Position.L}, R: {RobotState.Position.R}";
         }
     }
 
@@ -89,7 +51,7 @@ public class WellsViewModel : CommunicationBase
     {
         get
         {
-            if (Is96Well) return "96-WELL PLATE";
+            if (RobotState.Settings.Is96Well) return "96-WELL PLATE";
             else return "ORGAN-ON-CHIP PLATE";
         }
     }
@@ -118,19 +80,11 @@ public class WellsViewModel : CommunicationBase
     
     public WellsViewModel()
     {
-        EmergencyStopCommand = new RelayCommand(Stop);
-        GoHomeCommand = new RelayCommand(GoHome);
         WellsPositionCommand = new RelayCommand<string>(w => GoToWell(w));
-        SelectWell96Command = new RelayCommand(() => SelectedPlateType = PlateType.Well96);
-        SelectOrganOnChipCommand = new RelayCommand(() => SelectedPlateType = PlateType.OrganOnChip);
+        RobotState.Settings.PropertyChanged += Settings_PropertyChanged;
+        RobotState.CurrentWell.PropertyChanged += CurrentWell_PropertyChanged;
 
-        RobotState.PropertyChanged += (s, e) =>
-        {
-            if (e.PropertyName == nameof(RobotStateService.State))
-                OnPropertyChanged(nameof(TopNotificationText));
-        };
-
-        foreach (var row in RowHeaders)
+        foreach (char row in RowHeaders)
         {
             for (int col = 1; col <= WELLSCOUNT; col++)
             {
@@ -139,13 +93,24 @@ public class WellsViewModel : CommunicationBase
         }
     }
 
-    void GoHome()
+    private void Settings_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
     {
-        RobotState.CurrentWell.Type = WellType.Home;
-        RobotState.CurrentWell.Name = "Home";
-        if (activeWell != null) activeWell.IsSelected = false;
-        Send("h");
-        RobotState.State = MoveState.Moving;
+        if (e.PropertyName == nameof(Settings.Is96Well))
+        {
+            OnPropertyChanged(nameof(WellTypeText));
+            ChangePlateType();
+        }
+
+        if (e.PropertyName == nameof(Settings.State))
+            OnPropertyChanged(nameof(TopNotificationText));
+    }
+
+    private void CurrentWell_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(Well.Type))
+        {
+            if (RobotState.CurrentWell.Type != WellType.Standard) SelectWell(string.Empty);
+        }
     }
 
     void GoToWell(string well)
@@ -154,24 +119,25 @@ public class WellsViewModel : CommunicationBase
         RobotState.CurrentWell.Name = well;
         SelectWell(well);
         Send($"q{well.ToLower()}");
-        RobotState.State = MoveState.Moving;
+        RobotState.Settings.State = MoveState.Moving;
     }
 
     private void SelectWell(string name)
     {
-        if (activeWell != null) activeWell.IsSelected = false;
-        var found = Wells.FirstOrDefault(w => w.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
-        if (found != null) found.IsSelected = true;
-
-        ActiveWell = found;
+        foreach (WellItem well in Wells)
+        {
+            well.IsSelected = well.Name.Equals(name, StringComparison.OrdinalIgnoreCase);
+        }
     }
 
-    void Stop()
+    private void ChangePlateType()
     {
-        RobotState.CurrentWell.Name = "-";
-        if (activeWell != null) activeWell.IsSelected = false;
-        RobotState.CurrentWell.Type = WellType.Unknown;
-        RobotState.State = MoveState.EmergencyStopped;
-        Send("s");
+        foreach (WellItem well in Wells)
+        {
+            if (RobotState.Settings.Is96Well)
+                well.IsVisible = true;
+            else
+                well.IsVisible = (well.Row % 2 != 0) == (well.Column % 2 != 0);
+        }
     }
 }

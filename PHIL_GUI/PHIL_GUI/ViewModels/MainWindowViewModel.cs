@@ -2,12 +2,12 @@
 /* Created by Victoria Shvets
 Based on Phillip Dettinger work availible on https://github.com/CSDGroup/PHIL.git */
 
-using System;
-using System.Collections.Generic;
-using System.Windows.Input;
 using PHIL_GUI.Commands;
 using PHIL_GUI.Models;
 using PHIL_GUI.ViewModels.Base;
+using System;
+using System.Collections.Generic;
+using System.Windows.Input;
 
 namespace PHIL_GUI.ViewModels;
 
@@ -17,6 +17,10 @@ public class MainWindowViewModel : CommunicationBase
     public ICommand DisconnectCommand { get; }
     public ICommand MoveUpCommand { get; }
     public ICommand MoveDownCommand { get; }
+    public ICommand EmergencyStopCommand { get; }
+    public ICommand GoHomeCommand { get; }
+    public ICommand SelectWell96Command { get; }
+    public ICommand SelectOrganOnChipCommand { get; }
 
     private object _currentPage;
     private List<PageItem> _pages;
@@ -41,6 +45,7 @@ public class MainWindowViewModel : CommunicationBase
 
     public Well CurrentWell => RobotState.CurrentWell;
     public LimitSwitches Limit => RobotState.Limit;
+    public Settings Settings => RobotState.Settings;
 
     public MainWindowViewModel()
     {
@@ -58,6 +63,10 @@ public class MainWindowViewModel : CommunicationBase
         DisconnectCommand = new RelayCommand(Disconnect);
         MoveUpCommand = new RelayCommand(() => Send("u"));
         MoveDownCommand = new RelayCommand(() => Send("d"));
+        EmergencyStopCommand = new RelayCommand(EmergencyStop);
+        GoHomeCommand = new RelayCommand(GoHome);
+        SelectWell96Command = new RelayCommand(() => Settings.SelectedPlateType = PlateType.Well96);
+        SelectOrganOnChipCommand = new RelayCommand(() => Settings.SelectedPlateType = PlateType.OrganOnChip);
     }
 
     public void Disconnect()
