@@ -9,7 +9,7 @@
         x:DataType="vm:MainWindowViewModel"
         Icon="/Assets/applied-nanotechnology.ico"
         WindowStartupLocation="CenterScreen"
-        MinWidth="900" MinHeight="700"
+        MinWidth="700" MinHeight="700"
         Title="PHIL_GUI">
     
     <!-- Main content area that switches between pages -->

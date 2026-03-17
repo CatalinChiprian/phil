@@ -31,5 +31,13 @@ namespace PHIL_GUI.Models
             get => z2;
             set => SetProperty(ref z2, value);
         }
+
+        public Position()
+        {
+            L = "0";
+            R = "0";
+            Z1 = "0";
+            Z2 = "0";
+        }
     }
 }

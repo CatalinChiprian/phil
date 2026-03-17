@@ -117,9 +117,9 @@ public class WellsViewModel : CommunicationBase
     {
         RobotState.CurrentWell.Type = WellType.Standard;
         RobotState.CurrentWell.Name = well;
+        RobotState.Settings.State = MoveState.Moving;
         SelectWell(well);
         Send($"q{well.ToLower()}");
-        RobotState.Settings.State = MoveState.Moving;
     }
 
     private void SelectWell(string name)
