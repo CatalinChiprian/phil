@@ -327,7 +327,13 @@
           break; 
 
           case 'p':
-            printCurrentWell();
+          {
+            char arg = received.charAt(1);
+            if (arg == 'w')
+              printCurrentWell();
+            else if (arg == 'm')
+              printCalibrationPoints();
+          }
           break;
 
           case 'c':
@@ -406,11 +412,6 @@
                 Serial.print(",");     Serial.print(calR[i],2);
                 Serial.println(")");
               }
-                Serial.println("ML (Ldeg) coeffs [1, x, y, x^2, x*y, y^2, x^3, x^2y, xy^2, y^3]:");
-                for (int i=0;i<TERMS;i++) { Serial.print(ML[i],5); Serial.print(i<TERMS-1?' ':'\n'); }
-                Serial.println("MR (Rdeg) coeffs [1, x, y, x^2, x*y, y^2, x^3, x^2y, xy^2, y^3]:");
-                for (int i=0;i<TERMS;i++) { Serial.print(MR[i],5); Serial.print(i<TERMS-1?' ':'\n'); }
-
                 if (mapReady && calCount > 0) {
                   float rmsL=0, rmsR=0, maxErrL=0, maxErrR=0;
                   Serial.println("--- Residuals ---");
@@ -1331,6 +1332,14 @@
     y = plateY0 + r * WELL_DY;
   }
 
+  void XYToWell(float x, float y, String &wellName) {
+    int col = (x - plateX0) / WELL_DX;
+    int row = (y - plateY0) / WELL_DY;
+    char rowChar = 'a' + row;
+
+    wellName = rowChar + String(col + 1);
+  }
+
 
   void xyToAngles(float x, float y, float &Ldeg, float &Rdeg) {
     if (!mapReady) {
@@ -1460,19 +1469,22 @@
     saveCalibration();
 
     Serial.println("=== MAPPING SOLVED (quadratic least-squares) ===");
-    Serial.print("Points used: "); Serial.println(calCount);
-
-    Serial.println("ML (Ldeg) coefficients [1, x, y, x^2, x*y, y^2]:");
-    for (int i=0;i<TERMS;i++) { Serial.print(ML[i], 5); Serial.print(i<TERMS-1?' ':'\n'); }
-
-    Serial.println("MR (Rdeg) coefficients [1, x, y, x^2, x*y, y^2]:");
-    for (int i=0;i<TERMS;i++) { Serial.print(MR[i], 5); Serial.print(i<TERMS-1?' ':'\n'); }
+    printCalibrationPoints();
 
     // Residuals to assess fit quality
     Serial.println("--- Residuals (deg) ---");
+
+
+    return true;
+  }
+
+  void printCalibrationPoints() {
+    Serial.print("CAL_COUNT:"); Serial.println(calCount);
     float maxErrL = 0, maxErrR = 0, rmsL = 0, rmsR = 0;
     for (int i=0; i<calCount; i++) {
       float x = calX[i], y = calY[i];
+      String wellName;
+      XYToWell(calX[i], calY[i], wellName);
       float b[TERMS] = { 1.0f, x, y, x*x, x*y, y*y, x*x*x, x*x*y, x*y*y, y*y*y };
       float predL = dot10(ML, b);
       float predR = dot10(MR, b);
@@ -1481,8 +1493,8 @@
       rmsL += errL*errL; rmsR += errR*errR;
       if (fabs(errL) > maxErrL) maxErrL = fabs(errL);
       if (fabs(errR) > maxErrR) maxErrR = fabs(errR);
-      Serial.print("CAL_ERR:");
-      Serial.print(i); Serial.print(",");
+      Serial.print("CAL_PT:");
+      Serial.print(wellName); Serial.print(",");
       Serial.print(calX[i], 2); Serial.print(",");
       Serial.print(calY[i], 2); Serial.print(",");
       Serial.print(errL, 3); Serial.print(",");
@@ -1495,8 +1507,6 @@
     Serial.print(",R="); Serial.print(rmsR, 3);
     Serial.print(",MAX_L="); Serial.print(maxErrL, 3);
     Serial.print(",MAX_R="); Serial.println(maxErrR, 3);
-
-    return true;
   }
 
   long degToSteps(float deg) {

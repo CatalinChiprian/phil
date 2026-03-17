@@ -66,7 +66,7 @@ public class WellsViewModel : CommunicationBase
             return Application.Current.Resources["Accent"] as IBrush;
         }
     }
-    public string CalPointsText => $"{RobotState.Calibration.Count}/{Calibration.MaxCount}";
+    public string CalPointsText => $"{RobotState.Calibration.Count}/{Calibration.MAX_COUNT}";
     public IBrush CalPointsColor
     {
         get

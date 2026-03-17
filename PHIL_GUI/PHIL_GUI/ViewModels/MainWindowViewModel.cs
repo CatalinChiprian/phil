@@ -50,7 +50,7 @@ public class MainWindowViewModel : CommunicationBase
     public MainWindowViewModel()
     {
         ConnectedPort = SerialService.PortName;
-        GetStartPosition();
+        GetSetupInformation();
 
         _pages = new List<PageItem>
         {
