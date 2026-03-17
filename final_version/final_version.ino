@@ -482,13 +482,15 @@
           case 'o':
             enableMotors();
 
-            stepperL.moveTo(60 * currentMicrosteps); 
+            stepperL.moveTo(55 * currentMicrosteps); 
             stepperR.moveTo(-5.5 * currentMicrosteps); 
             
             while(stepperR.distanceToGo() != 0 || stepperL.distanceToGo() != 0) {
               stepperR.run();
               stepperL.run();
             }
+
+            savePositions();
 
           break;
 
