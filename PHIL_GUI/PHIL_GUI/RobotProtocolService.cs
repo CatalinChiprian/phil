@@ -1,20 +1,18 @@
 ﻿using Avalonia.Threading;
-using Microsoft.Extensions.DependencyInjection;
+using CommunityToolkit.Mvvm.ComponentModel;
 using PHIL_GUI.Models;
-using PHIL_GUI.Services;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 
-namespace PHIL_GUI.ViewModels.Base
+namespace PHIL_GUI.Services
 {
     enum LimitType
     {
         Released,
         Pressed
     }
-    public abstract class CommunicationBase : ViewModelBase
+    public class RobotProtocolService : ObservableObject
     {
         const string WELL_PREFIX = "WELL:";
         const string POS_PREFIX = "POS:";
@@ -22,8 +20,11 @@ namespace PHIL_GUI.ViewModels.Base
         const string LIMIT_PRESSED_PREFIX = "LIMIT_PRESSED:";
         const string LIMIT_RELEASED_PREFIX = "LIMIT_RELEASED:";
 
-        protected readonly SerialPortService SerialService;
-        protected readonly RobotStateService RobotState;
+
+        private readonly SerialPortService serialPort;
+        public SerialPortService SerialPort => serialPort;
+        private readonly RobotStateService robotState;
+        public RobotStateService RobotState => robotState;
 
         private string _receivedData = "";
         public string ReceivedData
@@ -32,11 +33,36 @@ namespace PHIL_GUI.ViewModels.Base
             private set => SetProperty(ref _receivedData, value);
         }
 
-        protected CommunicationBase()
+        public RobotProtocolService(SerialPortService serial, RobotStateService state)
         {
-            SerialService = App.Services.GetRequiredService<SerialPortService>();
-            RobotState = App.Services.GetRequiredService<RobotStateService>();
-            SerialService.MessageReceived += OnMessageReceived;
+            serialPort = serial;
+            robotState = state;
+            serial.MessageReceived += OnMessageReceived;
+        }
+
+        public void Send(string command)
+        {
+            serialPort.SendMessage(command);
+        }
+
+        public void GoHome()
+        {
+            robotState.CurrentWell.Type = WellType.Home;
+            robotState.Settings.State = MoveState.Moving;
+            Send("h");
+        }
+        public void EmergencyStop()
+        {
+            robotState.CurrentWell.Type = WellType.Unknown;
+            robotState.Settings.State = MoveState.EmergencyStopped;
+            Send("s");
+        }
+        public void GetSetupInformation()
+        {
+            // Current Well
+            Send("pw");
+            // Curent Calibration Points
+            Send("pm");
         }
 
         private void OnMessageReceived(string message)
@@ -46,7 +72,6 @@ namespace PHIL_GUI.ViewModels.Base
                 ReceivedData += $"{DateTime.Now:HH:mm:ss}: {message}\n";
             });
 
-            //AppendLog();
 
             if (message.StartsWith(WELL_PREFIX)) ParseWellArrival(message);
             else if (message.StartsWith(POS_PREFIX)) ParsePosition(message);
@@ -62,23 +87,6 @@ namespace PHIL_GUI.ViewModels.Base
             //else if (message.StartsWith("ERROR:"))   ParseAlert(message, AlertLevel.Error);
         }
 
-        protected void Send(string command)
-        {
-            SerialService.SendMessage(command);
-        }
-
-        protected void GoHome()
-        {
-            RobotState.CurrentWell.Type = WellType.Home;
-            RobotState.Settings.State = MoveState.Moving;
-            Send("h");
-        }
-        protected void EmergencyStop()
-        {
-            RobotState.CurrentWell.Type = WellType.Unknown;
-            RobotState.Settings.State = MoveState.EmergencyStopped;
-            Send("s");
-        }
         private Dictionary<string, string> ParseKV(string msg, string prefix)
         {
             return msg.Substring(prefix.Length)
@@ -86,14 +94,6 @@ namespace PHIL_GUI.ViewModels.Base
                       .Select(p => p.Split('='))
                       .Where(p => p.Length == 2)
                       .ToDictionary(p => p[0], p => p[1]);
-        }
-
-        protected void GetSetupInformation()
-        {
-            // Current Well
-            Send("pw");
-            // Curent Calibration Points
-            Send("pm");
         }
 
         private void ParseWellArrival(string msg)
@@ -106,36 +106,36 @@ namespace PHIL_GUI.ViewModels.Base
               .Where(p => p.Length == 2)
               .ToDictionary(p => p[0], p => p[1]);
 
-            RobotState.CurrentWell.Type = Models.WellType.Standard;
-            RobotState.CurrentWell.Name = parts[0].ToUpper();
-            RobotState.CurrentWell.X = kv["X"];
-            RobotState.CurrentWell.Y = kv["Y"];
-            RobotState.CurrentWell.AngleL = kv["L"];
-            RobotState.CurrentWell.AngleR = kv["R"].Trim();
+            robotState.CurrentWell.Type = Models.WellType.Standard;
+            robotState.CurrentWell.Name = parts[0].ToUpper();
+            robotState.CurrentWell.X = kv["X"];
+            robotState.CurrentWell.Y = kv["Y"];
+            robotState.CurrentWell.AngleL = kv["L"];
+            robotState.CurrentWell.AngleR = kv["R"].Trim();
 
-            RobotState.Settings.State = MoveState.Idle;
+            robotState.Settings.State = MoveState.Idle;
         }
 
         private void ParsePosition(string msg)
         {
             var d = ParseKV(msg, POS_PREFIX);
 
-            RobotState.Position.L = d["L"];
-            RobotState.Position.R = d["R"];
-            RobotState.Position.Z1 = d["Z1"];
-            RobotState.Position.Z2 = d["Z2"].Trim();
+            robotState.Position.L = d["L"];
+            robotState.Position.R = d["R"];
+            robotState.Position.Z1 = d["Z1"];
+            robotState.Position.Z2 = d["Z2"].Trim();
 
-            if (RobotState.Settings.State == MoveState.EmergencyStopped) return;
+            if (robotState.Settings.State == MoveState.EmergencyStopped) return;
 
             // If we're getting position updates, we must be moving (unless we e-stopped)
-            RobotState.Settings.State = MoveState.Idle;
+            robotState.Settings.State = MoveState.Idle;
         }
 
         private void ParseCalPoint(string msg)
         {
             var parts = msg.Substring("CAL_PT:".Length).Split(',');
             {
-                RobotState.Calibration.Points.Add(
+                robotState.Calibration.Points.Add(
                     new CalibrationPoint
                     {
                         Name = parts[0],
@@ -155,10 +155,10 @@ namespace PHIL_GUI.ViewModels.Base
             var d = ParseKV(msg, prefix);
             var axis = d["AXIS"].Trim();
 
-            if (axis == "Z1") RobotState.Limit.Z1 = state;
-            else if (axis == "Z2") RobotState.Limit.Z2 = state;
-            else if (axis == "L") RobotState.Limit.L = state;
-            else if (axis == "R") RobotState.Limit.R = state;
+            if (axis == "Z1") robotState.Limit.Z1 = state;
+            else if (axis == "Z2") robotState.Limit.Z2 = state;
+            else if (axis == "L") robotState.Limit.L = state;
+            else if (axis == "R") robotState.Limit.R = state;
         }
 
         //private void ParseRms(string msg)
@@ -219,5 +219,6 @@ namespace PHIL_GUI.ViewModels.Base
         //    public string Message { get; set; }
         //    public DateTime Time { get; set; } = DateTime.Now;
         //}
+
     }
 }

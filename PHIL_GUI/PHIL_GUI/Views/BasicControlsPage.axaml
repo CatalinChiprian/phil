@@ -30,7 +30,7 @@
                 
                 
                 <!-- Received Data Display -->
-                <TextBox Text="{Binding ReceivedData}"
+                <TextBox Text="{Binding RobotProtocol.ReceivedData}"
                          IsReadOnly="True"
                          Height="150"
                          TextWrapping="Wrap"

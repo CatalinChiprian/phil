@@ -2,7 +2,7 @@
 
 namespace PHIL_GUI.ViewModels
 {
-    public class CalibrationViewModel : CommunicationBase
+    public class CalibrationViewModel : ViewModelBase
     {
 
     }

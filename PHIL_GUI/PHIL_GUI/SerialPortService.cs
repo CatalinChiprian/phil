@@ -24,12 +24,14 @@ public class SerialPortService
     {
         try
         {
-            _serialPort = new SerialPort(portName, baudRate);
-            _serialPort.Parity = Parity.None;
-            _serialPort.DataBits = 8;
-            _serialPort.StopBits = StopBits.One;
-            _serialPort.Handshake = Handshake.None;
-            
+            _serialPort = new SerialPort(portName, baudRate)
+            {
+                Parity = Parity.None,
+                DataBits = 8,
+                StopBits = StopBits.One,
+                Handshake = Handshake.None
+            };
+
             _serialPort.DataReceived += OnDataReceived;
             
             _serialPort.Open();

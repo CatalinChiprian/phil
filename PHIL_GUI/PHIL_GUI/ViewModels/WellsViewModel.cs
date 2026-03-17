@@ -2,7 +2,6 @@ using Avalonia;
 using Avalonia.Media;
 using CommunityToolkit.Mvvm.Input;
 using PHIL_GUI.Models;
-using PHIL_GUI.Services;
 using PHIL_GUI.ViewModels.Base;
 using System;
 using System.Collections.Generic;
@@ -12,13 +11,18 @@ using System.Windows.Input;
 
 namespace PHIL_GUI.ViewModels;
 
-public class WellsViewModel : CommunicationBase
+public class WellsViewModel : ViewModelBase
 {
     const int WELLSCOUNT = 12;
     public List<string> ColHeaders { get; } = Enumerable.Range(1, WELLSCOUNT).Select(i => i.ToString()).ToList();
     public List<char> RowHeaders { get; } = new() { 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H' };
 
     public ICommand WellsPositionCommand { get; }
+
+    public Well CurrentWell => RobotProtocol.RobotState.CurrentWell;
+    public Settings Settings => RobotProtocol.RobotState.Settings;
+    public Position Position => RobotProtocol.RobotState.Position;
+    public Calibration Calibration => RobotProtocol.RobotState.Calibration;
 
     public ObservableCollection<WellItem> Wells { get; } = new ObservableCollection<WellItem>();
 
@@ -31,19 +35,19 @@ public class WellsViewModel : CommunicationBase
     {
         get
         {
-            if (RobotState.Settings.State == MoveState.EmergencyStopped)
-                return $"Emergency stop - L: {RobotState.Position.L}, R: {RobotState.Position.R}";
+            if (Settings.State == MoveState.EmergencyStopped)
+                return $"Emergency stop - L: {RobotProtocol.RobotState.Position.L}, R: {Position.R}";
 
-            if (RobotState.Settings.State == MoveState.Moving)
-                return $"Moving to {RobotState.CurrentWell.Name}...";
+            if (Settings.State == MoveState.Moving)
+                return $"Moving to {CurrentWell.Name}...";
 
-            if (RobotState.CurrentWell.Type == WellType.Standard)
-                return $"Moved to {RobotState.CurrentWell.Name} (L: {RobotState.CurrentWell.AngleL}°, R: {RobotState.CurrentWell.AngleR}°)";
+            if (CurrentWell.Type == WellType.Standard)
+                return $"Moved to {CurrentWell.Name} (L: {CurrentWell.AngleL}°, R: {CurrentWell.AngleR}°)";
 
-            if (RobotState.CurrentWell.Type == WellType.Home)
-                return $"Moved to Home (L: {RobotState.Position.L}, R: {RobotState.Position.R})";
+            if (CurrentWell.Type == WellType.Home)
+                return $"Moved to Home (L: {Position.L}, R: {Position.R})";
 
-            return $"Stopped - L: {RobotState.Position.L}, R: {RobotState.Position.R}";
+            return $"Stopped - L: {Position.L}, R: {Position.R}";
         }
     }
 
@@ -51,7 +55,7 @@ public class WellsViewModel : CommunicationBase
     {
         get
         {
-            if (RobotState.Settings.Is96Well) return "96-WELL PLATE";
+            if (Settings.Is96Well) return "96-WELL PLATE";
             else return "ORGAN-ON-CHIP PLATE";
         }
     }
@@ -66,13 +70,13 @@ public class WellsViewModel : CommunicationBase
             return Application.Current.Resources["Accent"] as IBrush;
         }
     }
-    public string CalPointsText => $"{RobotState.Calibration.Count}/{Calibration.MAX_COUNT}";
+    public string CalPointsText => $"{Calibration.Count}/{Calibration.MAX_COUNT}";
     public IBrush CalPointsColor
     {
         get
         {
-            if (RobotState.Calibration.Count < 10) return Application.Current.Resources["Warn"] as IBrush;
-            if (RobotState.Calibration.Count < 20) return Application.Current.Resources["Caution"] as IBrush;
+            if (Calibration.Count < 10) return Application.Current.Resources["Warn"] as IBrush;
+            if (Calibration.Count < 20) return Application.Current.Resources["Caution"] as IBrush;
             return Application.Current.Resources["Accent"] as IBrush;
         }
     }
@@ -81,8 +85,8 @@ public class WellsViewModel : CommunicationBase
     public WellsViewModel()
     {
         WellsPositionCommand = new RelayCommand<string>(w => GoToWell(w));
-        RobotState.Settings.PropertyChanged += Settings_PropertyChanged;
-        RobotState.CurrentWell.PropertyChanged += CurrentWell_PropertyChanged;
+        Settings.PropertyChanged += Settings_PropertyChanged;
+        CurrentWell.PropertyChanged += CurrentWell_PropertyChanged;
 
         foreach (char row in RowHeaders)
         {
@@ -109,17 +113,17 @@ public class WellsViewModel : CommunicationBase
     {
         if (e.PropertyName == nameof(Well.Type))
         {
-            if (RobotState.CurrentWell.Type != WellType.Standard) SelectWell(string.Empty);
+            if (CurrentWell.Type != WellType.Standard) SelectWell(string.Empty);
         }
     }
 
     void GoToWell(string well)
     {
-        RobotState.CurrentWell.Type = WellType.Standard;
-        RobotState.CurrentWell.Name = well;
-        RobotState.Settings.State = MoveState.Moving;
+        CurrentWell.Type = WellType.Standard;
+        CurrentWell.Name = well;
+        Settings.State = MoveState.Moving;
         SelectWell(well);
-        Send($"q{well.ToLower()}");
+        RobotProtocol.Send($"q{well.ToLower()}");
     }
 
     private void SelectWell(string name)
@@ -134,7 +138,7 @@ public class WellsViewModel : CommunicationBase
     {
         foreach (WellItem well in Wells)
         {
-            if (RobotState.Settings.Is96Well)
+            if (Settings.Is96Well)
                 well.IsVisible = true;
             else
                 well.IsVisible = (well.Row % 2 != 0) == (well.Column % 2 != 0);

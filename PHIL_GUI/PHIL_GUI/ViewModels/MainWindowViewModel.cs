@@ -11,7 +11,7 @@ using System.Windows.Input;
 
 namespace PHIL_GUI.ViewModels;
 
-public class MainWindowViewModel : CommunicationBase
+public class MainWindowViewModel : ViewModelBase
 {
     public Action Disconnected;
     public ICommand DisconnectCommand { get; }
@@ -43,14 +43,14 @@ public class MainWindowViewModel : CommunicationBase
         set => SetProperty(ref _currentPage, value);
     }
 
-    public Well CurrentWell => RobotState.CurrentWell;
-    public LimitSwitches Limit => RobotState.Limit;
-    public Settings Settings => RobotState.Settings;
+    public Well CurrentWell => RobotProtocol.RobotState.CurrentWell;
+    public LimitSwitches Limit => RobotProtocol.RobotState.Limit;
+    public Settings Settings => RobotProtocol.RobotState.Settings;
 
     public MainWindowViewModel()
     {
-        ConnectedPort = SerialService.PortName;
-        GetSetupInformation();
+        ConnectedPort = RobotProtocol.SerialPort.PortName;
+        RobotProtocol.GetSetupInformation();
 
         _pages = new List<PageItem>
         {
@@ -62,17 +62,17 @@ public class MainWindowViewModel : CommunicationBase
         SelectedPage = _pages[0];
 
         DisconnectCommand = new RelayCommand(Disconnect);
-        MoveUpCommand = new RelayCommand(() => Send("u"));
-        MoveDownCommand = new RelayCommand(() => Send("d"));
-        EmergencyStopCommand = new RelayCommand(EmergencyStop);
-        GoHomeCommand = new RelayCommand(GoHome);
+        MoveUpCommand = new RelayCommand(() => RobotProtocol.Send("u"));
+        MoveDownCommand = new RelayCommand(() => RobotProtocol.Send("d"));
+        EmergencyStopCommand = new RelayCommand(RobotProtocol.EmergencyStop);
+        GoHomeCommand = new RelayCommand(RobotProtocol.GoHome);
         SelectWell96Command = new RelayCommand(() => Settings.SelectedPlateType = PlateType.Well96);
         SelectOrganOnChipCommand = new RelayCommand(() => Settings.SelectedPlateType = PlateType.OrganOnChip);
     }
 
     public void Disconnect()
     {
-        SerialService.Disconnect();
+        RobotProtocol.SerialPort.Disconnect();
         Disconnected?.Invoke();
     }
 }
