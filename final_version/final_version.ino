@@ -466,7 +466,7 @@
               char row = received.charAt(1);
               String columnStr = received.substring(2);  
               int column = columnStr.toInt();
-              goToWell(row, column);
+              goToCalculatedWell(row, column);
               savePositions();
             }
           break;
@@ -1519,7 +1519,7 @@
     return (float)steps * (360.0f / stepsPerRev);
   }
 
-  void goToWell(char row, int col) {
+  void goToCalculatedWell(char row, int col) {
     if (!mapReady) {
       Serial.println("ERROR:MAP_NOT_READY,Run z solve before moving to wells");
       return;
