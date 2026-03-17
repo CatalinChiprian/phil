@@ -31,7 +31,7 @@ namespace PHIL_GUI.ViewModels.Base
             private set => SetProperty(ref _receivedData, value);
         }
 
-        protected CommunicationBase()   
+        protected CommunicationBase()
         {
             SerialService = App.Services.GetRequiredService<SerialPortService>();
             RobotState = App.Services.GetRequiredService<RobotStateService>();
@@ -86,6 +86,11 @@ namespace PHIL_GUI.ViewModels.Base
                       .Select(p => p.Split('='))
                       .Where(p => p.Length == 2)
                       .ToDictionary(p => p[0], p => p[1]);
+        }
+
+        protected void GetStartPosition()
+        {
+            Send("p");
         }
 
         private void ParseWellArrival(string msg)

@@ -33,6 +33,13 @@
   const int WELL_NAME_ADDR = 500;
   const int WELL_NAME_MAX = 5;
 
+  struct {
+    String wellName;
+    float x;
+    float y;
+    float lDeg;
+    float rDeg;
+  } currentWell;
 
   int MICROoptions[] = {1, 2, 4, 8, 16, 32};
 
@@ -319,15 +326,8 @@
             savePositions();  
           break; 
 
-          case 'p': // Print positions
-            Serial.print("Positions - L: ");
-            Serial.print(stepperL.currentPosition());
-            Serial.print(" | R: ");
-            Serial.print(stepperR.currentPosition());
-            Serial.print(" | Z1: ");
-            Serial.print(stepperZ1.currentPosition());
-            Serial.print(" | Z2: ");
-            Serial.println(stepperZ2.currentPosition());
+          case 'p':
+            printCurrentWell();
           break;
 
           case 'c':
@@ -585,7 +585,7 @@
       stepperL.run();
     }
 
-    saveCurrentWell("HOME");
+    saveCurrentWell("HOME", 0, 0, 0, 0);
   }
 
   int home() {
@@ -1061,7 +1061,7 @@
     stepperR.setCurrentPosition(0);
     stepperL.setCurrentPosition(0);
 
-    saveCurrentWell("HOME");
+    saveCurrentWell("HOME", 0, 0, 0, 0);
 
     return 1;
   }
@@ -1089,13 +1089,8 @@
     float Ldeg = stepsToDegrees(stepperL.currentPosition());
     float Rdeg = stepsToDegrees(stepperR.currentPosition());
 
-    Serial.print("WELL:"); Serial.print(row); Serial.print(col);
-    Serial.print(",X="); Serial.print(x, 2);
-    Serial.print(",Y="); Serial.print(y, 2);
-    Serial.print(",L="); Serial.print(Ldeg, 2);
-    Serial.print(",R="); Serial.println(Rdeg, 2);
-
-    saveCurrentWell(wellName);
+    saveCurrentWell(wellName, x, y, Ldeg, Rdeg);
+    printCurrentWell();
   }
 
 
@@ -1526,12 +1521,6 @@
     float Ldeg, Rdeg;
     xyToAngles(x, y, Ldeg, Rdeg);
 
-    Serial.print("WELL:"); Serial.print(row); Serial.print(col);
-    Serial.print(",X="); Serial.print(x, 2);
-    Serial.print(",Y="); Serial.print(y, 2);
-    Serial.print(",L="); Serial.print(Ldeg, 2);
-    Serial.print(",R="); Serial.println(Rdeg, 2);
-
     long Lsteps = degToSteps(Ldeg);
     long Rsteps = degToSteps(Rdeg);
 
@@ -1543,21 +1532,39 @@
         stepperR.run();
     }
 
-    saveCurrentWell(String(row) + String(col));
+    saveCurrentWell(String(row) + String(col), x, y, Ldeg, Rdeg);
+    printCurrentWell();
   }
 
-  void saveCurrentWell(String wellName) {
+  void saveCurrentWell(String wellName, float x, float y, float Ldeg, float Rdeg) {
     for (int i = 0; i < WELL_NAME_MAX; i++) {
-        EEPROM.put(WELL_NAME_ADDR + i, i < wellName.length() ? wellName.charAt(i) : '\0');
+        EEPROM.write(WELL_NAME_ADDR + i, i < wellName.length() ? wellName.charAt(i) : '\0');
     }
+
+    currentWell.wellName = wellName;
+    currentWell.x = x;
+    currentWell.y = y;
+    currentWell.lDeg = Ldeg;
+    currentWell.rDeg = Rdeg;
   }
 
   void loadCurrentWell() {
     char name[WELL_NAME_MAX];
     for (int i = 0; i < WELL_NAME_MAX; i++) {
-        EEPROM.get(WELL_NAME_ADDR + i, name[i]);
+        name[i] = EEPROM.read(WELL_NAME_ADDR + i);
     }
     name[WELL_NAME_MAX - 1] = '\0';
+
+    if (strcmp(name, "HOME") == 0) {
+      currentWell.wellName = "HOME";
+      currentWell.x = 0;
+      currentWell.y = 0;
+      currentWell.lDeg = 0;
+      currentWell.rDeg = 0;
+
+      Serial.println("WELL:HOME");
+    return;
+  }
 
     if (name[0] < 'a' || name[0] > 'h') return;
 
@@ -1571,9 +1578,19 @@
     float Ldeg = stepsToDegrees(stepperL.currentPosition());
     float Rdeg = stepsToDegrees(stepperR.currentPosition());
 
-    Serial.print("WELL:"); Serial.print(row); Serial.print(col);
-    Serial.print(",X="); Serial.print(x, 2);
-    Serial.print(",Y="); Serial.print(y, 2);
-    Serial.print(",L="); Serial.print(Ldeg, 2);
-    Serial.print(",R="); Serial.println(Rdeg, 2);
+    currentWell.wellName = String(row) + String(col);
+    currentWell.x = x;
+    currentWell.y = y;
+    currentWell.lDeg = Ldeg;
+    currentWell.rDeg = Rdeg;
+
+    printCurrentWell();
+  }
+
+  void printCurrentWell() {
+    Serial.print("WELL:"); Serial.print(currentWell.wellName);
+    Serial.print(",X="); Serial.print(currentWell.x, 2);
+    Serial.print(",Y="); Serial.print(currentWell.y, 2);
+    Serial.print(",L="); Serial.print(currentWell.lDeg, 2);
+    Serial.print(",R="); Serial.println(currentWell.rDeg, 2);
   }
