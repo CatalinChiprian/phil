@@ -78,8 +78,7 @@
             </Setter>
         </Style>
 
-        <Style Selector="Border.portItem">
-            <Setter Property="BorderBrush" Value="{StaticResource BorderColor}"/>
+        <Style Selector="Border.portItem">>
             <Setter Property="BorderThickness" Value="1"/>
             <Setter Property="Cursor" Value="Hand"/>
             <Setter Property="Padding" Value="12"/>
@@ -175,7 +174,6 @@
 
         <Style Selector="Border.topbar">
             <Setter Property="Background" Value="{StaticResource Surface}"/>
-            <Setter Property="BorderBrush" Value="{StaticResource BorderColor}"/>
             <Setter Property="BorderThickness" Value="0,0,0,1"/>
             <Setter Property="ZIndex" Value="10"/>
         </Style>
@@ -191,7 +189,6 @@
         <Style Selector="Border.sidebar">
             <Setter Property="Width" Value="200"/>
 			<Setter Property="Background" Value="{StaticResource Surface}"/>
-            <Setter Property="BorderBrush" Value="{StaticResource BorderColor}"/>
             <Setter Property="BorderThickness" Value="0,0,1,0"/>
         </Style>
 
@@ -280,7 +277,6 @@
 			<Setter Property="Padding" Value="24,12"/>
             <Setter Property="Background" Value="{StaticResource Surface}"/>
             <Setter Property="BorderThickness" Value="0,0,0,1"/>
-            <Setter Property="BorderBrush" Value="{StaticResource BorderColor}"/>
         </Style>
 
         <Style Selector="Button.toggle-btn">
@@ -389,7 +385,6 @@
         </Style>
 
         <Style Selector="Border.step-value">
-            <Setter Property="BorderBrush" Value="{StaticResource BorderColor}"/>
             <Setter Property="BorderThickness" Value="1"/>
             <Setter Property="Background" Value="{StaticResource Surface2}"/>
             <Setter Property="Padding" Value="3,6"/>
