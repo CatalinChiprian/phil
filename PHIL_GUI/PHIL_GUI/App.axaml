@@ -21,6 +21,7 @@
         <SolidColorBrush x:Key="Muted">#7a8f7a</SolidColorBrush>
         <SolidColorBrush x:Key="Warn">#d93025</SolidColorBrush>
         <SolidColorBrush x:Key="Warn-Dim">#0Cd93025</SolidColorBrush>
+        <SolidColorBrush x:Key="Caution">#cc7700</SolidColorBrush>
         <SolidColorBrush x:Key="Well-Idle">#e8ede8</SolidColorBrush>
         <SolidColorBrush x:Key="Well-Border">#cdd6cd</SolidColorBrush>
     </Application.Resources>
@@ -40,6 +41,10 @@
 
         <Style Selector="Button">
             <Setter Property="FontFamily" Value="avares://PHIL_GUI/Assets/Fonts/SpaceMono-Regular.ttf#Space Mono"/>
+        </Style>
+
+        <Style Selector="Border">
+			<Setter Property="BorderBrush" Value="{StaticResource BorderColor}"/>
         </Style>
 
         <Style Selector="TextBlock.subtitle">
@@ -184,6 +189,7 @@
         </Style>
 
         <Style Selector="Border.sidebar">
+            <Setter Property="Width" Value="200"/>
 			<Setter Property="Background" Value="{StaticResource Surface}"/>
             <Setter Property="BorderBrush" Value="{StaticResource BorderColor}"/>
             <Setter Property="BorderThickness" Value="0,0,1,0"/>
@@ -380,6 +386,14 @@
 
         <Style Selector="Button.btn-dpad:pointerover Path">
             <Setter Property="Fill" Value="{DynamicResource Accent}" />
+        </Style>
+
+        <Style Selector="Border.step-value">
+            <Setter Property="BorderBrush" Value="{StaticResource BorderColor}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Background" Value="{StaticResource Surface2}"/>
+            <Setter Property="Padding" Value="3,6"/>
+            <Setter Property="Height" Value="32"/>
         </Style>
     </Application.Styles>
 </Application>

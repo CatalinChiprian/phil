@@ -7,8 +7,8 @@ namespace PHIL_GUI.Services;
 
 public class SerialPortService
 {
-    private SerialPort _serialPort;
-    private bool _isConnected;
+    private SerialPort serialPort;
+    private bool isConnected;
     public string PortName { get; private set; }
 
 
@@ -24,7 +24,7 @@ public class SerialPortService
     {
         try
         {
-            _serialPort = new SerialPort(portName, baudRate)
+            serialPort = new SerialPort(portName, baudRate)
             {
                 Parity = Parity.None,
                 DataBits = 8,
@@ -32,14 +32,14 @@ public class SerialPortService
                 Handshake = Handshake.None
             };
 
-            _serialPort.DataReceived += OnDataReceived;
+            serialPort.DataReceived += OnDataReceived;
             
-            _serialPort.Open();
-            _isConnected = true;
+            serialPort.Open();
+            isConnected = true;
         }
         catch (Exception ex)
         {
-            _isConnected = false;
+            isConnected = false;
             throw new Exception($"Failed to connect: {ex.Message}");
         }
 
@@ -50,7 +50,7 @@ public class SerialPortService
     {
         try
         {
-            string data = _serialPort.ReadLine();
+            string data = serialPort.ReadLine();
             MessageReceived?.Invoke(data);
         }
         catch (Exception ex)
@@ -62,21 +62,21 @@ public class SerialPortService
     
     public void SendMessage(string message)
     {
-        if (_isConnected && _serialPort != null && _serialPort.IsOpen)
+        if (isConnected && serialPort != null && serialPort.IsOpen)
         {
-            _serialPort.WriteLine(message);
+            serialPort.WriteLine(message);
         }
     }
     
     public void Disconnect()
     {
-        if (_serialPort != null && _serialPort.IsOpen)
+        if (serialPort != null && serialPort.IsOpen)
         {
-            _serialPort.DataReceived -= OnDataReceived;
-            _serialPort.Close();
+            serialPort.DataReceived -= OnDataReceived;
+            serialPort.Close();
         }
-        _isConnected = false;
+        isConnected = false;
     }
     
-    public bool IsConnected => _isConnected;
+    public bool IsConnected => isConnected;
 }
