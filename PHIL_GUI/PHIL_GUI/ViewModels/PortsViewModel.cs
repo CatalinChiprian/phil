@@ -11,53 +11,53 @@ namespace PHIL_GUI.ViewModels
     {
         public event Action Connected;
 
-        private readonly SerialPortService _serialService;
+        private readonly SerialPortService serialService;
         public ObservableCollection<string> AvailablePorts { get; private set; } = new ObservableCollection<string>();
         public int WindowHeight => 150 + PortsHeight;
         public int PortsHeight => AvailablePorts.Count * 64;
 
-        private string _selectedPort;
+        private string selectedPort;
 
         public string SelectedPort
         {
-            get => _selectedPort;
+            get => selectedPort;
             set
             {
-                if (SetProperty(ref _selectedPort, value))
+                if (SetProperty(ref selectedPort, value))
                 {
-                    _connectCommand.RaiseCanExecuteChanged();
+                    connectCommand.RaiseCanExecuteChanged();
                 }
             }
         }
 
         public ICommand GetPortsCommand { get; }
-        private RelayCommand _connectCommand;
-        public ICommand ConnectCommand => _connectCommand;
+        private RelayCommand connectCommand;
+        public ICommand ConnectCommand => connectCommand;
 
         public PortsViewModel(SerialPortService serialService)
         {
-            _serialService = serialService;
+            this.serialService = serialService;
             AvailablePorts.CollectionChanged += (_, _) =>
             {
                 OnPropertyChanged(nameof(PortsHeight));
                 OnPropertyChanged(nameof(WindowHeight));
             };
             GetPortsCommand = new RelayCommand(GetAvailablePorts);
-            _connectCommand = new RelayCommand(ConnectToSelectedPort, CanConnect);
+            connectCommand = new RelayCommand(ConnectToSelectedPort, CanConnect);
         }
 
         private void GetAvailablePorts()
         {
             AvailablePorts.Clear();
-            foreach (string port in _serialService.GetAvailablePorts())
+            foreach (string port in serialService.GetAvailablePorts())
                 AvailablePorts.Add(port);
         }
 
-        private bool CanConnect() => !string.IsNullOrWhiteSpace(SelectedPort) && !_serialService.IsConnected;
+        private bool CanConnect() => !string.IsNullOrWhiteSpace(SelectedPort) && !serialService.IsConnected;
 
         private void ConnectToSelectedPort()
         {
-            _serialService.Connect(SelectedPort);
+            serialService.Connect(SelectedPort);
             Connected?.Invoke();
         }
     }
