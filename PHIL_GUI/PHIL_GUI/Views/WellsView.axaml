@@ -199,11 +199,11 @@
                                     </ItemsControl.ItemTemplate>
                                 </ItemsControl>
 
-                                <Grid RowDefinitions="*,*" ColumnDefinitions="*,*" IsHitTestVisible="False">
-                                    <Border Grid.Row="0" Grid.Column="0" BorderBrush="{StaticResource Accent-Mid}" BorderThickness="1" CornerRadius="8" Margin="4"/>
-                                    <Border Grid.Row="0" Grid.Column="1" BorderBrush="{StaticResource Accent-Mid}" BorderThickness="1" CornerRadius="8" Margin="4"/>
-                                    <Border Grid.Row="1" Grid.Column="0" BorderBrush="{StaticResource Accent-Mid}" BorderThickness="1" CornerRadius="8" Margin="4"/>
-                                    <Border Grid.Row="1" Grid.Column="1" BorderBrush="{StaticResource Accent-Mid}" BorderThickness="1" CornerRadius="8" Margin="4"/>
+                                <Grid RowDefinitions="*,*" ColumnDefinitions="*,*">
+                                    <Border Grid.Row="0" Grid.Column="0" Classes="quadrant"/>
+                                    <Border Grid.Row="0" Grid.Column="1" Classes="quadrant"/>
+                                    <Border Grid.Row="1" Grid.Column="0" Classes="quadrant"/>
+                                    <Border Grid.Row="1" Grid.Column="1" Classes="quadrant"/>
                                 </Grid>
                             </Panel>
                         </Border>
