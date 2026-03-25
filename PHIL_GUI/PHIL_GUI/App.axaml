@@ -362,6 +362,24 @@
             <Setter Property="Foreground" Value="{StaticResource Surface}"/>
         </Style>
 
+        <Style Selector="Border.well-pair">
+            <Setter Property="BorderThickness" Value="1"/>
+			<Setter Property="CornerRadius" Value="88,366,88,366"/>
+            <Setter Property="Margin" Value="6"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Transitions">
+                <Transitions>
+                    <BrushTransition Property="BorderBrush" Duration="0:0:0.12"/>
+                    <BrushTransition Property="Background" Duration="0:0:0.12"/>
+                </Transitions>
+            </Setter>
+        </Style>
+
+        <Style Selector="Border.well-pair:pointerover">
+            <Setter Property="BorderBrush" Value="{StaticResource Accent}"/>
+            <Setter Property="Background" Value="{StaticResource Accent-Dim}"/>
+        </Style>
+
         <Style Selector="Button.btn-dpad">
 			<Setter Property="Width" Value="32"/>
             <Setter Property="Height" Value="32"/>

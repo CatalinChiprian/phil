@@ -44,14 +44,6 @@ public class WellsViewModel : ViewModelBase
         }
     }
 
-    public string WellTypeText
-    {
-        get
-        {
-            if (Settings.Is96Well) return "96-WELL PLATE";
-            else return "ORGAN-ON-CHIP PLATE";
-        }
-    }
     public string RmsDisplayText => $"L {RmsL:F2}°  R {RmsR:F2}°";
     public IBrush RmsColor
     {
@@ -84,12 +76,6 @@ public class WellsViewModel : ViewModelBase
 
     private void Settings_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
     {
-        if (e.PropertyName == nameof(Settings.Is96Well))
-        {
-            OnPropertyChanged(nameof(WellTypeText));
-            WellPlate.ChangePlateType(Settings.SelectedPlateType);
-        }
-
         if (e.PropertyName == nameof(Settings.State))
             OnPropertyChanged(nameof(TopNotificationText));
     }
