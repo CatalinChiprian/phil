@@ -55,7 +55,7 @@
                     </StackPanel>
 
                    <ItemsControl Grid.Row="1" Grid.Column="1"
-                                 ItemsSource="{Binding ColHeaders}">
+                                 ItemsSource="{Binding WellPlate.ColHeaders}">
                         <ItemsControl.ItemsPanel>
                             <ItemsPanelTemplate>
                                 <UniformGrid Columns="12" Rows="1"/>
@@ -74,7 +74,7 @@
                     </ItemsControl>
 
                     <ItemsControl Grid.Row="2" Grid.Column="0"
-                                  ItemsSource="{Binding RowHeaders}">
+                                  ItemsSource="{Binding WellPlate.RowHeaders}">
                         <ItemsControl.ItemsPanel>
                             <ItemsPanelTemplate>
                                 <UniformGrid Rows="8" Columns="1"/>
@@ -94,7 +94,7 @@
 
                     <Border Grid.Row="2" Grid.Column="1" ClipToBounds="False">
                         <!-- Wells -->
-                        <ItemsControl ItemsSource="{Binding Wells}" ClipToBounds="False">
+                        <ItemsControl ItemsSource="{Binding WellPlate.Wells}" ClipToBounds="False">
                             <ItemsControl.ItemsPanel>
                                 <ItemsPanelTemplate>
                                     <UniformGrid Rows="8" Columns="12"/>

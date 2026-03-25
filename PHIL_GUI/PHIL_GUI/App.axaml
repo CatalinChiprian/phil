@@ -78,7 +78,7 @@
             </Setter>
         </Style>
 
-        <Style Selector="Border.portItem">>
+        <Style Selector="Border.portItem">
             <Setter Property="BorderThickness" Value="1"/>
             <Setter Property="Cursor" Value="Hand"/>
             <Setter Property="Padding" Value="12"/>

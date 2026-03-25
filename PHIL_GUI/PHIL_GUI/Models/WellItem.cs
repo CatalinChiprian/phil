@@ -4,9 +4,15 @@ namespace PHIL_GUI.Models
 {
     public class WellItem : ObservableObject
     {
-        public string Name { get; }
         public char Row { get; }
         public int Column { get; }
+
+        private string name;
+        public string Name
+        {
+            get => name;
+            set => SetProperty(ref name, value);
+        }
 
         private bool isSelected;
         public bool IsSelected
@@ -27,6 +33,20 @@ namespace PHIL_GUI.Models
             Column = column;
             Name = $"{row}{column}";
             IsVisible = true;
+        }
+
+        public void ChangeWellType(PlateType plateType)
+        {
+            if (plateType == PlateType.Well96)
+            {
+                IsVisible = true;
+                Name = $"{Row}{Column}";
+            }
+            else
+            {
+                IsVisible = (Row % 2 != 0) == (Column % 2 != 0);
+                Name = (Row % 2 != 0) ? "IN" : "OUT";
+            }
         }
     }
 }

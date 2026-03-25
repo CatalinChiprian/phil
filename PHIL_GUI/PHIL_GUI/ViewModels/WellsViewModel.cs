@@ -4,19 +4,12 @@ using CommunityToolkit.Mvvm.Input;
 using PHIL_GUI.Models;
 using PHIL_GUI.ViewModels.Base;
 using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
 using System.Windows.Input;
 
 namespace PHIL_GUI.ViewModels;
 
 public class WellsViewModel : ViewModelBase
 {
-    const int WELLSCOUNT = 12;
-    public List<string> ColHeaders { get; } = Enumerable.Range(1, WELLSCOUNT).Select(i => i.ToString()).ToList();
-    public List<char> RowHeaders { get; } = new() { 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H' };
-
     public ICommand WellsPositionCommand { get; }
 
     public Well CurrentWell => RobotProtocol.RobotState.CurrentWell;
@@ -24,7 +17,7 @@ public class WellsViewModel : ViewModelBase
     public Position Position => RobotProtocol.RobotState.Position;
     public Calibration Calibration => RobotProtocol.RobotState.Calibration;
 
-    public ObservableCollection<WellItem> Wells { get; } = new ObservableCollection<WellItem>();
+    public WellPlateItem WellPlate { get; } = new WellPlateItem();
 
     //Take this from RobotState when implemented
     public double RmsL = 0.57;
@@ -87,14 +80,6 @@ public class WellsViewModel : ViewModelBase
         WellsPositionCommand = new RelayCommand<string>(w => GoToWell(w));
         Settings.PropertyChanged += Settings_PropertyChanged;
         CurrentWell.PropertyChanged += CurrentWell_PropertyChanged;
-
-        foreach (char row in RowHeaders)
-        {
-            for (int col = 1; col <= WELLSCOUNT; col++)
-            {
-                Wells.Add(new WellItem(row, col));
-            }
-        }
     }
 
     private void Settings_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -102,7 +87,7 @@ public class WellsViewModel : ViewModelBase
         if (e.PropertyName == nameof(Settings.Is96Well))
         {
             OnPropertyChanged(nameof(WellTypeText));
-            ChangePlateType();
+            WellPlate.ChangePlateType(Settings.SelectedPlateType);
         }
 
         if (e.PropertyName == nameof(Settings.State))
@@ -113,7 +98,7 @@ public class WellsViewModel : ViewModelBase
     {
         if (e.PropertyName == nameof(Well.Type))
         {
-            if (CurrentWell.Type != WellType.Standard) SelectWell(string.Empty);
+            if (CurrentWell.Type != WellType.Standard) WellPlate.SelectWell(string.Empty);
         }
     }
 
@@ -122,26 +107,7 @@ public class WellsViewModel : ViewModelBase
         CurrentWell.Type = WellType.Standard;
         CurrentWell.Name = well;
         Settings.State = MoveState.Moving;
-        SelectWell(well);
+        WellPlate.SelectWell(well);
         RobotProtocol.Send($"q{well.ToLower()}");
-    }
-
-    private void SelectWell(string name)
-    {
-        foreach (WellItem well in Wells)
-        {
-            well.IsSelected = well.Name.Equals(name, StringComparison.OrdinalIgnoreCase);
-        }
-    }
-
-    private void ChangePlateType()
-    {
-        foreach (WellItem well in Wells)
-        {
-            if (Settings.Is96Well)
-                well.IsVisible = true;
-            else
-                well.IsVisible = (well.Row % 2 != 0) == (well.Column % 2 != 0);
-        }
     }
 }
