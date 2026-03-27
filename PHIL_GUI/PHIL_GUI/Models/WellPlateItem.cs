@@ -1,16 +1,16 @@
-﻿using Avalonia.Input.TextInput;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Data.Common;
 using System.Linq;
 
 namespace PHIL_GUI.Models
 {
     public class WellPlateItem
     {
-        const int WELLSCOUNT = 12;
-        public List<string> ColHeaders { get; } = Enumerable.Range(1, WELLSCOUNT).Select(i => i.ToString()).ToList();
+        const int COLUMN_COUNT = 12;
+        const int PAIRS_PER_QUADRANT = 3;
+        const int PAIR_COUNT = 2;
+        public List<string> ColHeaders { get; } = Enumerable.Range(1, COLUMN_COUNT).Select(i => i.ToString()).ToList();
         public List<char> RowHeaders { get; } = new() { 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H' };
         public PlateType PlateType { get; set; }
         public ObservableCollection<WellItem> Wells96 { get; } = new();
@@ -20,7 +20,7 @@ namespace PHIL_GUI.Models
         {
             foreach (char row in RowHeaders)
             {
-                for (int col = 1; col <= WELLSCOUNT; col++)
+                for (int col = 1; col <= COLUMN_COUNT; col++)
                 {
                     Wells96.Add(new WellItem(row, col));
                 }
@@ -30,36 +30,37 @@ namespace PHIL_GUI.Models
 
             int colIndex = 1;
             int rowIndex = 0;
+            int pairIndex = 1;
 
             while (rowIndex < RowHeaders.Count)
             {
                 if (colIndex > ColHeaders.Count)
                 {
                     colIndex = 1;
-                    rowIndex += 2;
+                    rowIndex += PAIR_COUNT;
+                    if ((rowIndex / PAIR_COUNT) % PAIR_COUNT != 0) pairIndex -= PAIR_COUNT * PAIRS_PER_QUADRANT;
                 }
 
                 if (rowIndex >= RowHeaders.Count) break;
 
                 char row = RowHeaders[rowIndex];
 
-                wells.Add(new WellItem(row, colIndex));
+                WellItem well = new WellItem(row, colIndex);
 
                 int nextRowIndex = rowIndex + 1;
                 int nextColumnIndex = colIndex + 1;
                 
                 char nextRow = RowHeaders[nextRowIndex];
 
-                wells.Add(new WellItem(nextRow, nextColumnIndex));
+                WellItem nextWell = new WellItem(nextRow, nextColumnIndex);
 
-                colIndex += 2;
-            }
+                WellsOoC.Add(new WellPairItem(pairIndex, well, nextWell));
 
-            for (int i = 0; i < wells.Count; i += 2)
-            {
-                int pairIndex = (i / 2) + 1;
-                WellPairItem pairItem = new WellPairItem(pairIndex, wells[i], wells[i + 1]);
-                WellsOoC.Add(pairItem);
+                colIndex += PAIR_COUNT;
+
+                if ((pairIndex % PAIRS_PER_QUADRANT == 0) && (colIndex < ColHeaders.Count)) pairIndex += PAIRS_PER_QUADRANT;
+
+                pairIndex++;
             }
         }
 
