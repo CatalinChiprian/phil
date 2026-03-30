@@ -5,7 +5,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="1200" d:DesignHeight="700"
              x:Class="PHIL_GUI.Views.CalibrationView"
-             x:DataType="vm:WellsViewModel">
+             x:DataType="vm:CalibrationViewModel">
 
     <DockPanel>
         <Border Classes="toolbar" DockPanel.Dock="Top">
@@ -121,8 +121,11 @@
         <Border DockPanel.Dock="Right" Classes="sidebar" BorderThickness="1,0,0,0" Width="380">
             <StackPanel Orientation="Vertical">
 		        <Border BorderThickness="0,0,0,1">
-				    <TextBlock Classes="subtitle" FontSize="10" LetterSpacing="1.5" Text="CALIBRATION POINTS" 
-                               Padding="15,10"/>
+                    <DockPanel Margin="15, 10">
+						<TextBlock DockPanel.Dock="Right" Classes="subtitle" FontSize="10" LetterSpacing="1.5" Text="40 pts"/>
+
+						<TextBlock DockPanel.Dock="Left" Classes="subtitle" FontSize="10" LetterSpacing="1.5" Text="CALIBRATION POINTS"/>
+                    </DockPanel>
                 </Border>
                 
                 <Border BorderThickness="0,0,0,1">
@@ -148,6 +151,29 @@
                         </StackPanel>
                     </StackPanel>
                 </Border>
+
+                <DataGrid Name="CalibrationGrid"
+                          AutoGenerateColumns="False"
+                          HeadersVisibility="All"
+                          GridLinesVisibility="All"
+                          ItemsSource="{Binding CalibrationRows}"
+                          IsReadOnly="True">
+
+                    <DataGrid.Columns>
+
+                        <DataGridTextColumn Header="Well"
+                                            Binding="{Binding Well}" />
+
+                        <DataGridTextColumn Header="X / Y"
+                                            Binding="{Binding XY}" />
+
+                        <DataGridTextColumn Header="Err L"
+                                            Binding="{Binding ErrL}" />
+
+                        <DataGridTextColumn Header="Err R"
+                                            Binding="{Binding ErrR}" />
+                    </DataGrid.Columns>
+                </DataGrid>
             </StackPanel>
         </Border>
 
