@@ -77,14 +77,16 @@
   bool systemInitialized = false;
 
   unsigned long lastMotorActivityTime = 0;
-  bool motorsCurrentlyEnabled = false;
+  bool ZMotorsCurrentlyEnabled = false;
+  bool LMotorCurrentlyEnabled = false;
+  bool RMotorCurrentlyEnabled = false;
   const unsigned long MOTOR_TIMEOUT = 5000;
   bool emergencyStopRequested = false;
 
   void setup() {
     Serial.begin(9600);
 
-    enableMotors();
+    enableAllMotors();
 
     pinMode(limitSwitchL, INPUT_PULLUP);
     pinMode(limitSwitchR, INPUT_PULLUP);
@@ -112,7 +114,7 @@
     stepperZ2.setAcceleration(500 * currentMicrosteps);
   
     if (!loadPositions()) {
-      home();
+      calibrate();
     }
 
     loadCurrentWell();
@@ -123,23 +125,9 @@
     systemInitialized = true;
   }
 
-  void stopMotors() {
-    stepperL.stop();
-    stepperR.stop();
-    // Run until fully decelerated
-    while (stepperL.distanceToGo() != 0 || stepperR.distanceToGo() != 0) {
-        stepperL.run();
-        stepperR.run();
-    }
-    // Force zero speed so no residual velocity
-    stepperL.setCurrentPosition(stepperL.currentPosition());
-    stepperR.setCurrentPosition(stepperR.currentPosition());
-  }
-
   void moveBackward() {
-    enableMotors();
-
-    stopMotors();
+    enableLMotor();
+    enableRMotor();
 
     // stepperL.move(-4 * currentMicrosteps);
     // stepperR.move(5 * currentMicrosteps);
@@ -154,9 +142,8 @@
   }
 
   void moveForward() {
-    enableMotors();
-
-    stopMotors();
+    enableLMotor();
+    enableRMotor();
 
     // stepperL.move(4 * currentMicrosteps);
     // stepperR.move(-5 * currentMicrosteps);
@@ -171,9 +158,8 @@
   }
 
   void moveLeft() {
-    enableMotors();
-
-    stopMotors();
+    enableLMotor();
+    enableRMotor();
 
     // stepperL.move(-4 * times * currentMicrosteps);
     // stepperR.move(-3 * times * currentMicrosteps);
@@ -188,9 +174,8 @@
   }
 
   void moveRight() {
-    enableMotors();
-
-    stopMotors();
+    enableLMotor();
+    enableRMotor();
 
     // stepperL.move(4 * times * currentMicrosteps);
     // stepperR.move(3 * times * currentMicrosteps);
@@ -206,7 +191,7 @@
   }
 
   void moveUp() {
-    enableMotors();
+    enableZMotors();
     
     bool z1LimitHit = false;
     bool z2LimitHit = false;
@@ -240,7 +225,7 @@
   }
 
   void moveDown() {
-    enableMotors();
+    enableZMotors();
 
     long s = steps;
     stepperZ1.moveTo(-s + stepperZ1.currentPosition());
@@ -322,7 +307,7 @@
           case 'h': // Home
             goToOrigin();
             interruptibleDelay(500);
-            disableMotors();
+            disableAllMotors();
             savePositions();  
           break; 
 
@@ -481,7 +466,8 @@
           break;
 
           case 'o':
-            enableMotors();
+            enableLMotor();
+            enableRMotor();
 
             stepperL.moveTo(55 * currentMicrosteps); 
             stepperR.moveTo(-5.5 * currentMicrosteps); 
@@ -579,7 +565,8 @@
   }
   
   int goToOrigin() {
-    enableMotors();
+    enableLMotor();
+    enableRMotor();
     stepperL.moveTo(0); 
     stepperR.moveTo(0); 
     
@@ -591,162 +578,6 @@
     saveCurrentWell("HOME", 0, 0, 0, 0);
   }
 
-  int home() {
-    if(emergencyStopRequested) {
-      emergencyStopRequested = false; 
-      return -1;
-    }
-    enableMotors(); 
-
-    Serial.println("Checking if safe pre-positioning needed...");
-    
-    long currentL = stepperL.currentPosition();
-    long currentR = stepperR.currentPosition();
-    
-    Serial.print("Current position - L: ");
-    Serial.print(currentL);
-    Serial.print(" | R: ");
-    Serial.println(currentR);
-    
-    bool needsPrePositioning = false;
-    
-    if (currentL <= 600 && currentL >= -100 && currentR >= -1800 && currentR <= -1200) {
-      Serial.println("Zone 1 detected - moving to safe position");
-      stepperL.move(-20 * currentMicrosteps); 
-      stepperR.move(20 * currentMicrosteps); 
-      needsPrePositioning = true;
-    }
-
-    if (needsPrePositioning) {
-      while(stepperR.distanceToGo() != 0 || stepperL.distanceToGo() != 0) {
-        // Add stop check here too
-        if(Serial.available() > 0) {
-          char c = Serial.read();
-          if(c == 's') {
-            emergencyStop(); 
-            Serial.println("Pre-positioning STOPPED by user");
-            return -1;
-          }
-        }
-        stepperR.run();
-        stepperL.run();
-      }
-      interruptibleDelay(1000);
-      Serial.println("Safe position reached - starting homing");
-    } else {
-      Serial.println("Already in safe zone - proceeding with homing");
-    }
-
-    Serial.println("Homing - Attempt 1... (send 's' to stop)");
-    
-    unsigned long overallStartTime = millis();
-    unsigned long overallTimeout = 20000;
-    
-    int result = attemptHome(50 * currentMicrosteps, 100 * currentMicrosteps, 4000, overallStartTime, overallTimeout);
-    
-    if(result == 1) {
-      Serial.println("PHIL homed (Attempt 1)");
-      return 1; 
-    }
-    
-    if(result == -1) {
-      return -1; 
-    }
-    
-    if(result == -2) {
-    Serial.println("ERROR:HOME_FAILED,Homing timed out - move needle to center and retry");
-    return -2; 
-    }
-
-    // First attempt timed out (result == 0)
-    Serial.println("First attempt timed out - preparing retry...");
-
-    // Reset motor states
-    stepperL.stop();
-    stepperR.stop();
-    stepperL.setSpeed(0);
-    stepperR.setSpeed(0);
-
-    interruptibleDelay(1000);
-
-    Serial.println("Moving back for retry...");
-    stepperR.move(-20 * currentMicrosteps); 
-    stepperL.move(-80 * currentMicrosteps); 
-
-    Serial.print("Distance to go - L: ");
-    Serial.print(stepperL.distanceToGo());
-    Serial.print(" | R: ");
-    Serial.println(stepperR.distanceToGo());
-
-    unsigned long retryMoveStart = millis();
-    while(stepperR.distanceToGo() != 0 || stepperL.distanceToGo() != 0) {
-      if(millis() - retryMoveStart > 5000) {
-        Serial.println("Retry movement stuck - aborting");
-        return -2;
-      }
-      
-      if(Serial.available() > 0) {
-        char c = Serial.read();
-        if(c == 's') {
-          emergencyStop(); 
-          Serial.println("ERROR:HOME_ABORTED,Homing stopped by user");
-          return -1;
-        }
-      }
-      
-      stepperR.run();
-      stepperL.run();
-    }
-
-    Serial.println("Retry position reached");
-    interruptibleDelay(1000);
-    attemptHome(50 * currentMicrosteps, 100 * currentMicrosteps, 4000, overallStartTime, overallTimeout);
-  }
-
-  int attemptHome(int speedR, int speedL, unsigned long timeout, unsigned long overallStartTime, unsigned long overallTimeout) {
-    
-    enterHomingMode(speedL, speedR); 
-    
-    unsigned long startTime = millis();
-    
-    while(digitalRead(limitSwitchR) == HIGH){
-      if(millis() - overallStartTime > overallTimeout) {
-        Serial.println("Overall timeout, check for problems and obstacles");
-        stepperR.setSpeed(0);
-        stepperL.setSpeed(0);
-        return -2; 
-      }
-      
-      if(Serial.available() > 0) {
-        char c = Serial.read();
-        if(c == 's') {
-          emergencyStop(); 
-          Serial.println("Homing STOPPED by user");
-          return -1; 
-        }
-      }
-      
-      if(millis() - startTime > timeout) {
-        Serial.println("Timeout - second attempt...");
-        stepperR.setSpeed(0);
-        stepperL.setSpeed(0);
-        return 0;
-      }
-      
-      stepperR.runSpeed();
-      stepperL.runSpeed();
-    }
-    
-    // Success - limit switch pressed
-    stepperR.setSpeed(0);
-    stepperL.setSpeed(0);
-    stepperR.setCurrentPosition(0);
-    stepperL.setCurrentPosition(0);
-
-    exitHomingMode();
-    return 1; 
-  }
-
   void wells(char row, int column) {  
 
     if(emergencyStopRequested) {
@@ -754,7 +585,8 @@
       return;
     }
 
-    enableMotors();
+    enableLMotor();
+    enableRMotor();
  
     switch(row) {
         case 'a':
@@ -1011,66 +843,58 @@
   }
 
   int calibrate() {
+    disableAllMotors();
+
     if(emergencyStopRequested) {
       emergencyStopRequested = false;  
       return -1;
     }
-    enableMotors(); 
 
-    Serial.println("=== CALIBRATION START ===");
-    
-    int homeResult = home(); 
-    if(homeResult != 1) {  
-      Serial.println("Calibration aborted - homing failed");
-      return homeResult;  
+    digitalWrite(ena[2], LOW);
+    stepperR.setSpeed(10 * currentMicrosteps);
+    while(digitalRead(limitSwitchR) == HIGH){
+      stepperR.runSpeed();
     }
-    
-    Serial.print("After first home - L: ");
-    Serial.print(stepperL.currentPosition());
-    Serial.print(" | R: ");
-    Serial.println(stepperR.currentPosition());
-    
-    interruptibleDelay(1000);
-    Serial.println("Calibrating - moving L motor...");
 
-    stepperL.setSpeed(10 * currentMicrosteps);
-    
-    unsigned long pushStart = millis();
-    while (millis() - pushStart < 2500) {
+    stepperR.setSpeed(-10 * currentMicrosteps);
+
+    stepperR.moveTo(stepperR.currentPosition() - 700);
+    while(stepperR.distanceToGo() != 0) {
+      stepperR.run();
+    }
+
+    stepperR.setCurrentPosition(0);
+
+    digitalWrite(ena[1], LOW);
+    stepperL.setSpeed(-10 * currentMicrosteps);
+    while(digitalRead(limitSwitchL) == HIGH){
       stepperL.runSpeed();
     }
 
-    stepperL.setSpeed(0);
+    stepperL.setSpeed(10 * currentMicrosteps);
 
-    stepperR.setCurrentPosition(0);
     stepperL.setCurrentPosition(0);
 
-    Serial.println("=== CALIBRATION COMPLETE ===");
+    digitalWrite(ena[1], HIGH);
 
-    // Move to absolute value (Middle)
+    stepperR.moveTo(stepperL.currentPosition() + 63.5 * currentMicrosteps);
 
-    disableMotors();
-    interruptibleDelay(500);
-    enableMotors();
-
-    stepperR.moveTo(stepperR.currentPosition() - 22 * currentMicrosteps);
-    stepperL.moveTo(stepperL.currentPosition() - 57 * currentMicrosteps);
-
-    while(stepperR.distanceToGo() != 0 || stepperL.distanceToGo() != 0) {
+    while (stepperL.distanceToGo() != 0 || stepperR.distanceToGo() != 0) {
       stepperR.run();
-      stepperL.run();
     }
 
     stepperR.setCurrentPosition(0);
-    stepperL.setCurrentPosition(0);
 
     saveCurrentWell("HOME", 0, 0, 0, 0);
+
+    disableAllMotors();
 
     return 1;
   }
 
   void moveToWell(long moveL, long moveR, String wellName) {
-    enableMotors();
+    enableLMotor();
+    enableRMotor();
 
     stepperL.moveTo(moveL * currentMicrosteps); 
     stepperR.moveTo(moveR * currentMicrosteps); 
@@ -1111,21 +935,62 @@
     stepperR.setAcceleration(500 * currentMicrosteps);
   }
 
-  void enableMotors() {
-    if (motorsCurrentlyEnabled) return;
-    for (int i = 0; i < 4; i++) {
-      digitalWrite(ena[i], LOW);  // LOW = enabled (motors energized)
-    }
-    motorsCurrentlyEnabled = true;     
-    lastMotorActivityTime = millis();   
+  void enableAllMotors() {
+    if (areMotorsCurrentlyEnabled()) return;
+    enableZMotors();
+    enableLMotor();
+    enableRMotor(); 
   }
 
-  void disableMotors() {
-    for (int i = 0; i < 4; i++) {
-      digitalWrite(ena[i], HIGH);  // HIGH = disabled (motors off)
-    }
+  void enableZMotors() {
+    digitalWrite(ena[0], LOW);
+    digitalWrite(ena[3], LOW);
 
-    motorsCurrentlyEnabled = false;
+    ZMotorsCurrentlyEnabled = true;     
+    lastMotorActivityTime = millis(); 
+  }
+
+    void enableLMotor() {
+    digitalWrite(ena[1], LOW);
+
+    LMotorCurrentlyEnabled = true;
+    lastMotorActivityTime = millis(); 
+  }
+
+  void enableRMotor() {
+    digitalWrite(ena[2], LOW);
+
+    RMotorCurrentlyEnabled = true;
+    lastMotorActivityTime = millis(); 
+  }
+
+  void disableZMotors() {
+    digitalWrite(ena[0], HIGH);
+    digitalWrite(ena[3], HIGH);
+
+    ZMotorsCurrentlyEnabled = false;
+    lastMotorActivityTime = millis(); 
+  }
+
+  void disableLMotor() {
+    digitalWrite(ena[1], HIGH);
+
+    LMotorCurrentlyEnabled = false;
+    lastMotorActivityTime = millis(); 
+  }
+
+  void disableRMotor() {
+    digitalWrite(ena[2], HIGH);
+
+    RMotorCurrentlyEnabled = false;
+    lastMotorActivityTime = millis(); 
+  }
+
+
+  void disableAllMotors() {
+    disableLMotor();
+    disableRMotor();
+    disableZMotors();
   }
 
   void autoDisableMotors() {
@@ -1135,20 +1000,16 @@
                     stepperZ1.distanceToGo() != 0 || 
                     stepperZ2.distanceToGo() != 0);
     
-    if(isMoving) {
-      lastMotorActivityTime = millis();  // Reset timer while moving
-      if(!motorsCurrentlyEnabled) {
-        enableMotors();
-        motorsCurrentlyEnabled = true;
-      }
-    } else {
-      // Motors are idle
-      if(motorsCurrentlyEnabled && (millis() - lastMotorActivityTime > MOTOR_TIMEOUT)) {
-        disableMotors();
-        motorsCurrentlyEnabled = false;
+    if(!isMoving) {
+      if(areMotorsCurrentlyEnabled() && (millis() - lastMotorActivityTime > MOTOR_TIMEOUT)) {
+        disableAllMotors();
         Serial.println("Motors auto-disabled after timeout");
       }
     }
+  }
+
+  bool areMotorsCurrentlyEnabled() {
+    return ZMotorsCurrentlyEnabled || LMotorCurrentlyEnabled || RMotorCurrentlyEnabled;
   }
 
   void emergencyStop() {
@@ -1156,8 +1017,7 @@
     stepperR.stop();
     stepperZ1.stop();
     stepperZ2.stop();
-    disableMotors();
-    motorsCurrentlyEnabled = false;
+    disableAllMotors();
     lastMotorActivityTime = 0;
     emergencyStopRequested = true;
     Serial.println("WARNING:EMERGENCY_STOP,Motors disabled by user");
@@ -1525,7 +1385,8 @@
       return;
     }
 
-    enableMotors();
+    enableLMotor();
+    enableRMotor();
 
     float x, y;
     wellToXY(row, col, x, y);
