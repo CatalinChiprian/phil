@@ -119,8 +119,8 @@
         </Border>
 
         <Border DockPanel.Dock="Right" Classes="sidebar" BorderThickness="1,0,0,0" Width="380">
-            <StackPanel Orientation="Vertical">
-		        <Border BorderThickness="0,0,0,1">
+            <Grid RowDefinitions="Auto,Auto,*">
+		        <Border BorderThickness="0,0,0,1" Grid.Row="0">
                     <DockPanel Margin="15, 10">
 						<TextBlock DockPanel.Dock="Right" Classes="subtitle" FontSize="10" LetterSpacing="1.5" Text="40 pts"/>
 
@@ -128,7 +128,7 @@
                     </DockPanel>
                 </Border>
                 
-                <Border BorderThickness="0,0,0,1">
+                <Border BorderThickness="0,0,0,1" Grid.Row="1" Background="{StaticResource Surface2}">
 					<StackPanel Orientation="Horizontal" Margin="15,5" Spacing="12">
 						<StackPanel Orientation="Horizontal" Spacing="5">
                             <Ellipse Width="7" Height="7" Fill="{StaticResource Accent}"/>
@@ -151,30 +151,31 @@
                         </StackPanel>
                     </StackPanel>
                 </Border>
-
-                <DataGrid Name="CalibrationGrid"
-                          AutoGenerateColumns="False"
-                          HeadersVisibility="All"
-                          GridLinesVisibility="All"
-                          ItemsSource="{Binding CalibrationRows}"
-                          IsReadOnly="True">
+                <DataGrid Name="CalibrationGrid" Grid.Row="2"
+                            GridLinesVisibility="Horizontal"
+                            ItemsSource="{Binding CalibrationRows}"
+                            IsReadOnly="True">
 
                     <DataGrid.Columns>
 
-                        <DataGridTextColumn Header="Well"
-                                            Binding="{Binding Well}" />
+                        <DataGridTextColumn Header="WELL"
+                                            Binding="{Binding Well}"
+                                            Width="80"/>
 
                         <DataGridTextColumn Header="X / Y"
-                                            Binding="{Binding XY}" />
+                                            Binding="{Binding XY}"
+                                            Width="80"/>
 
-                        <DataGridTextColumn Header="Err L"
-                                            Binding="{Binding ErrL}" />
+                        <DataGridTextColumn Header="ERR L"
+                                            Binding="{Binding ErrL}"
+                                            Width="*"/>
 
-                        <DataGridTextColumn Header="Err R"
-                                            Binding="{Binding ErrR}" />
+                        <DataGridTextColumn Header="ERR R"
+                                            Binding="{Binding ErrR}"
+                                            Width="*"/>
                     </DataGrid.Columns>
                 </DataGrid>
-            </StackPanel>
+            </Grid>
         </Border>
 
         <Border>

@@ -9,6 +9,7 @@
         <local:ViewLocator/>
     </Application.DataTemplates>
 
+
     <Application.Resources>
         <SolidColorBrush x:Key="Bg">#f4f6f4</SolidColorBrush>
         <SolidColorBrush x:Key="Surface">#ffffff</SolidColorBrush>
@@ -28,6 +29,7 @@
   
     <Application.Styles>
         <FluentTheme />
+        <StyleInclude Source="avares://Avalonia.Controls.DataGrid/Themes/Fluent.xaml"/>
 
         <Style Selector="Window">
 		    <Setter Property="Background" Value="{StaticResource Surface}"/>
@@ -45,6 +47,36 @@
 
         <Style Selector="Border">
 			<Setter Property="BorderBrush" Value="{StaticResource BorderColor}"/>
+        </Style>
+
+        <Style Selector="DataGrid DataGridColumnHeader">
+			<Setter Property="Background" Value="{StaticResource Surface2}"/>
+        </Style>
+
+        <Style Selector="DataGrid DataGridColumnHeader TextBlock">
+            <Setter Property="Foreground" Value="{StaticResource Muted}"/>
+            <Setter Property="LetterSpacing" Value="1.2"/>
+            <Setter Property="FontSize" Value="8"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+        </Style>
+
+        <Style Selector="DataGrid DataGridRow">
+			<Setter Property="Background" Value="Transparent"/>
+        </Style>
+
+        <Style Selector="DataGrid DataGridRow:pointerover /template/ Rectangle#BackgroundRectangle">
+            <Setter Property="Fill" Value="{StaticResource Surface2}"/>
+            <Setter Property="Opacity" Value="1"/>
+        </Style>
+
+        <Style Selector="DataGrid DataGridRow:selected /template/ Rectangle#BackgroundRectangle">
+            <Setter Property="Fill" Value="{StaticResource Accent-Dim}"/>
+            <Setter Property="Opacity" Value="1"/>
+        </Style>
+
+        <Style Selector="DataGrid DataGridRow:selected:pointerover /template/ Rectangle#BackgroundRectangle">
+            <Setter Property="Fill" Value="{StaticResource Accent-Dim}"/>
+            <Setter Property="Opacity" Value="1"/>
         </Style>
 
         <Style Selector="TextBlock.subtitle">
