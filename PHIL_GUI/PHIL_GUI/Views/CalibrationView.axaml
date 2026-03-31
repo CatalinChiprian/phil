@@ -122,7 +122,7 @@
             <Grid RowDefinitions="Auto,Auto,*">
 		        <Border BorderThickness="0,0,0,1" Grid.Row="0">
                     <DockPanel Margin="15, 10">
-						<TextBlock DockPanel.Dock="Right" Classes="subtitle" FontSize="10" LetterSpacing="1.5" Text="40 pts"/>
+						<TextBlock DockPanel.Dock="Right" Classes="subtitle" FontSize="10" LetterSpacing="1.5" Text="{Binding CalibrationRows.Count, StringFormat='{}{0} pts'}"/>
 
 						<TextBlock DockPanel.Dock="Left" Classes="subtitle" FontSize="10" LetterSpacing="1.5" Text="CALIBRATION POINTS"/>
                     </DockPanel>
@@ -160,7 +160,9 @@
 
                         <DataGridTextColumn Header="WELL"
                                             Binding="{Binding Well}"
-                                            Width="80"/>
+                                            Width="80"
+                                            FontWeight="Bold"
+                                            Foreground="{StaticResource Accent}"/>
 
                         <DataGridTextColumn Header="X / Y"
                                             Binding="{Binding XY}"
