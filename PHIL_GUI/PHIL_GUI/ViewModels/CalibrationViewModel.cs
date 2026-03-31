@@ -24,7 +24,7 @@ namespace PHIL_GUI.ViewModels
             new CalibrationRowItem("N14", "15, 75", 0.5f, 0.9f),
             new CalibrationRowItem("O15", "75, 15", 0.3f, 0.5f),
             new CalibrationRowItem("P16", "90, 0", 0.4f, 0.6f),
-            new CalibrationRowItem("Q17", "0, 90", 2f, 0.4f),
+            new CalibrationRowItem("Q17", "0, 90", 2f, 2f),
         };
 
         public CalibrationViewModel()
