@@ -168,13 +168,41 @@
                                             Binding="{Binding XY}"
                                             Width="80"/>
 
-                        <DataGridTextColumn Header="ERR L"
-                                            Binding="{Binding ErrL}"
-                                            Width="*"/>
+                        <DataGridTemplateColumn Header="ERR L" Width="*" SortMemberPath="ErrLVal">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal" Spacing="4" 
+                                                VerticalAlignment="Center" Margin="10,0">
+                                        <TextBlock Text="{Binding ErrL}"
+                                                   FontSize="10"
+                                                   Foreground="{Binding ErrLColor}"/>
+                                        <Border Height="3" 
+                                                Width="{Binding ErrLBarWidth}" 
+                                                CornerRadius="2"
+                                                Background="{Binding ErrLColor}"
+                                                VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
 
-                        <DataGridTextColumn Header="ERR R"
-                                            Binding="{Binding ErrR}"
-                                            Width="*"/>
+                        <DataGridTemplateColumn Header="ERR R" Width="*" SortMemberPath="ErrRVal">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal" Spacing="4" 
+                                                VerticalAlignment="Center" Margin="10,0">
+                                        <TextBlock Text="{Binding ErrR}"
+                                                   FontSize="10"
+                                                   Foreground="{Binding ErrRColor}"/>
+                                        <Border Height="3" 
+                                                Width="{Binding ErrRBarWidth}" 
+                                                CornerRadius="2"
+                                                Background="{Binding ErrRColor}"
+                                                VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
                     </DataGrid.Columns>
                 </DataGrid>
             </Grid>
