@@ -118,95 +118,270 @@
             </DockPanel>
         </Border>
 
-        <Border DockPanel.Dock="Right" Classes="sidebar" BorderThickness="1,0,0,0" Width="380">
-            <Grid RowDefinitions="Auto,Auto,*">
-		        <Border BorderThickness="0,0,0,1" Grid.Row="0">
-                    <DockPanel Margin="15, 10">
-						<TextBlock DockPanel.Dock="Right" Classes="subtitle" FontSize="10" LetterSpacing="1.5" Text="{Binding CalibrationRows.Count, StringFormat='{}{0} pts'}"/>
+        <Grid ColumnDefinitions="*, Auto">
 
-						<TextBlock DockPanel.Dock="Left" Classes="subtitle" FontSize="10" LetterSpacing="1.5" Text="CALIBRATION POINTS"/>
-                    </DockPanel>
-                </Border>
+		    <Border Grid.Column="0" Background="{StaticResource Bg}" Padding="60,40">
+                <Viewbox Stretch="Uniform">
+                    <Panel>
+
+                        <!-- 96-Well Plate -->
+                        <Grid IsVisible="{Binding Settings.Is96Well}" RowDefinitions="Auto, Auto, Auto" ColumnDefinitions="Auto, Auto">
+
+                           <StackPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" 
+                                        Orientation="Horizontal" Spacing="10" Margin="0,0,0,16">
+                                <TextBlock Classes="subtitle" Text="96-WELL PLATE" FontSize="10" LetterSpacing="1.5"/>
+                                <Border Classes="badge" Padding="8,3">
+                                    <TextBlock Text="8 × 12" FontSize="9"/>
+                                </Border>
+                            </StackPanel>
+
+                           <ItemsControl Grid.Row="1" Grid.Column="1"
+                                         ItemsSource="{Binding WellPlate.ColHeaders}">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <UniformGrid Columns="12" Rows="1"/>
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Classes="subtitle" Text="{Binding}" 
+                                                   Width="44"
+                                                   TextAlignment="Center"
+                                                   VerticalAlignment="Center"
+                                                   HorizontalAlignment="Center"
+                                                   Margin="0,0,0,6"/>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+
+                            <ItemsControl Grid.Row="2" Grid.Column="0"
+                                          ItemsSource="{Binding WellPlate.RowHeaders}">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <UniformGrid Rows="8" Columns="1"/>
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Classes="subtitle" Text="{Binding}" 
+                                                   Width="10"
+                                                   TextAlignment="Center"
+                                                   VerticalAlignment="Center"
+                                                   HorizontalAlignment="Center"
+                                                   Margin="0,0,10,0"/>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+
+                            <Border Grid.Row="2" Grid.Column="1" ClipToBounds="False">
+                                <ItemsControl ItemsSource="{Binding WellPlate.Wells96}" ClipToBounds="False">
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <UniformGrid Rows="8" Columns="12"/>
+                                        </ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Button Content="{Binding Name}"
+                                                    Classes="well"
+                                                    Classes.active="{Binding IsSelected}"
+                                                    IsVisible="{Binding IsVisible}"
+                                                    Command="{Binding $parent[ItemsControl].((vm:WellsViewModel)DataContext).WellsPositionCommand}"
+                                                    CommandParameter="{Binding Name}"/>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </Border>
+                        </Grid>
+
+                        <!-- Organ-on-Chip Plate -->
+                        <Grid IsVisible="{Binding Settings.Is96Well, Converter={x:Static BoolConverters.Not}}"
+                              RowDefinitions="Auto, Auto, Auto" ColumnDefinitions="Auto, Auto">
+
+                            <StackPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
+                                        Orientation="Horizontal" Spacing="10" Margin="0,0,0,16">
+                                <TextBlock Classes="subtitle" Text="ORGAN-ON-CHIP PLATE" FontSize="10" LetterSpacing="1.5"/>
+                                <Border Classes="badge" Padding="8,3">
+                                    <TextBlock Text="4 × 6" FontSize="9"/>
+                                </Border>
+                            </StackPanel>
+
+                            <ItemsControl Grid.Row="1" Grid.Column="1" ItemsSource="{Binding WellPlate.ColHeaders}">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <UniformGrid Columns="12" Rows="1"/>
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Classes="subtitle" Text="{Binding}"
+                                                   Width="44" TextAlignment="Center"
+                                                   VerticalAlignment="Center" HorizontalAlignment="Center"
+                                                   Margin="0,0,0,6"/>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+
+                            <ItemsControl Grid.Row="2" Grid.Column="0" ItemsSource="{Binding WellPlate.RowHeaders}">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <UniformGrid Rows="8" Columns="1"/>
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Classes="subtitle" Text="{Binding}"
+                                                   Width="10" TextAlignment="Center"
+                                                   VerticalAlignment="Center" HorizontalAlignment="Center"
+                                                   Margin="0,0,10,0"/>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+
+                            <Border Grid.Row="2" Grid.Column="1" ClipToBounds="False">
+                                <Panel>
+                                    <ItemsControl ItemsSource="{Binding WellPlate.WellsOoC}" ClipToBounds="False">
+                                        <ItemsControl.ItemsPanel>
+                                            <ItemsPanelTemplate>
+                                                <UniformGrid Rows="4" Columns="6"/>
+                                            </ItemsPanelTemplate>
+                                        </ItemsControl.ItemsPanel>
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate>
+                                                <Border Classes="well-pair">
+                                                    <Grid RowDefinitions="*,*" ColumnDefinitions="*,*">
+                                                        <Button Grid.Row="0" Grid.Column="0"
+                                                                Content="IN"
+                                                                Classes="well"
+                                                                Classes.active="{Binding In.IsSelected}"
+                                                                Command="{Binding $parent[ItemsControl].((vm:WellsViewModel)DataContext).WellsPositionCommand}"
+                                                                CommandParameter="{Binding In.Name}"/>
+
+                                                        <TextBlock Grid.Row="0" Grid.Column="0"
+                                                                    Grid.RowSpan="2" Grid.ColumnSpan="2"
+                                                                    Text="{Binding PairIndex}"
+                                                                    Foreground="{StaticResource Muted}"
+                                                                    HorizontalAlignment="Center"
+                                                                    VerticalAlignment="Center"
+                                                                    Margin="0,0,0,2"/>
+
+                                                        <Button Grid.Row="1" Grid.Column="1"
+                                                                Content="OUT"
+                                                                Classes="well"
+                                                                Classes.active="{Binding Out.IsSelected}"
+                                                                Command="{Binding $parent[ItemsControl].((vm:WellsViewModel)DataContext).WellsPositionCommand}"
+                                                                CommandParameter="{Binding Out.Name}"/>
+                                                    </Grid>
+                                                </Border>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+
+                                    <Grid RowDefinitions="*,*" ColumnDefinitions="*,*">
+                                        <Border Grid.Row="0" Grid.Column="0" Classes="quadrant"/>
+                                        <Border Grid.Row="0" Grid.Column="1" Classes="quadrant"/>
+                                        <Border Grid.Row="1" Grid.Column="0" Classes="quadrant"/>
+                                        <Border Grid.Row="1" Grid.Column="1" Classes="quadrant"/>
+                                    </Grid>
+                                </Panel>
+                            </Border>
+                        </Grid>
+
+                    </Panel>
+                </Viewbox>
+            </Border>
+
+            <Border Grid.Column="1" Classes="sidebar" BorderThickness="1,0,0,0" MinWidth="380">
+                <Grid ColumnDefinitions="*" RowDefinitions="Auto,Auto,*">
+		            <Border BorderThickness="0,0,0,1" Grid.Row="0">
+                        <DockPanel Margin="15, 10">
+						    <TextBlock DockPanel.Dock="Right" Classes="subtitle" FontSize="10" LetterSpacing="1.5" Text="{Binding CalibrationRows.Count, StringFormat='{}{0} pts'}"/>
+
+						    <TextBlock DockPanel.Dock="Left" Classes="subtitle" FontSize="10" LetterSpacing="1.5" Text="CALIBRATION POINTS"/>
+                        </DockPanel>
+                    </Border>
                 
-                <Border BorderThickness="0,0,0,1" Grid.Row="1" Background="{StaticResource Surface2}">
-					<StackPanel Orientation="Horizontal" Margin="15,5" Spacing="12">
-						<StackPanel Orientation="Horizontal" Spacing="5">
-                            <Ellipse Width="7" Height="7" Fill="{StaticResource Accent}"/>
-                            <TextBlock Classes="subtitle" Text="&lt; 1°"/>
+                    <Border BorderThickness="0,0,0,1" Grid.Row="1" Background="{StaticResource Surface2}">
+					    <StackPanel Orientation="Horizontal" Margin="15,5" Spacing="12">
+						    <StackPanel Orientation="Horizontal" Spacing="5">
+                                <Ellipse Width="7" Height="7" Fill="{StaticResource Accent}"/>
+                                <TextBlock Classes="subtitle" Text="&lt; 1°"/>
+                            </StackPanel>
+
+						    <StackPanel Orientation="Horizontal" Spacing="5">
+                                <Ellipse Width="7" Height="7" Fill="{StaticResource Caution}"/>
+                                <TextBlock Classes="subtitle" Text="1-2°"/>
+                            </StackPanel>
+
+						    <StackPanel Orientation="Horizontal" Spacing="5">
+                                <Ellipse Width="7" Height="7" Fill="{StaticResource Warn}"/>
+                                <TextBlock Classes="subtitle" Text="&gt; 2°"/>
+                            </StackPanel>
+
+						    <StackPanel Orientation="Horizontal" Spacing="5">
+                                <Ellipse Width="7" Height="7" Fill="{StaticResource BorderColor}"/>
+                                <TextBlock Classes="subtitle" Text="not recorded"/>
+                            </StackPanel>
                         </StackPanel>
+                    </Border>
+                    <DataGrid Name="CalibrationGrid" Grid.Row="2"
+                                GridLinesVisibility="Horizontal"
+                                ItemsSource="{Binding CalibrationRows}"
+                                IsReadOnly="True">
 
-						<StackPanel Orientation="Horizontal" Spacing="5">
-                            <Ellipse Width="7" Height="7" Fill="{StaticResource Caution}"/>
-                            <TextBlock Classes="subtitle" Text="1-2°"/>
-                        </StackPanel>
+                        <DataGrid.Columns>
 
-						<StackPanel Orientation="Horizontal" Spacing="5">
-                            <Ellipse Width="7" Height="7" Fill="{StaticResource Warn}"/>
-                            <TextBlock Classes="subtitle" Text="&gt; 2°"/>
-                        </StackPanel>
+                            <DataGridTextColumn Header="WELL"
+                                                Binding="{Binding Well}"
+                                                Width="*"
+                                                FontWeight="Bold"
+                                                Foreground="{StaticResource Accent}"/>
 
-						<StackPanel Orientation="Horizontal" Spacing="5">
-                            <Ellipse Width="7" Height="7" Fill="{StaticResource BorderColor}"/>
-                            <TextBlock Classes="subtitle" Text="not recorded"/>
-                        </StackPanel>
-                    </StackPanel>
-                </Border>
-                <DataGrid Name="CalibrationGrid" Grid.Row="2"
-                            GridLinesVisibility="Horizontal"
-                            ItemsSource="{Binding CalibrationRows}"
-                            IsReadOnly="True">
+                            <DataGridTextColumn Header="X / Y"
+                                                Binding="{Binding XY}"
+                                                Width="*"/>
 
-                    <DataGrid.Columns>
+                            <DataGridTemplateColumn Header="ERR L" Width="*" SortMemberPath="ErrLVal">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal" Spacing="4" 
+                                                    VerticalAlignment="Center" Margin="10,0">
+                                            <TextBlock Text="{Binding ErrL}"
+                                                       FontSize="10"
+                                                       Foreground="{Binding ErrLColor}"/>
+                                            <Border Height="3" 
+                                                    Width="{Binding ErrLBarWidth}" 
+                                                    CornerRadius="2"
+                                                    Background="{Binding ErrLColor}"
+                                                    VerticalAlignment="Center"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
 
-                        <DataGridTextColumn Header="WELL"
-                                            Binding="{Binding Well}"
-                                            Width="80"
-                                            FontWeight="Bold"
-                                            Foreground="{StaticResource Accent}"/>
+                            <DataGridTemplateColumn Header="ERR R" Width="*" SortMemberPath="ErrRVal">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal" Spacing="4" 
+                                                    VerticalAlignment="Center" Margin="10,0">
+                                            <TextBlock Text="{Binding ErrR}"
+                                                       FontSize="10"
+                                                       Foreground="{Binding ErrRColor}"/>
+                                            <Border Height="3" 
+                                                    Width="{Binding ErrRBarWidth}" 
+                                                    CornerRadius="2"
+                                                    Background="{Binding ErrRColor}"
+                                                    VerticalAlignment="Center"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
+            </Border>
 
-                        <DataGridTextColumn Header="X / Y"
-                                            Binding="{Binding XY}"
-                                            Width="80"/>
-
-                        <DataGridTemplateColumn Header="ERR L" Width="*" SortMemberPath="ErrLVal">
-                            <DataGridTemplateColumn.CellTemplate>
-                                <DataTemplate>
-                                    <StackPanel Orientation="Horizontal" Spacing="4" 
-                                                VerticalAlignment="Center" Margin="10,0">
-                                        <TextBlock Text="{Binding ErrL}"
-                                                   FontSize="10"
-                                                   Foreground="{Binding ErrLColor}"/>
-                                        <Border Height="3" 
-                                                Width="{Binding ErrLBarWidth}" 
-                                                CornerRadius="2"
-                                                Background="{Binding ErrLColor}"
-                                                VerticalAlignment="Center"/>
-                                    </StackPanel>
-                                </DataTemplate>
-                            </DataGridTemplateColumn.CellTemplate>
-                        </DataGridTemplateColumn>
-
-                        <DataGridTemplateColumn Header="ERR R" Width="*" SortMemberPath="ErrRVal">
-                            <DataGridTemplateColumn.CellTemplate>
-                                <DataTemplate>
-                                    <StackPanel Orientation="Horizontal" Spacing="4" 
-                                                VerticalAlignment="Center" Margin="10,0">
-                                        <TextBlock Text="{Binding ErrR}"
-                                                   FontSize="10"
-                                                   Foreground="{Binding ErrRColor}"/>
-                                        <Border Height="3" 
-                                                Width="{Binding ErrRBarWidth}" 
-                                                CornerRadius="2"
-                                                Background="{Binding ErrRColor}"
-                                                VerticalAlignment="Center"/>
-                                    </StackPanel>
-                                </DataTemplate>
-                            </DataGridTemplateColumn.CellTemplate>
-                        </DataGridTemplateColumn>
-                    </DataGrid.Columns>
-                </DataGrid>
-            </Grid>
-        </Border>
+        </Grid>
 
         <Border>
 			

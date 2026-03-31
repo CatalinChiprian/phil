@@ -14,15 +14,15 @@
                     <StackPanel>
                         <TextBlock Classes="subtitle" LetterSpacing="1.5" Text="CALIBRATION RMS"/>
 						<TextBlock Classes="metric-value" 
-                                   Text="{Binding RmsDisplayText}" 
-                                   Foreground="{Binding RmsColor}"/>
+                                   Text="{Binding Calibration.RmsDisplayText}" 
+                                   Foreground="{Binding Calibration.RmsColor}"/>
                     </StackPanel>
 
                     <StackPanel>
                         <TextBlock Classes="subtitle" LetterSpacing="1.5" Text="CAL. POINTS"/>
 						<TextBlock Classes="metric-value" 
-                                   Text="{Binding CalPointsText}"
-                                   Foreground="{Binding CalPointsColor}"/>
+                                   Text="{Binding Calibration.CalPointsText}"
+                                   Foreground="{Binding Calibration.PointsColor}"/>
                     </StackPanel>
 
                     <StackPanel>

@@ -34,19 +34,5 @@ namespace PHIL_GUI.Models
             Name = $"{row}{column}";
             IsVisible = true;
         }
-
-        public void ChangeWellType(PlateType plateType)
-        {
-            if (plateType == PlateType.Well96)
-            {
-                IsVisible = true;
-                Name = $"{Row}{Column}";
-            }
-            else
-            {
-                IsVisible = (Row % 2 != 0) == (Column % 2 != 0);
-                Name = (Row % 2 != 0) ? "IN" : "OUT";
-            }
-        }
     }
 }

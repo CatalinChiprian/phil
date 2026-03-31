@@ -19,9 +19,6 @@ public class WellsViewModel : ViewModelBase
 
     public WellPlateItem WellPlate { get; } = new WellPlateItem();
 
-    //Take this from RobotState when implemented
-    public double RmsL = 0.57;
-    public double RmsR = 0.8;
     public int Microsteps = 8;
 
     public string TopNotificationText
@@ -41,28 +38,6 @@ public class WellsViewModel : ViewModelBase
                 return $"Moved to Home (L: {Position.L}, R: {Position.R})";
 
             return $"Stopped - L: {Position.L}, R: {Position.R}";
-        }
-    }
-
-    public string RmsDisplayText => $"L {RmsL:F2}°  R {RmsR:F2}°";
-    public IBrush RmsColor
-    {
-        get
-        {
-            double worst = Math.Max(RmsL, RmsR);
-            if (worst > 1.5) return Application.Current.Resources["Warn"] as IBrush;
-            if (worst > 1.0) return Application.Current.Resources["Caution"] as IBrush;
-            return Application.Current.Resources["Accent"] as IBrush;
-        }
-    }
-    public string CalPointsText => $"{Calibration.Count}/{Calibration.MAX_COUNT}";
-    public IBrush CalPointsColor
-    {
-        get
-        {
-            if (Calibration.Count < 10) return Application.Current.Resources["Warn"] as IBrush;
-            if (Calibration.Count < 20) return Application.Current.Resources["Caution"] as IBrush;
-            return Application.Current.Resources["Accent"] as IBrush;
         }
     }
     public string MicrostepsText => $"1/{Microsteps}";

@@ -6,6 +6,9 @@ namespace PHIL_GUI.ViewModels
 {
     public class CalibrationViewModel : ViewModelBase
     {
+        public Settings Settings => RobotProtocol.RobotState.Settings;
+
+        public WellPlateItem WellPlate { get; } = new WellPlateItem();
         public ObservableCollection<CalibrationRowItem> CalibrationRows { get; } = new()
         {
             new CalibrationRowItem("A1", "0, 36", 0.5f, 0.8f),
