@@ -152,8 +152,8 @@ namespace PHIL_GUI.Services
         private void ParseRms(string msg)
         {
             var d = ParseKV(msg, RMS_PREFIX);
-            robotState.Calibration.RmsL = d["L"];
-            robotState.Calibration.RmsR = d["R"];
+            robotState.Calibration.RmsLValue = double.Parse(d["L"], CultureInfo.InvariantCulture);
+            robotState.Calibration.RmsRValue = double.Parse(d["R"], CultureInfo.InvariantCulture);
         }
 
         private void ParseLimit(string msg, LimitType type)
