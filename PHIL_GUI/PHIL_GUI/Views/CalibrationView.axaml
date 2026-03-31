@@ -120,14 +120,14 @@
 
         <Grid ColumnDefinitions="*, Auto">
 
-		    <Border Grid.Column="0" Background="{StaticResource Bg}" Padding="60,40">
+		    <Border Grid.Column="0" Background="{StaticResource Bg}" Padding="30,20">
                 <Viewbox Stretch="Uniform">
                     <Panel>
 
                         <!-- 96-Well Plate -->
                         <Grid IsVisible="{Binding Settings.Is96Well}" RowDefinitions="Auto, Auto, Auto" ColumnDefinitions="Auto, Auto">
 
-                           <StackPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" 
+                            <StackPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" 
                                         Orientation="Horizontal" Spacing="10" Margin="0,0,0,16">
                                 <TextBlock Classes="subtitle" Text="96-WELL PLATE" FontSize="10" LetterSpacing="1.5"/>
                                 <Border Classes="badge" Padding="8,3">
@@ -135,8 +135,8 @@
                                 </Border>
                             </StackPanel>
 
-                           <ItemsControl Grid.Row="1" Grid.Column="1"
-                                         ItemsSource="{Binding WellPlate.ColHeaders}">
+                            <ItemsControl Grid.Row="1" Grid.Column="1"
+                                            ItemsSource="{Binding WellPlate.ColHeaders}">
                                 <ItemsControl.ItemsPanel>
                                     <ItemsPanelTemplate>
                                         <UniformGrid Columns="12" Rows="1"/>
@@ -145,17 +145,17 @@
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate>
                                         <TextBlock Classes="subtitle" Text="{Binding}" 
-                                                   Width="44"
-                                                   TextAlignment="Center"
-                                                   VerticalAlignment="Center"
-                                                   HorizontalAlignment="Center"
-                                                   Margin="0,0,0,6"/>
+                                                    Width="44"
+                                                    TextAlignment="Center"
+                                                    VerticalAlignment="Center"
+                                                    HorizontalAlignment="Center"
+                                                    Margin="0,0,0,6"/>
                                     </DataTemplate>
                                 </ItemsControl.ItemTemplate>
                             </ItemsControl>
 
                             <ItemsControl Grid.Row="2" Grid.Column="0"
-                                          ItemsSource="{Binding WellPlate.RowHeaders}">
+                                            ItemsSource="{Binding WellPlate.RowHeaders}">
                                 <ItemsControl.ItemsPanel>
                                     <ItemsPanelTemplate>
                                         <UniformGrid Rows="8" Columns="1"/>
@@ -164,11 +164,11 @@
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate>
                                         <TextBlock Classes="subtitle" Text="{Binding}" 
-                                                   Width="10"
-                                                   TextAlignment="Center"
-                                                   VerticalAlignment="Center"
-                                                   HorizontalAlignment="Center"
-                                                   Margin="0,0,10,0"/>
+                                                    Width="10"
+                                                    TextAlignment="Center"
+                                                    VerticalAlignment="Center"
+                                                    HorizontalAlignment="Center"
+                                                    Margin="0,0,10,0"/>
                                     </DataTemplate>
                                 </ItemsControl.ItemTemplate>
                             </ItemsControl>
@@ -196,7 +196,7 @@
 
                         <!-- Organ-on-Chip Plate -->
                         <Grid IsVisible="{Binding Settings.Is96Well, Converter={x:Static BoolConverters.Not}}"
-                              RowDefinitions="Auto, Auto, Auto" ColumnDefinitions="Auto, Auto">
+                                RowDefinitions="Auto, Auto, Auto" ColumnDefinitions="Auto, Auto">
 
                             <StackPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
                                         Orientation="Horizontal" Spacing="10" Margin="0,0,0,16">
@@ -215,9 +215,9 @@
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate>
                                         <TextBlock Classes="subtitle" Text="{Binding}"
-                                                   Width="44" TextAlignment="Center"
-                                                   VerticalAlignment="Center" HorizontalAlignment="Center"
-                                                   Margin="0,0,0,6"/>
+                                                    Width="44" TextAlignment="Center"
+                                                    VerticalAlignment="Center" HorizontalAlignment="Center"
+                                                    Margin="0,0,0,6"/>
                                     </DataTemplate>
                                 </ItemsControl.ItemTemplate>
                             </ItemsControl>
@@ -231,9 +231,9 @@
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate>
                                         <TextBlock Classes="subtitle" Text="{Binding}"
-                                                   Width="10" TextAlignment="Center"
-                                                   VerticalAlignment="Center" HorizontalAlignment="Center"
-                                                   Margin="0,0,10,0"/>
+                                                    Width="10" TextAlignment="Center"
+                                                    VerticalAlignment="Center" HorizontalAlignment="Center"
+                                                    Margin="0,0,10,0"/>
                                     </DataTemplate>
                                 </ItemsControl.ItemTemplate>
                             </ItemsControl>
@@ -291,8 +291,8 @@
                 </Viewbox>
             </Border>
 
-            <Border Grid.Column="1" Classes="sidebar" BorderThickness="1,0,0,0" MinWidth="380">
-                <Grid ColumnDefinitions="*" RowDefinitions="Auto,Auto,*">
+            <Border Grid.Column="1" Classes="sidebar" BorderThickness="1,0,0,0" Width="350">
+                <Grid RowDefinitions="Auto,Auto,*">
 		            <Border BorderThickness="0,0,0,1" Grid.Row="0">
                         <DockPanel Margin="15, 10">
 						    <TextBlock DockPanel.Dock="Right" Classes="subtitle" FontSize="10" LetterSpacing="1.5" Text="{Binding CalibrationRows.Count, StringFormat='{}{0} pts'}"/>
@@ -334,21 +334,23 @@
                             <DataGridTextColumn Header="WELL"
                                                 Binding="{Binding Well}"
                                                 Width="*"
+                                                MinWidth="70"
                                                 FontWeight="Bold"
                                                 Foreground="{StaticResource Accent}"/>
 
                             <DataGridTextColumn Header="X / Y"
                                                 Binding="{Binding XY}"
+                                                MinWidth="85"
                                                 Width="*"/>
 
-                            <DataGridTemplateColumn Header="ERR L" Width="*" SortMemberPath="ErrLVal">
+                            <DataGridTemplateColumn Header="ERR L" Width="2*" SortMemberPath="ErrLVal">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <StackPanel Orientation="Horizontal" Spacing="4" 
                                                     VerticalAlignment="Center" Margin="10,0">
                                             <TextBlock Text="{Binding ErrL}"
-                                                       FontSize="10"
-                                                       Foreground="{Binding ErrLColor}"/>
+                                                        FontSize="10"
+                                                        Foreground="{Binding ErrLColor}"/>
                                             <Border Height="3" 
                                                     Width="{Binding ErrLBarWidth}" 
                                                     CornerRadius="2"
@@ -359,14 +361,14 @@
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
 
-                            <DataGridTemplateColumn Header="ERR R" Width="*" SortMemberPath="ErrRVal">
+                            <DataGridTemplateColumn Header="ERR R" Width="2*" SortMemberPath="ErrRVal">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <StackPanel Orientation="Horizontal" Spacing="4" 
                                                     VerticalAlignment="Center" Margin="10,0">
                                             <TextBlock Text="{Binding ErrR}"
-                                                       FontSize="10"
-                                                       Foreground="{Binding ErrRColor}"/>
+                                                        FontSize="10"
+                                                        Foreground="{Binding ErrRColor}"/>
                                             <Border Height="3" 
                                                     Width="{Binding ErrRBarWidth}" 
                                                     CornerRadius="2"
@@ -380,12 +382,6 @@
                     </DataGrid>
                 </Grid>
             </Border>
-
         </Grid>
-
-        <Border>
-			
-        </Border>
-
     </DockPanel>
 </UserControl>

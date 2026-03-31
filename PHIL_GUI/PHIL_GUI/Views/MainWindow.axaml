@@ -67,7 +67,7 @@
             </Grid>
         </Border>
 
-        <Border DockPanel.Dock="Left" Classes="sidebar" Padding="15,20">
+        <Border DockPanel.Dock="Left" Classes="sidebar" Padding="15,20" Width="200">
 			<StackPanel Orientation="Vertical"
                         Spacing="15" >
                 <StackPanel Orientation="Vertical">

@@ -225,7 +225,6 @@
         </Style>
 
         <Style Selector="Border.sidebar">
-            <Setter Property="Width" Value="200"/>
 			<Setter Property="Background" Value="{StaticResource Surface}"/>
             <Setter Property="BorderThickness" Value="0,0,1,0"/>
         </Style>
