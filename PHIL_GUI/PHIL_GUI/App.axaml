@@ -64,19 +64,25 @@
 			<Setter Property="Background" Value="Transparent"/>
         </Style>
 
+        <Style Selector="DataGrid DataGridRow TextBlock">
+			<Setter Property="FontSize" Value="10"/>
+            <Setter Property="Foreground" Value="{StaticResource Muted}"/>
+        </Style>
+
         <Style Selector="DataGrid DataGridRow:pointerover /template/ Rectangle#BackgroundRectangle">
             <Setter Property="Fill" Value="{StaticResource Surface2}"/>
-            <Setter Property="Opacity" Value="1"/>
         </Style>
 
         <Style Selector="DataGrid DataGridRow:selected /template/ Rectangle#BackgroundRectangle">
             <Setter Property="Fill" Value="{StaticResource Accent-Dim}"/>
-            <Setter Property="Opacity" Value="1"/>
         </Style>
 
         <Style Selector="DataGrid DataGridRow:selected:pointerover /template/ Rectangle#BackgroundRectangle">
             <Setter Property="Fill" Value="{StaticResource Accent-Dim}"/>
-            <Setter Property="Opacity" Value="1"/>
+        </Style>
+
+        <Style Selector="DataGrid DataGridCell:focus /template/ Rectangle">
+            <Setter Property="StrokeThickness" Value="0"/>
         </Style>
 
         <Style Selector="TextBlock.subtitle">
