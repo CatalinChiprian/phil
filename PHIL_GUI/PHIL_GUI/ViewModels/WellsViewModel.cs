@@ -1,9 +1,6 @@
-using Avalonia;
-using Avalonia.Media;
 using CommunityToolkit.Mvvm.Input;
 using PHIL_GUI.Models;
 using PHIL_GUI.ViewModels.Base;
-using System;
 using System.Windows.Input;
 
 namespace PHIL_GUI.ViewModels;
@@ -40,6 +37,7 @@ public class WellsViewModel : ViewModelBase
             return $"Stopped - L: {Position.L}, R: {Position.R}";
         }
     }
+    public string CalPointsText => $"{Calibration.Points.Count}/{(Settings.Is96Well ? Calibration.MAX_COUNT_96 : Calibration.MAX_COUNT_OOC)}";
     public string MicrostepsText => $"1/{Microsteps}";
     
     public WellsViewModel()
@@ -55,7 +53,10 @@ public class WellsViewModel : ViewModelBase
             OnPropertyChanged(nameof(TopNotificationText));
 
         if (e.PropertyName == nameof(Settings.SelectedPlateType))
+        {
+            OnPropertyChanged(nameof(CalPointsText));
             WellPlate.PlateType = Settings.SelectedPlateType;
+        }
     }
 
     private void CurrentWell_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)

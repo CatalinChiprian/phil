@@ -21,7 +21,7 @@
                     <StackPanel>
                         <TextBlock Classes="subtitle" LetterSpacing="1.5" Text="CAL. POINTS"/>
 						<TextBlock Classes="metric-value" 
-                                   Text="{Binding Calibration.CalPointsText}"
+                                   Text="{Binding CalPointsText}"
                                    Foreground="{Binding Calibration.PointsColor}"/>
                     </StackPanel>
 

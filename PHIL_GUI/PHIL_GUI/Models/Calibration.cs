@@ -9,10 +9,11 @@ namespace PHIL_GUI.Models
 {
     public class Calibration : ObservableObject
     {
-        public const int MAX_COUNT = 40;
+        public const int MAX_COUNT_96 = 40;
+        public const int MAX_COUNT_OOC = 32;
         public const int MIN_COUNT = 10;
         public int Count => Points.Count();
-        public List<CalibrationPoint> Points { get; } = new List<CalibrationPoint>(MAX_COUNT);
+        public List<CalibrationPoint> Points { get; } = new List<CalibrationPoint>();
 
         private double rmsLValue;
         public double RmsLValue { 
@@ -41,7 +42,6 @@ namespace PHIL_GUI.Models
         }
         public IBrush RmsColor => Application.Current.Resources[rmsColor] as IBrush;
 
-        public string CalPointsText => $"{Count}/{MAX_COUNT}";
         private string pointsColor => Count < 10 ? "Warn" : Count < 20 ? "Caution" : "Accent";
         public IBrush PointsColor => Application.Current.Resources[pointsColor] as IBrush;
     }
