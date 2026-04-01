@@ -19,8 +19,10 @@ public class MainWindowViewModel : ViewModelBase
     public ICommand MoveDownCommand { get; }
     public ICommand EmergencyStopCommand { get; }
     public ICommand GoHomeCommand { get; }
+    public ICommand CalibrateHomeCommand { get; }
     public ICommand SelectWell96Command { get; }
     public ICommand SelectOrganOnChipCommand { get; }
+    public ICommand EmergencyStopCommand { get; }
 
     private object _currentPage;
     private List<PageItem> _pages;
@@ -55,7 +57,7 @@ public class MainWindowViewModel : ViewModelBase
         _pages = new List<PageItem>
         {
             new PageItem { Title = "Wells", ViewModel = new WellsViewModel() },
-            new PageItem { Title = "Calibration", ViewModel = new CalibrationViewModel() }, // Change VM
+            new PageItem { Title = "Calibration", ViewModel = new CalibrationViewModel() },
             new PageItem { Title = "Medium Exchange", ViewModel = new BasicControlsViewModel() } // Change VM
         };
 
@@ -64,10 +66,11 @@ public class MainWindowViewModel : ViewModelBase
         DisconnectCommand = new RelayCommand(Disconnect);
         MoveUpCommand = new RelayCommand(() => RobotProtocol.Send("u"));
         MoveDownCommand = new RelayCommand(() => RobotProtocol.Send("d"));
-        EmergencyStopCommand = new RelayCommand(RobotProtocol.EmergencyStop);
         GoHomeCommand = new RelayCommand(RobotProtocol.GoHome);
+        CalibrateHomeCommand = new RelayCommand(RobotProtocol.CalibrateHome);
         SelectWell96Command = new RelayCommand(() => Settings.SelectedPlateType = PlateType.Well96);
         SelectOrganOnChipCommand = new RelayCommand(() => Settings.SelectedPlateType = PlateType.OrganOnChip);
+        EmergencyStopCommand = new RelayCommand(RobotProtocol.EmergencyStop);
     }
 
     public void Disconnect()

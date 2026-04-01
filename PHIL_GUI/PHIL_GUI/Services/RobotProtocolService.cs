@@ -53,6 +53,13 @@ namespace PHIL_GUI.Services
             robotState.Settings.State = MoveState.Moving;
             Send("h");
         }
+
+        public void CalibrateHome()
+        {
+            robotState.CurrentWell.Type = WellType.Home;
+            robotState.Settings.State = MoveState.Moving;
+            Send("c");
+        }
         public void EmergencyStop()
         {
             robotState.CurrentWell.Type = WellType.Unknown;
