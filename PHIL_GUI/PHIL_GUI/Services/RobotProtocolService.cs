@@ -47,6 +47,36 @@ namespace PHIL_GUI.Services
             serialPort.SendMessage(command);
         }
 
+        public void MoveUp()
+        {
+            Send("u");
+        }
+
+        public void MoveDown()
+        {
+            Send("d");
+        }
+
+        public void MoveForward()
+        {
+            Send("f");
+        }
+
+        public void MoveBackward()
+        {
+            Send("b");
+        }
+
+        public void MoveLeft()
+        {
+            Send("l");
+        }
+
+        public void MoveRight()
+        {
+            Send("r");
+        }
+
         public void GoHome()
         {
             robotState.CurrentWell.Type = WellType.Home;
@@ -60,12 +90,14 @@ namespace PHIL_GUI.Services
             robotState.Settings.State = MoveState.Moving;
             Send("c");
         }
+
         public void EmergencyStop()
         {
             robotState.CurrentWell.Type = WellType.Unknown;
             robotState.Settings.State = MoveState.EmergencyStopped;
             Send("s");
         }
+
         public void GetSetupInformation()
         {
             // Current Well
@@ -147,11 +179,11 @@ namespace PHIL_GUI.Services
                 robotState.Calibration.Points.Add(
                     new CalibrationPoint
                     {
-                        Name = parts[0],
+                        Well = parts[0],
                         X = parts[1],
                         Y = parts[2],
-                        ErrorLeft = parts[3],
-                        ErrorRight = parts[4].Trim(),
+                        ErrorLeft = double.Parse(parts[3], CultureInfo.InvariantCulture),
+                        ErrorRight = double.Parse(parts[4].Trim(), CultureInfo.InvariantCulture),
                     });
             };
         }

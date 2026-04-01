@@ -10,6 +10,7 @@ namespace PHIL_GUI.Models
     public class Calibration : ObservableObject
     {
         public const int MAX_COUNT = 40;
+        public const int MIN_COUNT = 10;
         public int Count => Points.Count();
         public List<CalibrationPoint> Points { get; } = new List<CalibrationPoint>(MAX_COUNT);
 

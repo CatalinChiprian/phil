@@ -17,7 +17,6 @@ public class MainWindowViewModel : ViewModelBase
     public ICommand DisconnectCommand { get; }
     public ICommand MoveUpCommand { get; }
     public ICommand MoveDownCommand { get; }
-    public ICommand EmergencyStopCommand { get; }
     public ICommand GoHomeCommand { get; }
     public ICommand CalibrateHomeCommand { get; }
     public ICommand SelectWell96Command { get; }
@@ -64,8 +63,8 @@ public class MainWindowViewModel : ViewModelBase
         SelectedPage = _pages[0];
 
         DisconnectCommand = new RelayCommand(Disconnect);
-        MoveUpCommand = new RelayCommand(() => RobotProtocol.Send("u"));
-        MoveDownCommand = new RelayCommand(() => RobotProtocol.Send("d"));
+        MoveUpCommand = new RelayCommand(RobotProtocol.MoveUp);
+        MoveDownCommand = new RelayCommand(RobotProtocol.MoveDown);
         GoHomeCommand = new RelayCommand(RobotProtocol.GoHome);
         CalibrateHomeCommand = new RelayCommand(RobotProtocol.CalibrateHome);
         SelectWell96Command = new RelayCommand(() => Settings.SelectedPlateType = PlateType.Well96);

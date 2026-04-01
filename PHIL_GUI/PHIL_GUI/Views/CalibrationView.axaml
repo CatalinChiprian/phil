@@ -48,7 +48,7 @@
 
                         <!-- Front -->
                         <Button Grid.Row="0" Grid.Column="2" Classes="btn btn-dpad"
-                                Command="{Binding}">
+                                Command="{Binding MoveForwardCommand}">
                             <Path Data="M6 8L2 8L2 6L8 5.24536e-07L14 6L14 8L10 8L10 16L6 16L6 8Z"
                                   Stretch="Fill"
                                   Width="9"
@@ -56,7 +56,7 @@
                         </Button>
                         <!-- Left -->
                         <Button Grid.Row="2" Grid.Column="0" Classes="btn btn-dpad"
-                                Command="{Binding}">
+                                Command="{Binding MoveLeftCommand}">
                             <Path Data="M6 8L2 8L2 6L8 5.24536e-07L14 6L14 8L10 8L10 16L6 16L6 8Z"
                                   Stretch="Fill"
                                   Width="9"
@@ -68,7 +68,7 @@
                         </Button>
                         <!-- Right -->
                         <Button Grid.Row="2" Grid.Column="4" Classes="btn btn-dpad"
-                                Command="{Binding}">
+                                Command="{Binding MoveRightCommand}">
                             <Path Data="M6 8L2 8L2 6L8 5.24536e-07L14 6L14 8L10 8L10 16L6 16L6 8Z"
                                   Stretch="Fill"
                                   Width="9"
@@ -80,7 +80,7 @@
                         </Button>
                         <!-- Backward -->
                         <Button Grid.Row="4" Grid.Column="2" Classes="btn btn-dpad"
-                                Command="{Binding}" IsEnabled="False">
+                                Command="{Binding MoveBackwardCommand}" IsEnabled="False">
                             <Path Data="M6 8L2 8L2 6L8 5.24536e-07L14 6L14 8L10 8L10 16L6 16L6 8Z"
                                   Stretch="Fill"
                                   Width="9"
@@ -97,12 +97,18 @@
                     <TextBlock Classes="subtitle" LetterSpacing="2" Text="STEP SIZE" VerticalAlignment="Center"/>
 
                     <StackPanel Orientation="Horizontal" Spacing="5">
-						<Button Classes="btn btn-dpad" Content="-"/>
+						<Button Classes="btn btn-dpad" Content="-"
+                                Command="{Binding DecreaseStepSize}"
+                                FontSize="15"
+                                Padding="0"/>
                         <Border Classes="step-value" CornerRadius="4">
                             <TextBlock Text="0.10x" Foreground="{StaticResource Text}" 
                                        FontWeight="SemiBold" FontSize="12"/>
                         </Border>
-						<Button Classes="btn btn-dpad" Content="+"/>
+						<Button Classes="btn btn-dpad" Content="+"
+                                Command="{Binding IncreaseStepSize}"
+                                FontSize="15"
+                                Padding="0"/>
                     </StackPanel>
 
 
@@ -111,8 +117,12 @@
                     <TextBlock Classes="subtitle" LetterSpacing="2" Text="RECORD" VerticalAlignment="Center"/>
 
                     <StackPanel Orientation="Horizontal" Spacing="8">
-			            <Button Classes="btn btn-primary" Content="Record position"/>
-                        <Button Classes="btn btn-secondary" Content="Solve"/>
+			            <Button Classes="btn btn-primary" Content="Record position"
+                                IsEnabled="{Binding RecordEnabled}"
+                                Command="{Binding RecordPositionCommand}"/>
+                        <Button Classes="btn btn-secondary" Content="Solve"
+                                IsEnabled="{Binding SolveEnabled}"
+                                Command="{Binding SolveMappingCommand}"/>
                     </StackPanel>
                 </StackPanel>
             </DockPanel>
@@ -186,7 +196,7 @@
                                                     Classes="well"
                                                     Classes.active="{Binding IsSelected}"
                                                     IsVisible="{Binding IsVisible}"
-                                                    Command="{Binding $parent[ItemsControl].((vm:WellsViewModel)DataContext).WellsPositionCommand}"
+                                                    Command="{Binding $parent[ItemsControl].((vm:CalibrationViewModel)DataContext).WellsPositionCommand}"
                                                     CommandParameter="{Binding Name}"/>
                                         </DataTemplate>
                                     </ItemsControl.ItemTemplate>
@@ -248,13 +258,13 @@
                                         </ItemsControl.ItemsPanel>
                                         <ItemsControl.ItemTemplate>
                                             <DataTemplate>
-                                                <Border Classes="well-pair">
+                                                <Border Classes="well-pair" IsVisible="{Binding IsVisible}">
                                                     <Grid RowDefinitions="*,*" ColumnDefinitions="*,*">
                                                         <Button Grid.Row="0" Grid.Column="0"
-                                                                Content="IN"
+                                                                Content="{Binding In.Name}"
                                                                 Classes="well"
                                                                 Classes.active="{Binding In.IsSelected}"
-                                                                Command="{Binding $parent[ItemsControl].((vm:WellsViewModel)DataContext).WellsPositionCommand}"
+                                                                Command="{Binding $parent[ItemsControl].((vm:CalibrationViewModel)DataContext).WellsPositionCommand}"
                                                                 CommandParameter="{Binding In.Name}"/>
 
                                                         <TextBlock Grid.Row="0" Grid.Column="0"
@@ -266,10 +276,10 @@
                                                                     Margin="0,0,0,2"/>
 
                                                         <Button Grid.Row="1" Grid.Column="1"
-                                                                Content="OUT"
+                                                                Content="{Binding Out.Name}"
                                                                 Classes="well"
                                                                 Classes.active="{Binding Out.IsSelected}"
-                                                                Command="{Binding $parent[ItemsControl].((vm:WellsViewModel)DataContext).WellsPositionCommand}"
+                                                                Command="{Binding $parent[ItemsControl].((vm:CalibrationViewModel)DataContext).WellsPositionCommand}"
                                                                 CommandParameter="{Binding Out.Name}"/>
                                                     </Grid>
                                                 </Border>

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Threading;
 
 namespace PHIL_GUI.Models
 {
@@ -14,16 +13,36 @@ namespace PHIL_GUI.Models
         public List<string> ColHeaders { get; } = Enumerable.Range(1, COLUMN_COUNT).Select(i => i.ToString()).ToList();
         public List<char> RowHeaders { get; } = new() { 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H' };
         public PlateType PlateType { get; set; }
+        public bool IsCalibrationPage { get; }
         public ObservableCollection<WellItem> Wells96 { get; } = new();
         public ObservableCollection<WellPairItem> WellsOoC { get; } = new();
-
-        public WellPlateItem()
+        public WellItem SelectedWell
         {
+            get
+            {
+                if (PlateType == PlateType.Well96)
+                    return Wells96.FirstOrDefault(w => w.IsSelected);
+
+                foreach (WellPairItem pair in WellsOoC)
+                {
+                    if (pair.In.IsSelected) return pair.In;
+                    if (pair.Out.IsSelected) return pair.Out;
+                }
+
+                return null;
+            }
+        }
+
+        public WellPlateItem(bool isCalibrationPage = false)
+        {
+            IsCalibrationPage = isCalibrationPage;
+
             foreach (char row in RowHeaders)
             {
                 for (int col = 1; col <= COLUMN_COUNT; col++)
                 {
-                    Wells96.Add(new WellItem(row, col));
+                    bool isVisible = !IsCalibrationPage || (col == 1 || col % 3 == 0);
+                    Wells96.Add(new WellItem(row, col, isVisible));
                 }
             }
 
@@ -55,7 +74,12 @@ namespace PHIL_GUI.Models
 
                 WellItem nextWell = new WellItem(nextRow, nextColumnIndex);
 
-                WellsOoC.Add(new WellPairItem(pairIndex, well, nextWell));
+                int rowPairIndex  = row / PAIR_COUNT;
+                bool isRowPairIndexEven = rowPairIndex % 2 == 0;
+                bool isPairIndexEven = pairIndex % 2 == 0;
+                bool isVisible = !IsCalibrationPage || (isRowPairIndexEven != isPairIndexEven);
+
+                WellsOoC.Add(new WellPairItem(pairIndex, well, nextWell, isVisible));
 
                 colIndex += PAIR_COUNT;
 

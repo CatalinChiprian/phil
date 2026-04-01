@@ -27,12 +27,12 @@ namespace PHIL_GUI.Models
             get => isVisible;
             set => SetProperty(ref isVisible, value);
         }
-        public WellItem(char row, int column)
+        public WellItem(char row, int column, bool isVisible = true)
         {
             Row = row;
             Column = column;
             Name = $"{row}{column}";
-            IsVisible = true;
+            IsVisible = isVisible;
         }
     }
 }

@@ -53,6 +53,9 @@ public class WellsViewModel : ViewModelBase
     {
         if (e.PropertyName == nameof(Settings.State))
             OnPropertyChanged(nameof(TopNotificationText));
+
+        if (e.PropertyName == nameof(Settings.SelectedPlateType))
+            WellPlate.PlateType = Settings.SelectedPlateType;
     }
 
     private void CurrentWell_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)

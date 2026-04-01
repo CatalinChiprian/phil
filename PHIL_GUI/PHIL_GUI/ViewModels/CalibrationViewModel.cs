@@ -1,14 +1,30 @@
-﻿using PHIL_GUI.Models;
+﻿using CommunityToolkit.Mvvm.Input;
+using PHIL_GUI.Models;
 using PHIL_GUI.ViewModels.Base;
 using System.Collections.ObjectModel;
+using System.Windows.Input;
 
 namespace PHIL_GUI.ViewModels
 {
     public class CalibrationViewModel : ViewModelBase
     {
+        public ICommand MoveForwardCommand { get; }
+        public ICommand MoveBackwardCommand { get; }
+        public ICommand MoveLeftCommand { get; }
+        public ICommand MoveRightCommand { get; }
+        public ICommand DecreaseStepSize { get; }
+        public ICommand IncreaseStepSize { get; }
+        public ICommand WellsPositionCommand { get; }
+        public ICommand RecordPositionCommand { get; }
+        public ICommand SolveMappingCommand { get; }
+        public bool RecordEnabled => WellPlate.SelectedWell != null;
+        public bool SolveEnabled => Calibration.Points.Count >= Calibration.MIN_COUNT;
         public Settings Settings => RobotProtocol.RobotState.Settings;
+        public Calibration Calibration => RobotProtocol.RobotState.Calibration;
 
-        public WellPlateItem WellPlate { get; } = new WellPlateItem();
+        public WellPlateItem WellPlate { get; } = new WellPlateItem(true);
+
+        // Used for Front End testing, not actual calibration points
         public ObservableCollection<CalibrationRowItem> CalibrationRows { get; } = new()
         {
             new CalibrationRowItem("A1", "0, 36", 0.5f, 0.8f),
@@ -32,6 +48,36 @@ namespace PHIL_GUI.ViewModels
 
         public CalibrationViewModel()
         {
+            MoveForwardCommand = new RelayCommand(RobotProtocol.MoveForward);
+            MoveBackwardCommand = new RelayCommand(RobotProtocol.MoveBackward);
+            MoveLeftCommand = new RelayCommand(RobotProtocol.MoveLeft);
+            MoveRightCommand = new RelayCommand(RobotProtocol.MoveRight);
+            DecreaseStepSize = new RelayCommand(() => RobotProtocol.Send("-"));
+            IncreaseStepSize = new RelayCommand(() => RobotProtocol.Send("+"));
+            WellsPositionCommand = new RelayCommand<string>(w => GoToWell(w));
+            RecordPositionCommand = new RelayCommand(RecordPosition);
+            SolveMappingCommand = new RelayCommand(SolveMapping);
+        }
+
+        void GoToWell(string well)
+        {
+            Settings.State = MoveState.Moving;
+            WellPlate.SelectWell(well);
+            RobotProtocol.Send($"w{well.ToLower()}");
+        }
+
+        void RecordPosition()
+        {
+            if (WellPlate.SelectedWell == null) return;
+
+            RobotProtocol.Send($"z {WellPlate.SelectedWell.Name.ToLower()}");
+        }
+
+        void SolveMapping()
+        {
+            if (Calibration.Points.Count < Calibration.MIN_COUNT) return;
+
+            RobotProtocol.Send("z solve");
         }
     }
 }

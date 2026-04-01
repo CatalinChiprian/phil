@@ -429,6 +429,8 @@
             <Setter Property="BorderBrush" Value="{StaticResource BorderColor}"/>
             <Setter Property="Background" Value="{StaticResource Surface2}"/>
             <Setter Property="Foreground" Value="{StaticResource Muted}"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
         </Style>
 
         <Style Selector="Button.btn-dpad Path">
