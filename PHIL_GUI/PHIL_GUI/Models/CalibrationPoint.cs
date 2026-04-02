@@ -18,28 +18,68 @@ namespace PHIL_GUI.Models
         public int X
         {
             get => x;
-            set => SetProperty(ref x, value);
+            set
+            {
+                if (value ==  x) return;
+
+                SetProperty(ref x, value);
+
+                OnPropertyChanged(nameof(XY));
+            }
         }
 
         private int y;
         public int Y
         {
             get => y;
-            set => SetProperty(ref y, value);
+            set
+            {
+                if (value == y) return;
+
+                SetProperty(ref y, value);
+
+                OnPropertyChanged(nameof(XY));
+            }
         }
 
         private double errorLeft;
         public double ErrorLeft
         {
             get => errorLeft;
-            set => SetProperty(ref errorLeft, value);
+            set
+            {
+                if (value == errorLeft) return;
+
+                SetProperty(ref errorLeft, value);
+
+                OnPropertyChanged(nameof(ErrL));
+                OnPropertyChanged(nameof(ErrLColor));
+                OnPropertyChanged(nameof(ErrLBarWidth));
+
+                OnPropertyChanged(nameof(IsOk));
+                OnPropertyChanged(nameof(IsCaution));
+                OnPropertyChanged(nameof(IsWarn));
+            }
         }
 
         private double errorRight;
         public double ErrorRight
         {
             get => errorRight;
-            set => SetProperty(ref errorRight, value);
+            set
+            {
+                if (value == errorRight) return;
+
+                SetProperty(ref errorRight, value);
+
+                OnPropertyChanged(nameof(ErrR));
+                OnPropertyChanged(nameof(ErrRColor));
+                OnPropertyChanged(nameof(ErrRBarWidth));
+
+                OnPropertyChanged(nameof(IsOk));
+                OnPropertyChanged(nameof(IsCaution));
+                OnPropertyChanged(nameof(IsWarn));
+            }
         }
 
         public string XY => $"{X}, {Y}";
@@ -61,5 +101,14 @@ namespace PHIL_GUI.Models
 
         public double ErrLBarWidth => Math.Min(Math.Abs(ErrorLeft) / 3.0 * 40, 40);
         public double ErrRBarWidth => Math.Min(Math.Abs(ErrorRight) / 3.0 * 40, 40);
+
+        public CalibrationPoint(string name, int x = 0, int y = 0, double errorLeft = -2, double errorRight = -2)
+        {
+            Name = name;
+            X = x;
+            Y = y;
+            ErrorLeft = errorLeft;
+            ErrorRight = errorRight;
+        }
     }
 }

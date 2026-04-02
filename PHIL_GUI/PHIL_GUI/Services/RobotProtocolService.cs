@@ -15,6 +15,8 @@ namespace PHIL_GUI.Services
     }
     public class RobotProtocolService : ObservableObject
     {
+        const int DEFAULT_ERROR_VALUE = -2;
+
         const string WELL_PREFIX = "WELL:";
         const string POS_PREFIX = "POS:";
         const string CAL_PT_PREFIX = "CAL_PT:";
@@ -153,8 +155,8 @@ namespace PHIL_GUI.Services
 
             robotState.CurrentWell.Type = WellType.Standard;
             robotState.CurrentWell.Name = parts[0].ToUpper();
-            robotState.CurrentWell.X = kv["X"];
-            robotState.CurrentWell.Y = kv["Y"];
+            robotState.CurrentWell.X = double.Parse(kv["X"], CultureInfo.InvariantCulture);
+            robotState.CurrentWell.Y = double.Parse(kv["Y"], CultureInfo.InvariantCulture);
             robotState.CurrentWell.AngleL = kv["L"];
             robotState.CurrentWell.AngleR = kv["R"].Trim();
 
@@ -190,31 +192,46 @@ namespace PHIL_GUI.Services
                     existingPoint.ErrorRight = double.Parse(parts[4].Trim(), CultureInfo.InvariantCulture);
                 }
                 else
-                    robotState.Calibration.Points.Add(
-                    new CalibrationPoint
+                {
+                    int x = (int)double.Parse(parts[1], CultureInfo.InvariantCulture);
+                    int y = (int)double.Parse(parts[2].Trim(), CultureInfo.InvariantCulture);
+                    double errorLeft = DEFAULT_ERROR_VALUE;
+                    double errorRight = DEFAULT_ERROR_VALUE;
+
+                    if (parts.Length > 3)
                     {
-                        Name = parts[0].ToUpper(),
-                        X = (int)double.Parse(parts[1], CultureInfo.InvariantCulture),
-                        Y = (int)double.Parse(parts[2].Trim(), CultureInfo.InvariantCulture),
-                        ErrorLeft = parts.Length > 3 ? double.Parse(parts[3], CultureInfo.InvariantCulture) : -2,
-                        ErrorRight = parts.Length > 3 ? double.Parse(parts[4].Trim(), CultureInfo.InvariantCulture) : -2,
-                    });
-            };
+                        errorLeft = double.Parse(parts[3], CultureInfo.InvariantCulture);
+                        errorRight = double.Parse(parts[4], CultureInfo.InvariantCulture);
+                    }
+
+                    CalibrationPoint point = new CalibrationPoint(name, x, y, errorLeft, errorRight);
+
+                    robotState.Calibration.Points.Add(point);
+                };
+            }
         }
 
         private void ParseCalRecorded(string msg)
         {
             var parts = msg.Substring(CAL_REC_PREFIX.Length).Split(',');
             {
-                robotState.Calibration.Points.Add(
-                    new CalibrationPoint
-                    {
-                        Name = parts[0].ToUpper(),
-                        X = (int)double.Parse(parts[1], CultureInfo.InvariantCulture),
-                        Y = (int)double.Parse(parts[2].Trim(), CultureInfo.InvariantCulture),
-                        ErrorLeft = -2,
-                        ErrorRight = -2,
-                    });
+
+                string name = parts[0].ToUpper();
+                int x = (int)double.Parse(parts[1], CultureInfo.InvariantCulture);
+                int y = (int)double.Parse(parts[2].Trim(), CultureInfo.InvariantCulture);
+
+                CalibrationPoint existingPoint = robotState.Calibration.Points.FirstOrDefault(p => p.Name == name);
+                if (existingPoint != null)
+                {
+                    existingPoint.X = (int)double.Parse(parts[1], CultureInfo.InvariantCulture);
+                    existingPoint.Y = (int)double.Parse(parts[2].Trim(), CultureInfo.InvariantCulture);
+                }
+                else
+                {
+                    CalibrationPoint point = new CalibrationPoint(name);
+
+                    robotState.Calibration.Points.Add(point);
+                }
             };
         }
 
@@ -243,6 +260,13 @@ namespace PHIL_GUI.Services
         {
             string d = msg.Substring(STEP_SIZE_PREFIX.Length).Trim();
             robotState.Settings.StepSize = double.Parse(d, CultureInfo.InvariantCulture);
+        }
+
+        public void RecordCalibrationPoint(string wellName)
+        {
+            CalibrationPoint point = new CalibrationPoint(wellName);
+
+            robotState.Calibration.Points.Add(point);
         }
 
 

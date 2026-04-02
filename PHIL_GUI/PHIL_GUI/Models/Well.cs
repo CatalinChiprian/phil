@@ -32,15 +32,15 @@ namespace PHIL_GUI.Models
             set => SetProperty(ref name, value);
         }
 
-        private string x;
-        public string X
+        private double x;
+        public double X
         {
             get => x;
             set => SetProperty(ref x, value);
         }
 
-        private string y;
-        public string Y
+        private double y;
+        public double Y
         {
             get => y;
             set => SetProperty(ref y, value);

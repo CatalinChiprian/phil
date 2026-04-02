@@ -345,7 +345,7 @@
 
 						    <StackPanel Orientation="Horizontal" Spacing="5">
                                 <Ellipse Width="7" Height="7" Fill="{StaticResource BorderColor}"/>
-                                <TextBlock Classes="subtitle" Text="not recorded"/>
+                                <TextBlock Classes="subtitle" Text="recorded"/>
                             </StackPanel>
                         </StackPanel>
                     </Border>

@@ -1,11 +1,14 @@
 ﻿using CommunityToolkit.Mvvm.Input;
 using PHIL_GUI.Models;
 using PHIL_GUI.ViewModels.Base;
+using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Globalization;
 using System.Linq;
 using System.Windows.Input;
+using System.Xml.Linq;
 
 namespace PHIL_GUI.ViewModels
 {
@@ -62,8 +65,18 @@ namespace PHIL_GUI.ViewModels
             {
                 foreach (CalibrationPoint point in e.NewItems)
                 {
+                    point.PropertyChanged += Point_PropertyChanged;
                     UpdateWellClass(point);
                 }
+            }
+        }
+
+        private void Point_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(CalibrationPoint.ErrorLeft) || 
+                e.PropertyName == nameof(CalibrationPoint.ErrorRight))
+            {
+                CalibrationPoint point = (CalibrationPoint)sender; 
             }
         }
 
@@ -95,6 +108,9 @@ namespace PHIL_GUI.ViewModels
         void RecordPosition()
         {
             if (WellPlate.SelectedWellName == null) return;
+
+            CalibrationPoint point = new CalibrationPoint(WellPlate.SelectedWellName, (int)CurrentWell.X, (int)CurrentWell.Y);
+            Calibration.Points.Add(point);
 
             RobotProtocol.Send($"z {WellPlate.SelectedWellName.ToLower()}");
 

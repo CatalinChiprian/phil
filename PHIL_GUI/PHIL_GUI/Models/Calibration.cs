@@ -44,5 +44,15 @@ namespace PHIL_GUI.Models
 
         private string pointsColor => Count < 10 ? "Warn" : Count < 20 ? "Caution" : "Accent";
         public IBrush PointsColor => Application.Current.Resources[pointsColor] as IBrush;
+
+        public Calibration()
+        {
+            Points.CollectionChanged += Points_CollectionChanged;
+        }
+
+        private void Points_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            OnPropertyChanged(nameof(Count));
+        }
     }
 }
