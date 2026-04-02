@@ -1,4 +1,6 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using Avalonia.Media;
+using CommunityToolkit.Mvvm.ComponentModel;
+using System;
 
 namespace PHIL_GUI.Models
 {
@@ -27,6 +29,8 @@ namespace PHIL_GUI.Models
             get => isVisible;
             set => SetProperty(ref isVisible, value);
         }
+        
+        public CalibrationPoint Calibration { get; set; }
         public WellItem(char row, int column, bool isVisible = true)
         {
             Row = row;

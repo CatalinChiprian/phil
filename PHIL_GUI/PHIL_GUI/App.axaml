@@ -23,7 +23,9 @@
         <SolidColorBrush x:Key="Warn">#d93025</SolidColorBrush>
         <SolidColorBrush x:Key="Warn-Dim">#0Cd93025</SolidColorBrush>
         <SolidColorBrush x:Key="Caution">#cc7700</SolidColorBrush>
+        <SolidColorBrush x:Key="Caution-Dim">#0Ccc7700</SolidColorBrush>
         <SolidColorBrush x:Key="Well-Idle">#e8ede8</SolidColorBrush>
+        <SolidColorBrush x:Key="Well-Idle-NoRecord">#d8d8d8</SolidColorBrush>
         <SolidColorBrush x:Key="Well-Border">#cdd6cd</SolidColorBrush>
     </Application.Resources>
   
@@ -374,6 +376,23 @@
             </Setter>
         </Style>
 
+        <Style Selector="Button.well.no-record">
+            <Setter Property="BorderBrush" Value="{StaticResource Muted}"/>
+            <Setter Property="Opacity" Value="0.5"/>
+        </Style>
+
+        <Style Selector="Button.well.caution">
+            <Setter Property="BorderBrush" Value="{StaticResource Caution}"/>
+        </Style>
+
+        <Style Selector="Button.well.warn">
+            <Setter Property="BorderBrush" Value="{StaticResource Warn}"/>
+        </Style>
+
+        <Style Selector="Button.well.ok">
+            <Setter Property="BorderBrush" Value="{StaticResource Accent}"/>
+        </Style>
+
         <Style Selector="Button.well:pointerover">
             <Setter Property="ZIndex" Value="10"/>     
             <Setter Property="RenderTransform">
@@ -387,15 +406,69 @@
             <Setter Property="Foreground" Value="{StaticResource Accent}"/>
         </Style>
 
+        <Style Selector="Button.well.no-record:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="{StaticResource Surface2}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource Muted}"/>
+            <Setter Property="Foreground" Value="{StaticResource Muted}"/>
+        </Style>
+
+        <Style Selector="Button.well.caution:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="{StaticResource Caution-Dim}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource Caution}"/>
+            <Setter Property="Foreground" Value="{StaticResource Caution}"/>
+        </Style>
+
+        <Style Selector="Button.well.warn:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="{StaticResource Warn-Dim}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource Warn}"/>
+            <Setter Property="Foreground" Value="{StaticResource Warn}"/>
+        </Style>
+
         <Style Selector="Button.well.active">
 			<Setter Property="Background" Value="{StaticResource Accent}"/>
             <Setter Property="BorderBrush" Value="{StaticResource Accent}"/>
             <Setter Property="Foreground" Value="{StaticResource Surface}"/>
         </Style>
 
+        <Style Selector="Button.well.no-record.active">
+            <Setter Property="Background" Value="{StaticResource Muted}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource Muted}"/>
+            <Setter Property="Foreground" Value="{StaticResource Surface}"/>
+        </Style>
+
+        <Style Selector="Button.well.caution.active">
+            <Setter Property="Background" Value="{StaticResource Caution}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource Caution}"/>
+            <Setter Property="Foreground" Value="{StaticResource Surface}"/>
+        </Style>
+
+        <Style Selector="Button.well.warn.active">
+            <Setter Property="Background" Value="{StaticResource Warn}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource Warn}"/>
+            <Setter Property="Foreground" Value="{StaticResource Surface}"/>
+        </Style>
+
         <Style Selector="Button.well.active:pointerover /template/ ContentPresenter">
 			<Setter Property="Background" Value="{StaticResource Accent}"/>
             <Setter Property="BorderBrush" Value="{StaticResource Accent}"/>
+            <Setter Property="Foreground" Value="{StaticResource Surface}"/>
+        </Style>
+
+        <Style Selector="Button.well.no-record:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="{StaticResource Muted}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource Muted}"/>
+            <Setter Property="Foreground" Value="{StaticResource Surface}"/>
+        </Style>
+
+        <Style Selector="Button.well.caution.active:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="{StaticResource Caution}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource Caution}"/>
+            <Setter Property="Foreground" Value="{StaticResource Surface}"/>
+        </Style>
+
+        <Style Selector="Button.well.warn.active:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="{StaticResource Warn}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource Warn}"/>
             <Setter Property="Foreground" Value="{StaticResource Surface}"/>
         </Style>
 
@@ -413,8 +486,8 @@
         </Style>
 
         <Style Selector="Border.well-pair:pointerover">
-            <Setter Property="BorderBrush" Value="{StaticResource Accent}"/>
-            <Setter Property="Background" Value="{StaticResource Accent-Dim}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource Accent-Dim}"/>
+            <Setter Property="Background" Value="{StaticResource Surface}"/>
         </Style>
 
         <Style Selector="Border.quadrant">

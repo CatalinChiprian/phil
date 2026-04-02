@@ -194,6 +194,10 @@
                                         <DataTemplate>
                                             <Button Content="{Binding Name}"
                                                     Classes="well"
+                                                    Classes.ok="{Binding Calibration?.IsOk}"
+                                                    Classes.caution="{Binding Calibration?.IsCaution}"
+                                                    Classes.warn="{Binding Calibration?.IsWarn}"
+                                                    Classes.no-record="{Binding Calibration?.IsNoRecord}"
                                                     Classes.active="{Binding IsSelected}"
                                                     IsVisible="{Binding IsVisible}"
                                                     Command="{Binding $parent[ItemsControl].((vm:CalibrationViewModel)DataContext).WellsPositionCommand}"
@@ -262,7 +266,11 @@
                                                     <Grid RowDefinitions="*,*" ColumnDefinitions="*,*">
                                                         <Button Grid.Row="0" Grid.Column="0"
                                                                 Content="{Binding In.Name}"
-                                                                Classes="well"
+                                                                Classes="well warn"
+                                                                Classes.ok="{Binding In.Calibration?.IsOk}"
+                                                                Classes.caution="{Binding In.Calibration?.IsCaution}"
+                                                                Classes.warn="{Binding In.Calibration?.IsWarn}"
+                                                                Classes.no-record="{Binding In.Calibration?.IsNoRecord}"
                                                                 Classes.active="{Binding In.IsSelected}"
                                                                 Command="{Binding $parent[ItemsControl].((vm:CalibrationViewModel)DataContext).WellsPositionCommand}"
                                                                 CommandParameter="{Binding In.Name}"/>
@@ -277,7 +285,11 @@
 
                                                         <Button Grid.Row="1" Grid.Column="1"
                                                                 Content="{Binding Out.Name}"
-                                                                Classes="well"
+                                                                Classes="well caution"
+                                                                Classes.ok="{Binding Out.Calibration?.IsOk}"
+                                                                Classes.caution="{Binding Out.Calibration?.IsCaution}"
+                                                                Classes.warn="{Binding Out.Calibration?.IsWarn}"
+                                                                Classes.no-record="{Binding Out.Calibration?.IsNoRecord}"
                                                                 Classes.active="{Binding Out.IsSelected}"
                                                                 Command="{Binding $parent[ItemsControl].((vm:CalibrationViewModel)DataContext).WellsPositionCommand}"
                                                                 CommandParameter="{Binding Out.Name}"/>

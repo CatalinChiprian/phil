@@ -7,11 +7,11 @@ namespace PHIL_GUI.Models
 {
     public class CalibrationPoint : ObservableObject
     {
-        private string well;
-        public string Well
+        private string name;
+        public string Name
         {
-            get => well;
-            set => SetProperty(ref well, value);
+            get => name;
+            set => SetProperty(ref name, value);
         }
 
         private string x;
@@ -48,22 +48,13 @@ namespace PHIL_GUI.Models
 
         string errLColor => Math.Abs(ErrorLeft) < 1 ? "Accent" : Math.Abs(ErrorLeft) < 2 ? "Caution" : "Warn";
         string errRColor => Math.Abs(ErrorRight) < 1 ? "Accent" : Math.Abs(ErrorRight) < 2 ? "Caution" : "Warn";
-        string wellColor
-        {
-            get
-            {
-                double worst = Math.Max(Math.Abs(ErrorLeft), Math.Abs(ErrorRight));
-                if (worst > 2) return "Warn";
-                if (worst > 1) return "Caution";
-                if (worst < 1) return "Accent";
-
-                return "Muted";
-            }
-        }
 
         public IBrush ErrLColor => Application.Current.Resources[errLColor] as IBrush;
         public IBrush ErrRColor => Application.Current.Resources[errRColor] as IBrush;
-        public IBrush WellColor => Application.Current.Resources[wellColor] as IBrush;
+        public bool IsOk => Math.Max(Math.Abs(ErrorLeft), Math.Abs(ErrorRight)) < 1;
+        public bool IsCaution => Math.Max(Math.Abs(ErrorLeft), Math.Abs(ErrorRight)) is >= 1 and < 2;
+        public bool IsWarn => Math.Max(Math.Abs(ErrorLeft), Math.Abs(ErrorRight)) >= 2;
+        public bool IsNoRecord => !IsOk && !IsCaution && !IsWarn;
 
         public double ErrLBarWidth => Math.Min(Math.Abs(ErrorLeft) / 3.0 * 40, 40);
         public double ErrRBarWidth => Math.Min(Math.Abs(ErrorRight) / 3.0 * 40, 40);

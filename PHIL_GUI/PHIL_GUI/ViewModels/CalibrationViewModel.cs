@@ -1,7 +1,11 @@
 ﻿using CommunityToolkit.Mvvm.Input;
 using PHIL_GUI.Models;
 using PHIL_GUI.ViewModels.Base;
+using System;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
+using System.ComponentModel;
+using System.Linq;
 using System.Windows.Input;
 
 namespace PHIL_GUI.ViewModels
@@ -57,6 +61,21 @@ namespace PHIL_GUI.ViewModels
             WellsPositionCommand = new RelayCommand<string>(w => GoToWell(w));
             RecordPositionCommand = new RelayCommand(RecordPosition);
             SolveMappingCommand = new RelayCommand(SolveMapping);
+
+            Calibration.Points.CollectionChanged += Points_CollectionChanged; ;
+        }
+
+        private void Points_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            OnPropertyChanged(nameof(SolveEnabled));
+            if (e.Action == NotifyCollectionChangedAction.Add)
+            {
+                foreach (CalibrationPoint point in e.NewItems)
+                {
+                    // point is the newly added item
+                    UpdateWellClass(point);
+                }
+            }
         }
 
         void GoToWell(string well)
@@ -78,6 +97,12 @@ namespace PHIL_GUI.ViewModels
             if (Calibration.Points.Count < Calibration.MIN_COUNT) return;
 
             RobotProtocol.Send("z solve");
+        }
+
+        void UpdateWellClass(CalibrationPoint point)
+        {
+            WellItem wellItem = WellPlate.DisplayedWells.FirstOrDefault(w => w.Name == point.Name);
+            wellItem.Calibration = point;
         }
     }
 }

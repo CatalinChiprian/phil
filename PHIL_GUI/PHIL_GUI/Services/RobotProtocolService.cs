@@ -179,7 +179,7 @@ namespace PHIL_GUI.Services
                 robotState.Calibration.Points.Add(
                     new CalibrationPoint
                     {
-                        Well = parts[0],
+                        Name = parts[0],
                         X = parts[1],
                         Y = parts[2],
                         ErrorLeft = double.Parse(parts[3], CultureInfo.InvariantCulture),

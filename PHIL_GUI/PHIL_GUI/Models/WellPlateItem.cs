@@ -16,6 +16,16 @@ namespace PHIL_GUI.Models
         public bool IsCalibrationPage { get; }
         public ObservableCollection<WellItem> Wells96 { get; } = new();
         public ObservableCollection<WellPairItem> WellsOoC { get; } = new();
+
+        public IEnumerable<WellItem> DisplayedWells
+        {
+            get
+            {
+                if (PlateType == PlateType.Well96)
+                    return Wells96.Where(w => w.IsVisible);
+                return WellsOoC.Where(p => p.IsVisible).SelectMany(p => new[] { p.In, p.Out });
+            }
+        }
         public WellItem SelectedWell
         {
             get

@@ -2,7 +2,7 @@
 using Avalonia.Media;
 using CommunityToolkit.Mvvm.ComponentModel;
 using System;
-using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 
 namespace PHIL_GUI.Models
@@ -13,7 +13,7 @@ namespace PHIL_GUI.Models
         public const int MAX_COUNT_OOC = 32;
         public const int MIN_COUNT = 10;
         public int Count => Points.Count();
-        public List<CalibrationPoint> Points { get; } = new List<CalibrationPoint>();
+        public ObservableCollection<CalibrationPoint> Points { get; } = new ObservableCollection<CalibrationPoint>();
 
         private double rmsLValue;
         public double RmsLValue { 
