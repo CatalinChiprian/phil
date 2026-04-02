@@ -317,7 +317,7 @@
                 <Grid RowDefinitions="Auto,Auto,*">
 		            <Border BorderThickness="0,0,0,1" Grid.Row="0">
                         <DockPanel Margin="15, 10">
-						    <TextBlock DockPanel.Dock="Right" Classes="subtitle" FontSize="10" LetterSpacing="1.5" Text="{Binding CalibrationRows.Count, StringFormat='{}{0} pts'}"/>
+						    <TextBlock DockPanel.Dock="Right" Classes="subtitle" FontSize="10" LetterSpacing="1.5" Text="{Binding Calibration.Count, StringFormat='{}{0} pts'}"/>
 
 						    <TextBlock DockPanel.Dock="Left" Classes="subtitle" FontSize="10" LetterSpacing="1.5" Text="CALIBRATION POINTS"/>
                         </DockPanel>
@@ -348,13 +348,13 @@
                     </Border>
                     <DataGrid Name="CalibrationGrid" Grid.Row="2"
                                 GridLinesVisibility="Horizontal"
-                                ItemsSource="{Binding CalibrationRows}"
+                                ItemsSource="{Binding Calibration.Points}"
                                 IsReadOnly="True">
 
                         <DataGrid.Columns>
 
                             <DataGridTextColumn Header="WELL"
-                                                Binding="{Binding Well}"
+                                                Binding="{Binding Name}"
                                                 Width="*"
                                                 MinWidth="70"
                                                 FontWeight="Bold"
