@@ -1,8 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.Input;
 using PHIL_GUI.Models;
 using PHIL_GUI.ViewModels.Base;
-using System;
-using System.Collections.ObjectModel;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
@@ -21,10 +20,20 @@ namespace PHIL_GUI.ViewModels
         public ICommand WellsPositionCommand { get; }
         public ICommand RecordPositionCommand { get; }
         public ICommand SolveMappingCommand { get; }
-        public bool RecordEnabled => WellPlate.SelectedWell != null;
+        public bool IsDecreaseStepSizeEnabled => RobotProtocol.RobotState.Settings.StepSize > 0.1;
+        public bool RecordEnabled
+        {
+            get
+            {
+                if (WellPlate.SelectedWellName == null) return false;
+
+                return !Calibration.Points.Select(p => p.Name).Contains(WellPlate.SelectedWellName);
+            }
+        }
         public bool SolveEnabled => Calibration.Points.Count >= Calibration.MIN_COUNT;
         public Settings Settings => RobotProtocol.RobotState.Settings;
         public Calibration Calibration => RobotProtocol.RobotState.Calibration;
+        public Well CurrentWell => RobotProtocol.RobotState.CurrentWell;
 
         public WellPlateItem WellPlate { get; } = new WellPlateItem(true);
 
@@ -40,34 +49,56 @@ namespace PHIL_GUI.ViewModels
             RecordPositionCommand = new RelayCommand(RecordPosition);
             SolveMappingCommand = new RelayCommand(SolveMapping);
 
-            Calibration.Points.CollectionChanged += Points_CollectionChanged; ;
+            Calibration.Points.CollectionChanged += Points_CollectionChanged;
+            Settings.PropertyChanged += Settings_PropertyChanged;
+            CurrentWell.PropertyChanged += CurrentWell_PropertyChanged;
         }
 
         private void Points_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
         {
             OnPropertyChanged(nameof(SolveEnabled));
+
             if (e.Action == NotifyCollectionChangedAction.Add)
             {
                 foreach (CalibrationPoint point in e.NewItems)
                 {
-                    // point is the newly added item
                     UpdateWellClass(point);
                 }
             }
         }
 
+        private void Settings_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(Settings.StepSize))
+                OnPropertyChanged(nameof(IsDecreaseStepSizeEnabled));
+        }
+
+        private void CurrentWell_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(CurrentWell.Name))
+            {
+                WellPlate.SelectWell(CurrentWell.Name);
+                OnPropertyChanged(nameof(RecordEnabled));
+            }
+        }
+
         void GoToWell(string well)
         {
-            Settings.State = MoveState.Moving;
+            CurrentWell.Type = WellType.Standard;
+            CurrentWell.Name = well;
             WellPlate.SelectWell(well);
             RobotProtocol.Send($"w{well.ToLower()}");
+
+            OnPropertyChanged(nameof(RecordEnabled));
         }
 
         void RecordPosition()
         {
-            if (WellPlate.SelectedWell == null) return;
+            if (WellPlate.SelectedWellName == null) return;
 
-            RobotProtocol.Send($"z {WellPlate.SelectedWell.Name.ToLower()}");
+            RobotProtocol.Send($"z {WellPlate.SelectedWellName.ToLower()}");
+
+            OnPropertyChanged(nameof(RecordEnabled));
         }
 
         void SolveMapping()
@@ -79,8 +110,9 @@ namespace PHIL_GUI.ViewModels
 
         void UpdateWellClass(CalibrationPoint point)
         {
-            WellItem wellItem = WellPlate.DisplayedWells.FirstOrDefault(w => w.Name == point.Name);
-            wellItem.Calibration = point;
+            List<WellItem> wellItems = WellPlate.VisibleWells.Where(w => w.Name == point.Name).ToList();
+            
+            foreach (WellItem wellItem in wellItems) wellItem.Calibration = point;
         }
     }
 }

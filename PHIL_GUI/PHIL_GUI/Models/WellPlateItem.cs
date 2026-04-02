@@ -17,31 +17,35 @@ namespace PHIL_GUI.Models
         public ObservableCollection<WellItem> Wells96 { get; } = new();
         public ObservableCollection<WellPairItem> WellsOoC { get; } = new();
 
-        public IEnumerable<WellItem> DisplayedWells
+        private List<WellItem> visibleWells;
+        public List<WellItem> VisibleWells
         {
             get
             {
-                if (PlateType == PlateType.Well96)
-                    return Wells96.Where(w => w.IsVisible);
-                return WellsOoC.Where(p => p.IsVisible).SelectMany(p => new[] { p.In, p.Out });
-            }
-        }
-        public WellItem SelectedWell
-        {
-            get
-            {
-                if (PlateType == PlateType.Well96)
-                    return Wells96.FirstOrDefault(w => w.IsSelected);
-
-                foreach (WellPairItem pair in WellsOoC)
+                if (visibleWells == null)
                 {
-                    if (pair.In.IsSelected) return pair.In;
-                    if (pair.Out.IsSelected) return pair.Out;
+                    visibleWells = Wells96.Where(w => w.IsVisible)
+                        .Concat(
+                            WellsOoC
+                            .Where(p => p.IsVisible)
+                            .SelectMany(p => new[] { p.In, p.Out })
+                         )
+                        .ToList();
                 }
 
-                return null;
+                return visibleWells;
             }
         }
+
+        public List<WellItem> SelectedWellItems
+        {
+            get
+            {
+                return VisibleWells.Where(w => w.IsSelected).ToList();
+            }
+        }
+
+        public string SelectedWellName => SelectedWellItems.Count > 0 ? SelectedWellItems[0].Name : null;
 
         public WellPlateItem(bool isCalibrationPage = false)
         {
@@ -101,20 +105,14 @@ namespace PHIL_GUI.Models
 
         public void SelectWell(string name)
         {
-            if (PlateType == PlateType.Well96)
+            foreach (WellItem well in Wells96)
             {
-                foreach (WellItem well in Wells96)
-                {
-                    well.IsSelected = well.Name.Equals(name, StringComparison.OrdinalIgnoreCase);
-                }
+                well.IsSelected = well.Name.Equals(name, StringComparison.OrdinalIgnoreCase);
             }
-            else
+            foreach (WellPairItem pair in WellsOoC)
             {
-                foreach (WellPairItem pair in WellsOoC)
-                {
-                    pair.In.IsSelected = pair.In.Name.Equals(name, StringComparison.OrdinalIgnoreCase);
-                    pair.Out.IsSelected = pair.Out.Name.Equals(name, StringComparison.OrdinalIgnoreCase);
-                }
+                pair.In.IsSelected = pair.In.Name.Equals(name, StringComparison.OrdinalIgnoreCase);
+                pair.Out.IsSelected = pair.Out.Name.Equals(name, StringComparison.OrdinalIgnoreCase);
             }
         }
     }

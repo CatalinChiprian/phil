@@ -35,5 +35,12 @@ namespace PHIL_GUI.Models
             get => state;
             set => SetProperty(ref state, value);
         }
+
+        private double stepSize;
+        public double StepSize
+        {
+            get => stepSize;
+            set => SetProperty(ref stepSize, value);
+        }
     }
 }

@@ -18,9 +18,11 @@ namespace PHIL_GUI.Services
         const string WELL_PREFIX = "WELL:";
         const string POS_PREFIX = "POS:";
         const string CAL_PT_PREFIX = "CAL_PT:";
+        const string CAL_REC_PREFIX = "CAL_REC:";
         const string RMS_PREFIX = "RMS:";
         const string LIMIT_PRESSED_PREFIX = "LIMIT_PRESSED:";
         const string LIMIT_RELEASED_PREFIX = "LIMIT_RELEASED:";
+        const string STEP_SIZE_PREFIX = "STEP_SIZE:";
 
 
         private readonly SerialPortService serialPort;
@@ -104,6 +106,8 @@ namespace PHIL_GUI.Services
             Send("pw");
             // Curent Calibration Points
             Send("pm");
+            // Current Step Size
+            Send("ps");
         }
 
         private void OnMessageReceived(string message)
@@ -111,17 +115,17 @@ namespace PHIL_GUI.Services
             Dispatcher.UIThread.Post(() =>
             {
                 ReceivedData += $"{DateTime.Now:HH:mm:ss}: {message}\n";
+                if (message.StartsWith(CAL_REC_PREFIX)) ParseCalRecorded(message);
+                else if (message.StartsWith(CAL_PT_PREFIX)) ParseCalPoint(message);
             });
 
 
             if (message.StartsWith(WELL_PREFIX)) ParseWellArrival(message);
             else if (message.StartsWith(POS_PREFIX)) ParsePosition(message);
-            else if (message.StartsWith(CAL_PT_PREFIX)) ParseCalPoint(message);
             else if (message.StartsWith(RMS_PREFIX)) ParseRms(message);
             else if (message.StartsWith(LIMIT_PRESSED_PREFIX)) ParseLimit(message, LimitType.Pressed);
             else if (message.StartsWith(LIMIT_RELEASED_PREFIX)) ParseLimit(message, LimitType.Released);
-            //else if (message.StartsWith("CAL_REC:")) ParseCalRecorded(message);
-            //else if (message.StartsWith("CAL_ERR:")) ParseCalError(message);
+            else if (message.StartsWith(STEP_SIZE_PREFIX)) ParseStepSize(message);
             //else if (message.StartsWith("CAL_COEFFS_L:")) ParseCoeffsL(message);
             //else if (message.StartsWith("CAL_COEFFS_R:")) ParseCoeffsR(message);
             //else if (message.StartsWith("LIMIT:")) ParseLimit(message);
@@ -174,16 +178,42 @@ namespace PHIL_GUI.Services
 
         private void ParseCalPoint(string msg)
         {
-            var parts = msg.Substring("CAL_PT:".Length).Split(',');
+            var parts = msg.Substring(CAL_PT_PREFIX.Length).Split(',');
+            {
+                string name = parts[0].ToUpper();
+                CalibrationPoint existingPoint = robotState.Calibration.Points.FirstOrDefault(p => p.Name == name);
+                if (existingPoint != null)
+                {
+                    existingPoint.X = (int)double.Parse(parts[1], CultureInfo.InvariantCulture);
+                    existingPoint.Y = (int)double.Parse(parts[2].Trim(), CultureInfo.InvariantCulture);
+                    existingPoint.ErrorLeft = double.Parse(parts[3], CultureInfo.InvariantCulture);
+                    existingPoint.ErrorRight = double.Parse(parts[4].Trim(), CultureInfo.InvariantCulture);
+                }
+                else
+                    robotState.Calibration.Points.Add(
+                    new CalibrationPoint
+                    {
+                        Name = parts[0].ToUpper(),
+                        X = (int)double.Parse(parts[1], CultureInfo.InvariantCulture),
+                        Y = (int)double.Parse(parts[2].Trim(), CultureInfo.InvariantCulture),
+                        ErrorLeft = parts.Length > 3 ? double.Parse(parts[3], CultureInfo.InvariantCulture) : -2,
+                        ErrorRight = parts.Length > 3 ? double.Parse(parts[4].Trim(), CultureInfo.InvariantCulture) : -2,
+                    });
+            };
+        }
+
+        private void ParseCalRecorded(string msg)
+        {
+            var parts = msg.Substring(CAL_REC_PREFIX.Length).Split(',');
             {
                 robotState.Calibration.Points.Add(
                     new CalibrationPoint
                     {
-                        Name = parts[0],
-                        X = parts[1],
-                        Y = parts[2],
-                        ErrorLeft = double.Parse(parts[3], CultureInfo.InvariantCulture),
-                        ErrorRight = double.Parse(parts[4].Trim(), CultureInfo.InvariantCulture),
+                        Name = parts[0].ToUpper(),
+                        X = (int)double.Parse(parts[1], CultureInfo.InvariantCulture),
+                        Y = (int)double.Parse(parts[2].Trim(), CultureInfo.InvariantCulture),
+                        ErrorLeft = -2,
+                        ErrorRight = -2,
                     });
             };
         }
@@ -209,17 +239,11 @@ namespace PHIL_GUI.Services
             else if (axis == "R") robotState.Limit.R = state;
         }
 
-        //private void ParseCalError(string msg)
-        //{
-        //    // "CAL_ERR:0,0.00,0.00,0.499,-0.296"
-        //    var parts = msg.Substring("CAL_ERR:".Length).Split(',');
-        //    int idx = int.Parse(parts[0]);
-        //    var pt = CalibrationPoints.FirstOrDefault(p => p.Index == idx);
-        //    if (pt != null) Dispatcher.UIThread.Post(() => {
-        //        pt.ErrL = double.Parse(parts[3], CultureInfo.InvariantCulture);
-        //        pt.ErrR = double.Parse(parts[4], CultureInfo.InvariantCulture);
-        //    });
-        //}
+        private void ParseStepSize(string msg)
+        {
+            string d = msg.Substring(STEP_SIZE_PREFIX.Length).Trim();
+            robotState.Settings.StepSize = double.Parse(d, CultureInfo.InvariantCulture);
+        }
 
 
         //private void ParseAlert(string msg, AlertLevel level)

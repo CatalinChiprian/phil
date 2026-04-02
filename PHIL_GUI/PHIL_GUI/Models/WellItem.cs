@@ -30,7 +30,12 @@ namespace PHIL_GUI.Models
             set => SetProperty(ref isVisible, value);
         }
         
-        public CalibrationPoint Calibration { get; set; }
+        private CalibrationPoint calibration;
+        public CalibrationPoint Calibration
+        {
+            get => calibration;
+            set => SetProperty(ref calibration, value);
+        }
         public WellItem(char row, int column, bool isVisible = true)
         {
             Row = row;

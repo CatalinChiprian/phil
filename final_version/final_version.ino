@@ -318,6 +318,8 @@
               printCurrentWell();
             else if (arg == 'm')
               printCalibrationPoints();
+            else if (arg == 's')
+              printStepSize();
           }
           break;
 
@@ -483,12 +485,12 @@
 
           case '+':
             times += 0.10;
-            Serial.print("STEP_SIZE:"); Serial.println(times, 2);
+            printStepSize();
           break;
 
           case '-':
             times -= 0.10;
-            Serial.print("STEP_SIZE:"); Serial.println(times, 2);
+            printStepSize();
           break;
         }
       }
@@ -1234,10 +1236,8 @@
     Serial.print(row); Serial.print(col); Serial.print(",");
     //XY
     Serial.print(x, 2); Serial.print(",");
-    Serial.print(y, 2); Serial.print(",");
-    //Angles
-    Serial.print(calL[calCount-1], 2); Serial.print(",");
-    Serial.println(calR[calCount-1], 2);
+    Serial.print(y, 2); Serial.println();
+    
     Serial.print("CAL_COUNT:"); Serial.println(++calCount);
   }
 
@@ -1356,12 +1356,21 @@
       Serial.print("CAL_PT:");
       Serial.print(wellName); Serial.print(",");
       Serial.print(calX[i], 2); Serial.print(",");
-      Serial.print(calY[i], 2); Serial.print(",");
+      Serial.print(calY[i], 2); 
+
+      if (!mapReady) {
+        Serial.println();
+        continue;
+      }
+      
+      Serial.print(",");
       Serial.print(errL, 3); Serial.print(",");
       Serial.println(errR, 3);
     }
     rmsL = sqrtf(rmsL / calCount);
     rmsR = sqrtf(rmsR / calCount);
+
+    if (!mapReady) return;
 
     Serial.print("RMS:L="); Serial.print(rmsL, 3);
     Serial.print(",R="); Serial.print(rmsR, 3);
@@ -1466,4 +1475,8 @@
     Serial.print(",Y="); Serial.print(currentWell.y, 2);
     Serial.print(",L="); Serial.print(currentWell.lDeg, 2);
     Serial.print(",R="); Serial.println(currentWell.rDeg, 2);
+  }
+
+  void printStepSize() {
+    Serial.print("STEP_SIZE:"); Serial.println(times, 2);
   }

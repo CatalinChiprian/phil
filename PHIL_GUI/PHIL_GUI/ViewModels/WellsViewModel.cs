@@ -65,6 +65,11 @@ public class WellsViewModel : ViewModelBase
         {
             if (CurrentWell.Type != WellType.Standard) WellPlate.SelectWell(string.Empty);
         }
+
+        if (e.PropertyName == nameof(CurrentWell.Name))
+        {
+            WellPlate.SelectWell(CurrentWell.Name);
+        }
     }
 
     void GoToWell(string well)

@@ -98,12 +98,15 @@
 
                     <StackPanel Orientation="Horizontal" Spacing="5">
 						<Button Classes="btn btn-dpad" Content="-"
+                                IsEnabled="{Binding IsDecreaseStepSizeEnabled}"
                                 Command="{Binding DecreaseStepSize}"
                                 FontSize="15"
                                 Padding="0"/>
                         <Border Classes="step-value" CornerRadius="4">
-                            <TextBlock Text="0.10x" Foreground="{StaticResource Text}" 
-                                       FontWeight="SemiBold" FontSize="12"/>
+                            <TextBlock Text="{Binding Settings.StepSize, StringFormat='{}{0}x'}" 
+                                       Foreground="{StaticResource Text}" 
+                                       FontWeight="SemiBold"
+                                       FontSize="12"/>
                         </Border>
 						<Button Classes="btn btn-dpad" Content="+"
                                 Command="{Binding IncreaseStepSize}"
