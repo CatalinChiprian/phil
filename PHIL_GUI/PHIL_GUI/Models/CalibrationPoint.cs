@@ -46,8 +46,8 @@ namespace PHIL_GUI.Models
         public string ErrL => ErrorLeft >= 0 ? $"{(ErrorLeft >= 0 ? "+" : "")}{ErrorLeft:F2}°" : "";
         public string ErrR => ErrorRight >= 0 ? $"{(ErrorRight >= 0 ? "+" : "")}{ErrorRight:F2}°" : "";
 
-        string errLColor => ErrorLeft < 0 ? "Text" : ErrorLeft < 1 ? "Accent" : ErrorLeft < 2 ? "Caution" : "Warn";
-        string errRColor => ErrorRight < 0 ? "Text" : ErrorRight < 1 ? "Accent" : ErrorRight < 2 ? "Caution" : "Warn";
+        string errLColor => ErrorLeft < 0 ? "Muted" : ErrorLeft < 1 ? "Accent" : ErrorLeft < 2 ? "Caution" : "Warn";
+        string errRColor => ErrorRight < 0 ? "Muted" : ErrorRight < 1 ? "Accent" : ErrorRight < 2 ? "Caution" : "Warn";
 
         public IBrush ErrLColor => Application.Current.Resources[errLColor] as IBrush;
         public IBrush ErrRColor => Application.Current.Resources[errRColor] as IBrush;
@@ -57,7 +57,6 @@ namespace PHIL_GUI.Models
         public bool IsOk => HasError && WorstError < 1;
         public bool IsCaution => HasError && WorstError >= 1 && WorstError < 2;
         public bool IsWarn => HasError && WorstError >= 2;
-        public bool IsNoRecord => !HasError;
 
 
         public double ErrLBarWidth => Math.Min(Math.Abs(ErrorLeft) / 3.0 * 40, 40);

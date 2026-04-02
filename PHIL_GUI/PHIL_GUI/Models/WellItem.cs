@@ -34,8 +34,15 @@ namespace PHIL_GUI.Models
         public CalibrationPoint Calibration
         {
             get => calibration;
-            set => SetProperty(ref calibration, value);
+            set
+            {
+                SetProperty(ref calibration, value);
+
+                OnPropertyChanged(nameof(IsCalibrated));
+            }
         }
+
+        public bool IsCalibrated => Calibration != null;
         public WellItem(char row, int column, bool isVisible = true)
         {
             Row = row;

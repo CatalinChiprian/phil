@@ -200,7 +200,7 @@
                                                     Classes.ok="{Binding Calibration?.IsOk}"
                                                     Classes.caution="{Binding Calibration?.IsCaution}"
                                                     Classes.warn="{Binding Calibration?.IsWarn}"
-                                                    Classes.no-record="{Binding Calibration?.IsNoRecord}"
+                                                    Classes.no-record="{Binding IsCalibrated, Converter={x:Static BoolConverters.Not}}"
                                                     Classes.active="{Binding IsSelected}"
                                                     IsVisible="{Binding IsVisible}"
                                                     Command="{Binding $parent[ItemsControl].((vm:CalibrationViewModel)DataContext).WellsPositionCommand}"
@@ -273,7 +273,7 @@
                                                                 Classes.ok="{Binding In.Calibration?.IsOk}"
                                                                 Classes.caution="{Binding In.Calibration?.IsCaution}"
                                                                 Classes.warn="{Binding In.Calibration?.IsWarn}"
-                                                                Classes.no-record="{Binding In.Calibration?.IsNoRecord}"
+                                                                Classes.no-record="{Binding In.IsCalibrated, Converter={x:Static BoolConverters.Not}}"
                                                                 Classes.active="{Binding In.IsSelected}"
                                                                 Command="{Binding $parent[ItemsControl].((vm:CalibrationViewModel)DataContext).WellsPositionCommand}"
                                                                 CommandParameter="{Binding In.Name}"/>
@@ -292,7 +292,7 @@
                                                                 Classes.ok="{Binding Out.Calibration?.IsOk}"
                                                                 Classes.caution="{Binding Out.Calibration?.IsCaution}"
                                                                 Classes.warn="{Binding Out.Calibration?.IsWarn}"
-                                                                Classes.no-record="{Binding Out.Calibration?.IsNoRecord}"
+                                                                Classes.no-record="{Binding Out.IsCalibrated, Converter={x:Static BoolConverters.Not}}"
                                                                 Classes.active="{Binding Out.IsSelected}"
                                                                 Command="{Binding $parent[ItemsControl].((vm:CalibrationViewModel)DataContext).WellsPositionCommand}"
                                                                 CommandParameter="{Binding Out.Name}"/>
