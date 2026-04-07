@@ -52,9 +52,7 @@ namespace PHIL_GUI.Models
 
                 SetProperty(ref errorLeft, value);
 
-                if (!value.HasValue) return;
-
-                AbsErrorLeft = Math.Abs(errorLeft!.Value);
+                AbsErrorLeft = errorLeft.HasValue ? Math.Abs(errorLeft.Value) : null;
             }
         }
 
@@ -92,9 +90,7 @@ namespace PHIL_GUI.Models
 
                 SetProperty(ref errorRight, value);
 
-                if (!value.HasValue) return;
-
-                AbsErrorRight = Math.Abs(errorRight!.Value);
+                AbsErrorRight = errorRight.HasValue ? Math.Abs(errorRight!.Value) : null;
             }
         }
 

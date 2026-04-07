@@ -451,7 +451,7 @@
                                 <StackPanel Grid.Column="1" Spacing="14">
                                     <StackPanel Spacing="5">
                                         <TextBlock Classes="subtitle" Text="Angles L / R" LetterSpacing="1"/>
-                                        <TextBlock Classes="metric-value" Text="{Binding CurrentWell.AngleL}"/>
+                                        <TextBlock Classes="metric-value" Text="{Binding CurrentWell.Angles}"/>
                                     </StackPanel>
 
 								    <StackPanel Spacing="5">

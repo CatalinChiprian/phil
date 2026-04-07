@@ -57,15 +57,27 @@ namespace PHIL_GUI.Models
         public string AngleL
         {
             get => angleL;
-            set => SetProperty(ref angleL, value);
+            set
+            {
+                SetProperty(ref angleL, value);
+
+                OnPropertyChanged(nameof(Angles));
+            }
         }
 
         private string angleR;
         public string AngleR
         {
             get => angleR;
-            set => SetProperty(ref angleR, value);
+            set
+            {
+                SetProperty(ref angleR, value);
+
+                OnPropertyChanged(nameof(Angles));
+            }
         }
+
+        public string Angles => $"{AngleL}° / {AngleR}°";
 
         public Well()
         {

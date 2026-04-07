@@ -153,6 +153,9 @@ namespace PHIL_GUI.ViewModels
         {
             if (SelectedCalibrationPoint == null) return;
 
+            SelectedCalibrationPoint.ErrorLeft = null;
+            SelectedCalibrationPoint.ErrorRight = null;
+
             RobotProtocol.Send($"z delete {SelectedCalibrationPoint.Name.ToLower()}");
 
             RobotProtocol.Send($"z {WellPlate.SelectedWellName.ToLower()}");
