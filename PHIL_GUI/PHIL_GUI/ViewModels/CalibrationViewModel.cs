@@ -76,9 +76,6 @@ namespace PHIL_GUI.ViewModels
             Calibration.Points.CollectionChanged += Points_CollectionChanged;
             Settings.PropertyChanged += Settings_PropertyChanged;
             CurrentWell.PropertyChanged += CurrentWell_PropertyChanged;
-
-            Calibration.Points.Add(new CalibrationPoint("A1", 0, 0));
-            Calibration.Points.Add(new CalibrationPoint("B1", 5, 0));
         }
 
         private void Points_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
