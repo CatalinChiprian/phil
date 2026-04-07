@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Text;
 
 namespace PHIL_GUI.Services
 {
@@ -15,8 +16,6 @@ namespace PHIL_GUI.Services
     }
     public class RobotProtocolService : ObservableObject
     {
-        const int DEFAULT_ERROR_VALUE = -2;
-
         const string WELL_PREFIX = "WELL:";
         const string POS_PREFIX = "POS:";
         const string CAL_PT_PREFIX = "CAL_PT:";
@@ -26,11 +25,15 @@ namespace PHIL_GUI.Services
         const string LIMIT_RELEASED_PREFIX = "LIMIT_RELEASED:";
         const string STEP_SIZE_PREFIX = "STEP_SIZE:";
 
+        private bool ready;
 
         private readonly SerialPortService serialPort;
         public SerialPortService SerialPort => serialPort;
         private readonly RobotState robotState;
         public RobotState RobotState => robotState;
+
+        private readonly StringBuilder logBuffer = new();
+        private readonly DispatcherTimer logTimer;
 
         private string _receivedData = "";
         public string ReceivedData
@@ -41,9 +44,25 @@ namespace PHIL_GUI.Services
 
         public RobotProtocolService(SerialPortService serial)
         {
+            logTimer = new DispatcherTimer
+            {
+                Interval = TimeSpan.FromMilliseconds(100)
+            };
+            logTimer.Tick += (_, _) =>
+            {
+                if (logBuffer.Length > 0)
+                {
+                    ReceivedData += logBuffer.ToString();
+                    logBuffer.Clear();
+                }
+            };
+            logTimer.Start();
+
+
             serialPort = serial;
             robotState = new RobotState();
             serial.MessageReceived += OnMessageReceived;
+            serial.GetStartUpMessage += GetSetupInformation;
         }
 
         public void Send(string command)
@@ -68,6 +87,9 @@ namespace PHIL_GUI.Services
 
         public void MoveBackward()
         {
+            // Disabled until backward movement is fixed
+            return;
+
             Send("b");
         }
 
@@ -104,6 +126,8 @@ namespace PHIL_GUI.Services
 
         public void GetSetupInformation()
         {
+            ready = true;
+
             // Current Well
             Send("pw");
             // Curent Calibration Points
@@ -114,24 +138,26 @@ namespace PHIL_GUI.Services
 
         private void OnMessageReceived(string message)
         {
+            if (!ready) return;
+
+            logBuffer.AppendLine($"{DateTime.Now:HH:mm:ss}: {message}");
+
             Dispatcher.UIThread.Post(() =>
             {
-                ReceivedData += $"{DateTime.Now:HH:mm:ss}: {message}\n";
-                if (message.StartsWith(CAL_REC_PREFIX)) ParseCalRecorded(message);
-                else if (message.StartsWith(CAL_PT_PREFIX)) ParseCalPoint(message);
-            });
+                ApplyMessage(message);
+            }, DispatcherPriority.Background);
+        }
 
-
+        private void ApplyMessage(string message)
+        {
             if (message.StartsWith(WELL_PREFIX)) ParseWellArrival(message);
+            else if (message.StartsWith(CAL_REC_PREFIX)) ParseCalRecorded(message);
+            else if (message.StartsWith(CAL_PT_PREFIX)) ParseCalPoint(message);
             else if (message.StartsWith(POS_PREFIX)) ParsePosition(message);
             else if (message.StartsWith(RMS_PREFIX)) ParseRms(message);
             else if (message.StartsWith(LIMIT_PRESSED_PREFIX)) ParseLimit(message, LimitType.Pressed);
             else if (message.StartsWith(LIMIT_RELEASED_PREFIX)) ParseLimit(message, LimitType.Released);
             else if (message.StartsWith(STEP_SIZE_PREFIX)) ParseStepSize(message);
-            //else if (message.StartsWith("CAL_COEFFS_L:")) ParseCoeffsL(message);
-            //else if (message.StartsWith("CAL_COEFFS_R:")) ParseCoeffsR(message);
-            //else if (message.StartsWith("LIMIT:")) ParseLimit(message);
-            //else if (message.StartsWith("ERROR:"))   ParseAlert(message, AlertLevel.Error);
         }
 
         private Dictionary<string, string> ParseKV(string msg, string prefix)
@@ -195,8 +221,8 @@ namespace PHIL_GUI.Services
                 {
                     int x = (int)double.Parse(parts[1], CultureInfo.InvariantCulture);
                     int y = (int)double.Parse(parts[2].Trim(), CultureInfo.InvariantCulture);
-                    double errorLeft = DEFAULT_ERROR_VALUE;
-                    double errorRight = DEFAULT_ERROR_VALUE;
+                    double? errorLeft = null;
+                    double? errorRight = null;
 
                     if (parts.Length > 3)
                     {

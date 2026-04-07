@@ -74,8 +74,6 @@
   float times = 0.10;
   const long steps = 4 * currentMicrosteps;
 
-  bool systemInitialized = false;
-
   unsigned long lastMotorActivityTime = 0;
   bool ZMotorsCurrentlyEnabled = false;
   bool LMotorCurrentlyEnabled = false;
@@ -121,8 +119,9 @@
 
     loadCalibration();
 
-    emergencyStopRequested = false; 
-    systemInitialized = true;
+    printStepSize();
+
+    emergencyStopRequested = false;
   }
 
   void moveBackward() {
@@ -1005,7 +1004,6 @@
     if(!isMoving) {
       if(areMotorsCurrentlyEnabled() && (millis() - lastMotorActivityTime > MOTOR_TIMEOUT)) {
         disableAllMotors();
-        Serial.println("Motors auto-disabled after timeout");
       }
     }
   }
@@ -1338,6 +1336,10 @@
     return true;
   }
 
+  float clampZero(float v, float eps = 5e-4f) {
+      return fabs(v) < eps ? 0.0f : v;
+  }
+
   void printCalibrationPoints() {
     Serial.print("CAL_COUNT:"); Serial.println(calCount);
     float maxErrL = 0, maxErrR = 0, rmsL = 0, rmsR = 0;
@@ -1364,8 +1366,8 @@
       }
       
       Serial.print(",");
-      Serial.print(errL, 3); Serial.print(",");
-      Serial.println(errR, 3);
+      Serial.print(clampZero(errL), 3); Serial.print(",");
+      Serial.println(clampZero(errR), 3);
     }
     rmsL = sqrtf(rmsL / calCount);
     rmsR = sqrtf(rmsR / calCount);

@@ -5,10 +5,8 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
-using System.Globalization;
 using System.Linq;
 using System.Windows.Input;
-using System.Xml.Linq;
 
 namespace PHIL_GUI.ViewModels
 {
@@ -38,6 +36,21 @@ namespace PHIL_GUI.ViewModels
         public Calibration Calibration => RobotProtocol.RobotState.Calibration;
         public Well CurrentWell => RobotProtocol.RobotState.CurrentWell;
 
+        private CalibrationPoint? selectedCalibrationPoint;
+        public CalibrationPoint? SelectedCalibrationPoint
+        {
+            get => selectedCalibrationPoint;
+            set
+            {
+                if (value == selectedCalibrationPoint) return;
+
+                if (SetProperty(ref selectedCalibrationPoint, value) && value != null)
+                {
+                    GoToWell(value.Name);
+                }
+            }
+        }
+
         public WellPlateItem WellPlate { get; } = new WellPlateItem(true);
 
         public CalibrationViewModel()
@@ -65,18 +78,8 @@ namespace PHIL_GUI.ViewModels
             {
                 foreach (CalibrationPoint point in e.NewItems)
                 {
-                    point.PropertyChanged += Point_PropertyChanged;
                     UpdateWellClass(point);
                 }
-            }
-        }
-
-        private void Point_PropertyChanged(object? sender, PropertyChangedEventArgs e)
-        {
-            if (e.PropertyName == nameof(CalibrationPoint.ErrorLeft) || 
-                e.PropertyName == nameof(CalibrationPoint.ErrorRight))
-            {
-                CalibrationPoint point = (CalibrationPoint)sender; 
             }
         }
 
@@ -91,6 +94,7 @@ namespace PHIL_GUI.ViewModels
             if (e.PropertyName == nameof(CurrentWell.Name))
             {
                 WellPlate.SelectWell(CurrentWell.Name);
+
                 OnPropertyChanged(nameof(RecordEnabled));
             }
         }
@@ -99,18 +103,23 @@ namespace PHIL_GUI.ViewModels
         {
             CurrentWell.Type = WellType.Standard;
             CurrentWell.Name = well;
-            WellPlate.SelectWell(well);
-            RobotProtocol.Send($"w{well.ToLower()}");
+            WellItem selectedWell = WellPlate.SelectWell(well);
+            SelectedCalibrationPoint = selectedWell.Calibration;
+
+            string moveCmd = "w";
+            if (selectedWell.IsCalibrated) moveCmd = "q";
+            RobotProtocol.Send($"{moveCmd}{well.ToLower()}");
 
             OnPropertyChanged(nameof(RecordEnabled));
         }
 
         void RecordPosition()
         {
-            if (WellPlate.SelectedWellName == null) return;
+            if (!RecordEnabled) return;
 
             CalibrationPoint point = new CalibrationPoint(WellPlate.SelectedWellName, (int)CurrentWell.X, (int)CurrentWell.Y);
             Calibration.Points.Add(point);
+            SelectedCalibrationPoint = point;
 
             RobotProtocol.Send($"z {WellPlate.SelectedWellName.ToLower()}");
 
@@ -127,8 +136,13 @@ namespace PHIL_GUI.ViewModels
         void UpdateWellClass(CalibrationPoint point)
         {
             List<WellItem> wellItems = WellPlate.VisibleWells.Where(w => w.Name == point.Name).ToList();
-            
-            foreach (WellItem wellItem in wellItems) wellItem.Calibration = point;
+
+            foreach (WellItem wellItem in wellItems)
+            {
+                wellItem.Calibration = point;
+                
+                if (wellItem.IsSelected) SelectedCalibrationPoint = point;
+            }
         }
     }
 }

@@ -42,8 +42,8 @@ namespace PHIL_GUI.Models
             }
         }
 
-        private double errorLeft;
-        public double ErrorLeft
+        private double? errorLeft;
+        public double? ErrorLeft
         {
             get => errorLeft;
             set
@@ -52,9 +52,29 @@ namespace PHIL_GUI.Models
 
                 SetProperty(ref errorLeft, value);
 
+                if (!value.HasValue) return;
+
+                AbsErrorLeft = Math.Abs(errorLeft!.Value);
+            }
+        }
+
+        private double? absErrorLeft;
+        public double? AbsErrorLeft
+        {
+            get => absErrorLeft;
+            set
+            {
+                if (value == absErrorLeft) return;
+
+                SetProperty(ref absErrorLeft, value);
+
                 OnPropertyChanged(nameof(ErrL));
                 OnPropertyChanged(nameof(ErrLColor));
                 OnPropertyChanged(nameof(ErrLBarWidth));
+
+                OnPropertyChanged(nameof(IsSolved));
+                OnPropertyChanged(nameof(IsRecorded));
+                OnPropertyChanged(nameof(WorstError));
 
                 OnPropertyChanged(nameof(IsOk));
                 OnPropertyChanged(nameof(IsCaution));
@@ -62,8 +82,8 @@ namespace PHIL_GUI.Models
             }
         }
 
-        private double errorRight;
-        public double ErrorRight
+        private double? errorRight;
+        public double? ErrorRight
         {
             get => errorRight;
             set
@@ -72,9 +92,29 @@ namespace PHIL_GUI.Models
 
                 SetProperty(ref errorRight, value);
 
+                if (!value.HasValue) return;
+
+                AbsErrorRight = Math.Abs(errorRight!.Value);
+            }
+        }
+
+        private double? absErrorRight;
+        public double? AbsErrorRight
+        {
+            get => absErrorRight;
+            set
+            {
+                if (value == absErrorRight) return;
+
+                SetProperty(ref absErrorRight, value);
+
                 OnPropertyChanged(nameof(ErrR));
                 OnPropertyChanged(nameof(ErrRColor));
                 OnPropertyChanged(nameof(ErrRBarWidth));
+
+                OnPropertyChanged(nameof(IsSolved));
+                OnPropertyChanged(nameof(IsRecorded));
+                OnPropertyChanged(nameof(WorstError));
 
                 OnPropertyChanged(nameof(IsOk));
                 OnPropertyChanged(nameof(IsCaution));
@@ -83,26 +123,27 @@ namespace PHIL_GUI.Models
         }
 
         public string XY => $"{X}, {Y}";
-        public string ErrL => ErrorLeft >= 0 ? $"{(ErrorLeft >= 0 ? "+" : "")}{ErrorLeft:F2}°" : "";
-        public string ErrR => ErrorRight >= 0 ? $"{(ErrorRight >= 0 ? "+" : "")}{ErrorRight:F2}°" : "";
+        public string ErrL => ErrorLeft.HasValue ? $"{ErrorLeft.Value:F2}°" : "";
+        public string ErrR => ErrorRight.HasValue ? $"{ErrorRight.Value:F2}°" : "";
 
-        string errLColor => ErrorLeft < 0 ? "Muted" : ErrorLeft < 1 ? "Accent" : ErrorLeft < 2 ? "Caution" : "Warn";
-        string errRColor => ErrorRight < 0 ? "Muted" : ErrorRight < 1 ? "Accent" : ErrorRight < 2 ? "Caution" : "Warn";
+        string errLColor => !AbsErrorLeft.HasValue ? "Muted" : AbsErrorLeft!.Value < 1 ? "Accent" : AbsErrorLeft!.Value < 2 ? "Caution" : "Warn";
+        string errRColor => !AbsErrorRight.HasValue ? "Muted" : AbsErrorRight!.Value < 1 ? "Accent" : AbsErrorRight!.Value < 2 ? "Caution" : "Warn";
 
         public IBrush ErrLColor => Application.Current.Resources[errLColor] as IBrush;
         public IBrush ErrRColor => Application.Current.Resources[errRColor] as IBrush;
 
-        private bool HasError => ErrorLeft >= 0 && ErrorRight >= 0;
-        public double WorstError => Math.Max(ErrorLeft, ErrorRight);
-        public bool IsOk => HasError && WorstError < 1;
-        public bool IsCaution => HasError && WorstError >= 1 && WorstError < 2;
-        public bool IsWarn => HasError && WorstError >= 2;
+        public bool IsSolved => AbsErrorLeft.HasValue && AbsErrorRight.HasValue;
+        public bool IsRecorded => !IsSolved;
+        public double WorstError => Math.Max(AbsErrorLeft!.Value, AbsErrorRight!.Value);
+        public bool IsOk => IsSolved && WorstError < 1;
+        public bool IsCaution => IsSolved && WorstError >= 1 && WorstError < 2;
+        public bool IsWarn => IsSolved && WorstError >= 2;
 
 
-        public double ErrLBarWidth => Math.Min(Math.Abs(ErrorLeft) / 3.0 * 40, 40);
-        public double ErrRBarWidth => Math.Min(Math.Abs(ErrorRight) / 3.0 * 40, 40);
+        public double ErrLBarWidth => Math.Min(AbsErrorLeft.GetValueOrDefault() / 3.0 * 40, 40);
+        public double ErrRBarWidth => Math.Min(AbsErrorRight.GetValueOrDefault() / 3.0 * 40, 40);
 
-        public CalibrationPoint(string name, int x = 0, int y = 0, double errorLeft = -2, double errorRight = -2)
+        public CalibrationPoint(string name, int x = 0, int y = 0, double? errorLeft = null, double? errorRight = null)
         {
             Name = name;
             X = x;

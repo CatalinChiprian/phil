@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 
@@ -103,17 +102,42 @@ namespace PHIL_GUI.Models
             }
         }
 
-        public void SelectWell(string name)
+        public WellItem SelectWell(string name)
         {
+            WellItem selectedWell = null;
             foreach (WellItem well in Wells96)
             {
-                well.IsSelected = well.Name.Equals(name, StringComparison.OrdinalIgnoreCase);
+                if (well.Name == name)
+                {
+                    well.IsSelected = true;
+
+                    selectedWell = well;
+                }
+                else
+                {
+                    well.IsSelected = false;
+                }
             }
             foreach (WellPairItem pair in WellsOoC)
             {
-                pair.In.IsSelected = pair.In.Name.Equals(name, StringComparison.OrdinalIgnoreCase);
-                pair.Out.IsSelected = pair.Out.Name.Equals(name, StringComparison.OrdinalIgnoreCase);
+                List<WellItem> pairWells = new List<WellItem> { pair.In, pair.Out };
+
+                foreach (WellItem well in pairWells)
+                {
+                    if (well.Name == name)
+                    {
+                        well.IsSelected = true;
+
+                        selectedWell = well;
+                    }
+                    else
+                    {
+                        well.IsSelected = false;
+                    }
+                }
             }
+
+            return selectedWell;
         }
     }
 }

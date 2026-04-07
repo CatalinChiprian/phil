@@ -434,6 +434,12 @@
             <Setter Property="Foreground" Value="{StaticResource Warn}"/>
         </Style>
 
+        <Style Selector="Button.well.ok:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="{StaticResource Accent-Dim}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource Accent}"/>
+            <Setter Property="Foreground" Value="{StaticResource Accent}"/>
+        </Style>
+
         <Style Selector="Button.well.active">
             <Setter Property="Background" Value="{StaticResource Surface}"/>
             <Setter Property="BorderBrush" Value="{StaticResource Text}"/>
@@ -464,6 +470,12 @@
             <Setter Property="Foreground" Value="{StaticResource Surface}"/>
         </Style>
 
+        <Style Selector="Button.well.ok.active">
+			<Setter Property="Background" Value="{StaticResource Accent}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource Accent}"/>
+            <Setter Property="Foreground" Value="{StaticResource Surface}"/>
+        </Style>
+
         <Style Selector="Button.well.calibrated.active:pointerover /template/ ContentPresenter">
 			<Setter Property="Background" Value="{StaticResource Accent}"/>
             <Setter Property="BorderBrush" Value="{StaticResource Accent}"/>
@@ -485,6 +497,12 @@
         <Style Selector="Button.well.warn.active:pointerover /template/ ContentPresenter">
             <Setter Property="Background" Value="{StaticResource Warn}"/>
             <Setter Property="BorderBrush" Value="{StaticResource Warn}"/>
+            <Setter Property="Foreground" Value="{StaticResource Surface}"/>
+        </Style>
+
+        <Style Selector="Button.well.ok.active:pointerover /template/ ContentPresenter">
+			<Setter Property="Background" Value="{StaticResource Accent}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource Accent}"/>
             <Setter Property="Foreground" Value="{StaticResource Surface}"/>
         </Style>
 

@@ -5,7 +5,21 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="1200" d:DesignHeight="700"
              x:Class="PHIL_GUI.Views.CalibrationView"
-             x:DataType="vm:CalibrationViewModel">
+             x:DataType="vm:CalibrationViewModel"
+             Focusable="True">
+
+    <UserControl.KeyBindings>
+        <KeyBinding Gesture="W" Command="{Binding MoveForwardCommand}"/>
+        <KeyBinding Gesture="A" Command="{Binding MoveLeftCommand}"/>
+        <KeyBinding Gesture="S" Command="{Binding MoveBackwardCommand}"/>
+        <KeyBinding Gesture="D" Command="{Binding MoveRightCommand}"/>
+
+        <KeyBinding Gesture="+" Command="{Binding IncreaseStepSize}"/>
+        <KeyBinding Gesture="-" Command="{Binding DecreaseStepSize}"/>
+
+        <KeyBinding Gesture="Z" Command="{Binding RecordPositionCommand}"/>
+        <KeyBinding Gesture="M" Command="{Binding SolveMappingCommand}"/>
+    </UserControl.KeyBindings>
 
     <DockPanel>
         <Border Classes="toolbar" DockPanel.Dock="Top">
@@ -352,7 +366,8 @@
                     <DataGrid Name="CalibrationGrid" Grid.Row="2"
                                 GridLinesVisibility="Horizontal"
                                 ItemsSource="{Binding Calibration.Points}"
-                                IsReadOnly="True">
+                                IsReadOnly="True"
+                                SelectedItem="{Binding SelectedCalibrationPoint}">
 
                         <DataGrid.Columns>
 

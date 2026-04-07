@@ -13,14 +13,15 @@ public class SerialPortService
 
 
     public event Action<string> MessageReceived;
-    
+    public event Action GetStartUpMessage;
+
     public List<string> GetAvailablePorts()
     {
         return SerialPort.GetPortNames().ToList(); // list availiable ports. If empty, check connection,
                                                    // check arduino lights and restart the program and computer. 
     }
     
-    public void Connect(string portName, int baudRate = 9600) // choose the same baudrate in arduino IDE
+    public void Connect(string portName, int baudRate = 9600)
     {
         try
         {
@@ -29,21 +30,24 @@ public class SerialPortService
                 Parity = Parity.None,
                 DataBits = 8,
                 StopBits = StopBits.One,
-                Handshake = Handshake.None
+                Handshake = Handshake.None,
+
             };
 
             serialPort.DataReceived += OnDataReceived;
             
             serialPort.Open();
             isConnected = true;
+
+            PortName = portName;
+
+            GetStartUpMessage?.Invoke();
         }
         catch (Exception ex)
         {
             isConnected = false;
             throw new Exception($"Failed to connect: {ex.Message}");
         }
-
-        PortName = portName;
     }
     
     private void OnDataReceived(object sender, SerialDataReceivedEventArgs e)
@@ -73,6 +77,7 @@ public class SerialPortService
         if (serialPort != null && serialPort.IsOpen)
         {
             serialPort.DataReceived -= OnDataReceived;
+            GetStartUpMessage -= GetStartUpMessage;
             serialPort.Close();
         }
         isConnected = false;

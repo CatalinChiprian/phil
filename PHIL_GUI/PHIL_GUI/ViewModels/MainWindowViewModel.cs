@@ -51,7 +51,6 @@ public class MainWindowViewModel : ViewModelBase
     public MainWindowViewModel()
     {
         ConnectedPort = RobotProtocol.SerialPort.PortName;
-        RobotProtocol.GetSetupInformation();
 
         _pages = new List<PageItem>
         {

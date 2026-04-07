@@ -16,6 +16,8 @@ namespace PHIL_GUI.Models
             get => type;
             set
             {
+                if (value == type) return;
+
                 SetProperty(ref type, value);
                 if (type == WellType.Home) Name = "Home";
                 if (type == WellType.Unknown) Name = "Unknown";
@@ -29,7 +31,12 @@ namespace PHIL_GUI.Models
         public string Name
         {
             get => name;
-            set => SetProperty(ref name, value);
+            set
+            {
+                if (value == name) return;
+
+                SetProperty(ref name, value);
+            }
         }
 
         private double x;
