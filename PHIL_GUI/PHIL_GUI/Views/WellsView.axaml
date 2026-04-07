@@ -28,7 +28,7 @@
                     <StackPanel>
                         <TextBlock Classes="subtitle" LetterSpacing="1.5" Text="MICROSTEPS"/>
 						<TextBlock Classes="metric-value"
-                                   Text="{Binding MicrostepsText}"/>
+                                   Text="{Binding Settings.Microsteps}"/>
                     </StackPanel>
                 </StackPanel>
             </StackPanel>

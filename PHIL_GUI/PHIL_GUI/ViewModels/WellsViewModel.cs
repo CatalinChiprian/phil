@@ -16,8 +16,6 @@ public class WellsViewModel : ViewModelBase
 
     public WellPlateItem WellPlate { get; } = new WellPlateItem();
 
-    public int Microsteps = 8;
-
     public string TopNotificationText
     {
         get
@@ -38,7 +36,6 @@ public class WellsViewModel : ViewModelBase
         }
     }
     public string CalPointsText => $"{Calibration.Points.Count}/{(Settings.Is96Well ? Calibration.MAX_COUNT_96 : Calibration.MAX_COUNT_OOC)}";
-    public string MicrostepsText => $"1/{Microsteps}";
     
     public WellsViewModel()
     {

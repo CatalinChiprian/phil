@@ -91,6 +91,14 @@ namespace PHIL_GUI.ViewModels
 
         private void CurrentWell_PropertyChanged(object? sender, PropertyChangedEventArgs e)
         {
+            if (e.PropertyName ==nameof(CurrentWell.Type))
+            {
+                if (CurrentWell.Type != WellType.Standard)
+                {
+                    SelectedCalibrationPoint = null;
+                }
+            }
+
             if (e.PropertyName == nameof(CurrentWell.Name))
             {
                 WellPlate.SelectWell(CurrentWell.Name);

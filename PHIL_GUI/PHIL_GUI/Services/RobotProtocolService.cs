@@ -24,6 +24,7 @@ namespace PHIL_GUI.Services
         const string LIMIT_PRESSED_PREFIX = "LIMIT_PRESSED:";
         const string LIMIT_RELEASED_PREFIX = "LIMIT_RELEASED:";
         const string STEP_SIZE_PREFIX = "STEP_SIZE:";
+        const string MICROSTEPS_PREFIX = "MICROSTEPS:";
 
         private bool ready;
 
@@ -158,6 +159,7 @@ namespace PHIL_GUI.Services
             else if (message.StartsWith(LIMIT_PRESSED_PREFIX)) ParseLimit(message, LimitType.Pressed);
             else if (message.StartsWith(LIMIT_RELEASED_PREFIX)) ParseLimit(message, LimitType.Released);
             else if (message.StartsWith(STEP_SIZE_PREFIX)) ParseStepSize(message);
+            else if (message.StartsWith(MICROSTEPS_PREFIX)) ParseMicrosteps(message);
         }
 
         private Dictionary<string, string> ParseKV(string msg, string prefix)
@@ -286,6 +288,12 @@ namespace PHIL_GUI.Services
         {
             string d = msg.Substring(STEP_SIZE_PREFIX.Length).Trim();
             robotState.Settings.StepSize = double.Parse(d, CultureInfo.InvariantCulture);
+        }
+
+        private void ParseMicrosteps(string msg)
+        {
+            string d = msg.Substring(MICROSTEPS_PREFIX.Length).Trim();
+            robotState.Settings.Microsteps = d;
         }
 
         public void RecordCalibrationPoint(string wellName)

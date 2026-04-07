@@ -29,14 +29,16 @@
                         <StackPanel>
                             <TextBlock Classes="subtitle" LetterSpacing="1.5" Text="RMS L"/>
 						    <TextBlock Classes="metric-value" 
-                                       Text="0.57" 
+                                       Text="{Binding Calibration.RmsLText}"
+                                       Foreground="{Binding Calibration.RmsLColor}"
                                        />
                         </StackPanel>
 
                         <StackPanel>
                             <TextBlock Classes="subtitle" LetterSpacing="1.5" Text="RMS R"/>
 						    <TextBlock Classes="metric-value" 
-                                       Text="0.83"
+                                       Text="{Binding Calibration.RmsRText}"
+                                       Foreground="{Binding Calibration.RmsRColor}"
                                        />
                         </StackPanel>
                     </StackPanel>

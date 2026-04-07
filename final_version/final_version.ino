@@ -317,8 +317,10 @@
               printCurrentWell();
             else if (arg == 'm')
               printCalibrationPoints();
-            else if (arg == 's')
+            else if (arg == 's') {
+              printMicroSteps();
               printStepSize();
+            }
           }
           break;
 
@@ -1481,4 +1483,8 @@
 
   void printStepSize() {
     Serial.print("STEP_SIZE:"); Serial.println(times, 2);
+  }
+
+  void printMicroSteps() {
+    Serial.print("MICROSTEPS:1/"); Serial.println(currentMicrosteps);
   }

@@ -36,6 +36,13 @@ namespace PHIL_GUI.Models
             set => SetProperty(ref state, value);
         }
 
+        private string microsteps;
+        public string Microsteps
+        {
+            get => microsteps;
+            set => SetProperty(ref microsteps, value);
+        }
+
         private double stepSize;
         public double StepSize
         {

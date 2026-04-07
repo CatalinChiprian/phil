@@ -28,6 +28,31 @@ namespace PHIL_GUI.Models
             set => SetProperty(ref rmsRValue, value); 
         }
 
+        public string RmsLText => $"L {RmsLValue:F2}°";
+        public string RmsRText => $"R {RmsRValue:F2}°";
+
+        private string rmsLColor
+        {
+            get
+            {
+                if (RmsLValue > 1.5) return "Warn";
+                if (RmsLValue > 1.0) return "Caution";
+                return "Accent";
+            }
+        }
+        public IBrush RmsLColor => Application.Current.Resources[rmsLColor] as IBrush;
+
+        private string rmsRColor
+        {
+            get
+            {
+                if (RmsRValue > 1.5) return "Warn";
+                if (RmsRValue > 1.0) return "Caution";
+                return "Accent";
+            }
+        }
+        public IBrush RmsRColor => Application.Current.Resources[rmsRColor] as IBrush;
+
         public string RmsDisplayText => $"L {RmsLValue:F2}°  R {RmsRValue:F2}°";
 
         private string rmsColor
