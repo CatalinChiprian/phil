@@ -21,6 +21,8 @@ namespace PHIL_GUI.ViewModels
         public ICommand WellsPositionCommand { get; }
         public ICommand RecordPositionCommand { get; }
         public ICommand SolveMappingCommand { get; }
+        public ICommand DeleteRecordPositionCommand { get; }
+        public ICommand CancelCommand { get; }
         public bool IsDecreaseStepSizeEnabled => RobotProtocol.RobotState.Settings.StepSize > 0.1;
         public bool RecordEnabled
         {
@@ -44,12 +46,16 @@ namespace PHIL_GUI.ViewModels
             {
                 if (value == selectedCalibrationPoint) return;
 
-                if (SetProperty(ref selectedCalibrationPoint, value) && value != null)
-                {
-                    GoToWell(value.Name);
-                }
+                SetProperty(ref selectedCalibrationPoint, value);
+
+                OnPropertyChanged(nameof(HasSelectedCalibrationPoint));
+
+                if (value == null) return;
+
+                GoToWell(value.Name);
             }
         }
+        public bool HasSelectedCalibrationPoint => SelectedCalibrationPoint != null;
 
         public WellPlateItem WellPlate { get; } = new WellPlateItem(true);
 
@@ -64,10 +70,15 @@ namespace PHIL_GUI.ViewModels
             WellsPositionCommand = new RelayCommand<string>(w => GoToWell(w));
             RecordPositionCommand = new RelayCommand(RecordPosition);
             SolveMappingCommand = new RelayCommand(SolveMapping);
+            DeleteRecordPositionCommand = new RelayCommand(DeleteRecordPosition);
+            CancelCommand = new RelayCommand(Cancel);
 
             Calibration.Points.CollectionChanged += Points_CollectionChanged;
             Settings.PropertyChanged += Settings_PropertyChanged;
             CurrentWell.PropertyChanged += CurrentWell_PropertyChanged;
+
+            Calibration.Points.Add(new CalibrationPoint("A1", 0, 0));
+            Calibration.Points.Add(new CalibrationPoint("B1", 5, 0));
         }
 
         private void Points_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
@@ -139,6 +150,22 @@ namespace PHIL_GUI.ViewModels
             if (Calibration.Points.Count < Calibration.MIN_COUNT) return;
 
             RobotProtocol.Send("z solve");
+        }
+
+        void DeleteRecordPosition()
+        {
+            if (SelectedCalibrationPoint == null) return;
+
+            RobotProtocol.Send($"z delete {SelectedCalibrationPoint.Name.ToLower()}");
+
+            RobotProtocol.Send($"z {WellPlate.SelectedWellName.ToLower()}");
+        }
+
+        void Cancel()
+        {
+            SelectedCalibrationPoint = null;
+
+            WellPlate.SelectWell("");
         }
 
         void UpdateWellClass(CalibrationPoint point)

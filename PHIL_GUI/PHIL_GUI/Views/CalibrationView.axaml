@@ -333,7 +333,7 @@
             </Border>
 
             <Border Grid.Column="1" Classes="sidebar" BorderThickness="1,0,0,0" Width="350">
-                <Grid RowDefinitions="Auto,Auto,*">
+                <Grid RowDefinitions="Auto,Auto,*,Auto">
 		            <Border BorderThickness="0,0,0,1" Grid.Row="0">
                         <DockPanel Margin="15, 10">
 						    <TextBlock DockPanel.Dock="Right" Classes="subtitle" FontSize="10" LetterSpacing="1.5" Text="{Binding Calibration.Count, StringFormat='{}{0} pts'}"/>
@@ -422,6 +422,54 @@
                             </DataGridTemplateColumn>
                         </DataGrid.Columns>
                     </DataGrid>
+
+                    <Border Grid.Row="3" Background="{StaticResource Surface2}" BorderThickness="1,1,0,0"
+                            IsVisible="{Binding HasSelectedCalibrationPoint}">
+                        <StackPanel Margin="14, 16" Spacing="10">
+
+                            <StackPanel Orientation="Horizontal" Spacing="5">
+                                <TextBlock Classes="subtitle" FontSize="10" LetterSpacing="1.5" Text="SELECTED POINT —"/>
+                                <Border Classes="badge" Padding="8,3">
+                                    <TextBlock Text="{Binding SelectedCalibrationPoint.Name}" FontSize="9"/>
+                                </Border>
+                            </StackPanel>
+
+                            <Grid ColumnDefinitions="*,*">
+
+                                <StackPanel Grid.Column="0" Spacing="14">
+                                    <StackPanel Spacing="5">
+                                        <TextBlock Classes="subtitle" Text="XY" LetterSpacing="1"/>
+                                        <TextBlock Classes="metric-value" Text="{Binding SelectedCalibrationPoint.XY}"/>
+                                    </StackPanel>
+
+                                    <StackPanel Grid.Row="1" Grid.Column="0" Spacing="5">
+                                        <TextBlock Classes="subtitle" Text="Error L" LetterSpacing="1"/>
+                                        <TextBlock Classes="metric-value" Text="{Binding SelectedCalibrationPoint.ErrL}"/>
+                                    </StackPanel>
+                                </StackPanel>
+
+                                <StackPanel Grid.Column="1" Spacing="14">
+                                    <StackPanel Spacing="5">
+                                        <TextBlock Classes="subtitle" Text="Angles L / R" LetterSpacing="1"/>
+                                        <TextBlock Classes="metric-value" Text="{Binding CurrentWell.AngleL}"/>
+                                    </StackPanel>
+
+								    <StackPanel Spacing="5">
+                                        <TextBlock Classes="subtitle" Text="Error R" LetterSpacing="1"/>
+                                        <TextBlock Classes="metric-value" Text="{Binding SelectedCalibrationPoint.ErrR}"/>
+                                    </StackPanel>
+                                </StackPanel>
+                            </Grid>
+
+                            <StackPanel Orientation="Horizontal" Spacing="6">
+								<Button Classes="btn btn-emergency" Content="Delete &amp; re-record"
+                                        Command="{Binding DeleteRecordPositionCommand}"/>
+                                
+                                <Button Classes="btn btn-secondary" Content="Cancel"
+                                        Command="{Binding CancelCommand}"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
                 </Grid>
             </Border>
         </Grid>
