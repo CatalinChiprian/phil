@@ -464,6 +464,8 @@
                             </Grid>
 
                             <StackPanel Orientation="Horizontal" Spacing="6">
+                                <Button Classes="btn btn-primary" Content="Go To Well"
+                                        Command="{Binding GoToSelectedWellCommand}"/>
 								<Button Classes="btn btn-emergency" Content="Delete &amp; re-record"
                                         Command="{Binding DeleteRecordPositionCommand}"/>
                                 

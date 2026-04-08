@@ -21,6 +21,7 @@ namespace PHIL_GUI.ViewModels
         public ICommand WellsPositionCommand { get; }
         public ICommand RecordPositionCommand { get; }
         public ICommand SolveMappingCommand { get; }
+        public ICommand GoToSelectedWellCommand { get; }
         public ICommand DeleteRecordPositionCommand { get; }
         public ICommand CancelCommand { get; }
         public bool IsDecreaseStepSizeEnabled => RobotProtocol.RobotState.Settings.StepSize > 0.1;
@@ -52,7 +53,7 @@ namespace PHIL_GUI.ViewModels
 
                 if (value == null) return;
 
-                GoToWell(value.Name);
+                SelectWell(value.Name);
             }
         }
         public bool HasSelectedCalibrationPoint => SelectedCalibrationPoint != null;
@@ -67,9 +68,10 @@ namespace PHIL_GUI.ViewModels
             MoveRightCommand = new RelayCommand(RobotProtocol.MoveRight);
             DecreaseStepSize = new RelayCommand(() => RobotProtocol.Send("-"));
             IncreaseStepSize = new RelayCommand(() => RobotProtocol.Send("+"));
-            WellsPositionCommand = new RelayCommand<string>(w => GoToWell(w));
+            WellsPositionCommand = new RelayCommand<string>(w => SelectWell(w));
             RecordPositionCommand = new RelayCommand(RecordPosition);
             SolveMappingCommand = new RelayCommand(SolveMapping);
+            GoToSelectedWellCommand = new RelayCommand(GoToSelectedWell);
             DeleteRecordPositionCommand = new RelayCommand(DeleteRecordPosition);
             CancelCommand = new RelayCommand(Cancel);
 
@@ -115,18 +117,23 @@ namespace PHIL_GUI.ViewModels
             }
         }
 
-        void GoToWell(string well)
+        void SelectWell(string well)
         {
             CurrentWell.Type = WellType.Standard;
             CurrentWell.Name = well;
             WellItem selectedWell = WellPlate.SelectWell(well);
             SelectedCalibrationPoint = selectedWell.Calibration;
 
-            string moveCmd = "w";
-            if (selectedWell.IsCalibrated) moveCmd = "q";
-            RobotProtocol.Send($"{moveCmd}{well.ToLower()}");
-
             OnPropertyChanged(nameof(RecordEnabled));
+        }
+
+        void GoToSelectedWell()
+        {
+            if (SelectedCalibrationPoint == null) return;
+
+            string moveCmd = "w";
+            if (SelectedCalibrationPoint.IsSolved) moveCmd = "q";
+            RobotProtocol.Send($"{moveCmd}{SelectedCalibrationPoint.Name.ToLower()}");
         }
 
         void RecordPosition()
