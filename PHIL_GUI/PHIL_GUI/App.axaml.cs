@@ -2,11 +2,11 @@ using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Data.Core.Plugins;
 using Avalonia.Markup.Xaml;
-using PHIL_GUI.ViewModels;
 using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using PHIL_GUI.Services;
+using PHIL_GUI.ViewModels;
 
 namespace PHIL_GUI;
 
@@ -25,6 +25,7 @@ public partial class App : Application
         services.AddSingleton<RobotProtocolService>();
         services.AddTransient<PortsWindowViewModel>();
         services.AddTransient<MainWindowViewModel>();
+        services.AddTransient<SettingsWindowViewModel>();
         Services = services.BuildServiceProvider();
 
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)

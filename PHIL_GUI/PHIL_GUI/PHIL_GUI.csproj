@@ -29,11 +29,16 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Compile Update="Views\WellsView.axaml.cs">
+      <Compile Update="Views\MainWindow\Views\WellsView.axaml.cs">
         <DependentUpon>WellsView.axaml</DependentUpon>
       </Compile>
-      <Compile Update="Views\PortsWindow.axaml.cs">
+      <Compile Update="Views\PortsWindow\PortsWindow.axaml.cs">
         <DependentUpon>PortsWindow.axaml</DependentUpon>
       </Compile>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="ViewModels\SettingsWindow\ViewModels\" />
+      <Folder Include="Views\SettingsWindow\Views\" />
     </ItemGroup>
 </Project>

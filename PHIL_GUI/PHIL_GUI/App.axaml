@@ -273,6 +273,10 @@
 			<Setter Property="Fill" Value="{StaticResource Muted}"/>
         </Style>
 
+        <Style Selector="ListBox.nav ListBoxItem Path">
+			<Setter Property="Fill" Value="{StaticResource Muted}"/>
+        </Style>
+
         <Style Selector="ListBox.nav ListBoxItem:selected /template/ ContentPresenter">
             <Setter Property="Background" Value="{StaticResource Accent-Dim}"/>
             <Setter Property="Foreground" Value="{StaticResource Accent}"/>
@@ -285,6 +289,10 @@
 
         <Style Selector="ListBox.nav ListBoxItem:selected Ellipse">
 			<Setter Property="Fill" Value="{StaticResource Accent}"/>
+        </Style>
+
+        <Style Selector="ListBox.nav ListBoxItem:selected Path">
+            <Setter Property="Fill" Value="{StaticResource Accent}"/>
         </Style>
 
         <Style Selector="Border.bottombar">
