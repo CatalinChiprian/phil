@@ -46,18 +46,16 @@
                         </Grid.ColumnDefinitions>
 
                         <!-- Front -->
-                        <Button Grid.Row="0" Grid.Column="2" Classes="btn btn-dpad"
+                        <Button Grid.Row="0" Grid.Column="2" Classes="btn btn-svg"
                                 Command="{Binding MoveForwardCommand}">
                             <Path Data="M6 8L2 8L2 6L8 5.24536e-07L14 6L14 8L10 8L10 16L6 16L6 8Z"
-                                  Stretch="Fill"
                                   Width="9"
                                   Height="9"/>
                         </Button>
                         <!-- Left -->
-                        <Button Grid.Row="2" Grid.Column="0" Classes="btn btn-dpad"
+                        <Button Grid.Row="2" Grid.Column="0" Classes="btn btn-svg"
                                 Command="{Binding MoveLeftCommand}">
                             <Path Data="M6 8L2 8L2 6L8 5.24536e-07L14 6L14 8L10 8L10 16L6 16L6 8Z"
-                                  Stretch="Fill"
                                   Width="9"
                                   Height="9">
                                 <Path.RenderTransform>
@@ -66,10 +64,9 @@
                             </Path>
                         </Button>
                         <!-- Right -->
-                        <Button Grid.Row="2" Grid.Column="4" Classes="btn btn-dpad"
+                        <Button Grid.Row="2" Grid.Column="4" Classes="btn btn-svg"
                                 Command="{Binding MoveRightCommand}">
                             <Path Data="M6 8L2 8L2 6L8 5.24536e-07L14 6L14 8L10 8L10 16L6 16L6 8Z"
-                                  Stretch="Fill"
                                   Width="9"
                                   Height="9">
                                 <Path.RenderTransform>
@@ -78,10 +75,9 @@
                             </Path>
                         </Button>
                         <!-- Backward -->
-                        <Button Grid.Row="4" Grid.Column="2" Classes="btn btn-dpad"
+                        <Button Grid.Row="4" Grid.Column="2" Classes="btn btn-svg"
                                 Command="{Binding MoveBackwardCommand}" IsEnabled="False">
                             <Path Data="M6 8L2 8L2 6L8 5.24536e-07L14 6L14 8L10 8L10 16L6 16L6 8Z"
-                                  Stretch="Fill"
                                   Width="9"
                                   Height="9">
                                 <Path.RenderTransform>
@@ -96,7 +92,7 @@
                     <TextBlock Classes="subtitle" LetterSpacing="2" Text="STEP SIZE" VerticalAlignment="Center"/>
 
                     <StackPanel Orientation="Horizontal" Spacing="5">
-						<Button Classes="btn btn-dpad" Content="-"
+						<Button Classes="btn btn-svg" Content="-"
                                 IsEnabled="{Binding IsDecreaseStepSizeEnabled}"
                                 Command="{Binding DecreaseStepSize}"
                                 FontSize="15"
@@ -107,7 +103,7 @@
                                        FontWeight="SemiBold"
                                        FontSize="12"/>
                         </Border>
-						<Button Classes="btn btn-dpad" Content="+"
+						<Button Classes="btn btn-svg" Content="+"
                                 Command="{Binding IncreaseStepSize}"
                                 FontSize="15"
                                 Padding="0"/>

@@ -15,6 +15,7 @@ public class MainWindowViewModel : ViewModelBase
 {
     public Action Disconnected;
     public ICommand DisconnectCommand { get; }
+    public ICommand OpenSettingsCommand { get; }
     public ICommand MoveUpCommand { get; }
     public ICommand MoveDownCommand { get; }
     public ICommand GoHomeCommand { get; }
@@ -62,6 +63,7 @@ public class MainWindowViewModel : ViewModelBase
         SelectedPage = _pages[0];
 
         DisconnectCommand = new RelayCommand(Disconnect);
+        OpenSettingsCommand = new RelayCommand(OpenSettings);
         MoveUpCommand = new RelayCommand(RobotProtocol.MoveUp);
         MoveDownCommand = new RelayCommand(RobotProtocol.MoveDown);
         GoHomeCommand = new RelayCommand(RobotProtocol.GoHome);
@@ -71,9 +73,14 @@ public class MainWindowViewModel : ViewModelBase
         EmergencyStopCommand = new RelayCommand(RobotProtocol.EmergencyStop);
     }
 
-    public void Disconnect()
+    private void Disconnect()
     {
         RobotProtocol.SerialPort.Disconnect();
         Disconnected?.Invoke();
+    }
+
+    private void OpenSettings()
+    {
+        // Implement settings dialog logic here
     }
 }
