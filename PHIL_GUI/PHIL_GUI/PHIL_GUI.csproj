@@ -32,8 +32,8 @@
       <Compile Update="Views\WellsView.axaml.cs">
         <DependentUpon>WellsView.axaml</DependentUpon>
       </Compile>
-      <Compile Update="Views\PortsView.axaml.cs">
-        <DependentUpon>PortsView.axaml</DependentUpon>
+      <Compile Update="Views\PortsWindow.axaml.cs">
+        <DependentUpon>PortsWindow.axaml</DependentUpon>
       </Compile>
     </ItemGroup>
 </Project>

@@ -7,7 +7,7 @@ using System.Windows.Input;
 
 namespace PHIL_GUI.ViewModels
 {
-    public class PortsViewModel : ViewModelBase
+    public class PortsWindowViewModel : ViewModelBase
     {
         public event Action Connected;
 
@@ -34,7 +34,7 @@ namespace PHIL_GUI.ViewModels
         private RelayCommand connectCommand;
         public ICommand ConnectCommand => connectCommand;
 
-        public PortsViewModel(SerialPortService serialService)
+        public PortsWindowViewModel(SerialPortService serialService)
         {
             this.serialService = serialService;
             AvailablePorts.CollectionChanged += (_, _) =>

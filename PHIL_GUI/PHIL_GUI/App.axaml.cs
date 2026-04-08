@@ -23,7 +23,7 @@ public partial class App : Application
         ServiceCollection services = new ServiceCollection();
         services.AddSingleton<SerialPortService>();
         services.AddSingleton<RobotProtocolService>();
-        services.AddTransient<PortsViewModel>();
+        services.AddTransient<PortsWindowViewModel>();
         services.AddTransient<MainWindowViewModel>();
         Services = services.BuildServiceProvider();
 
@@ -33,10 +33,10 @@ public partial class App : Application
             // More info: https://docs.avaloniaui.net/docs/guides/development-guides/data-validation#manage-validationplugins
             DisableAvaloniaDataAnnotationValidation();
 
-            PortsView portsView = new PortsView();
+            PortsWindow portsWindow = new PortsWindow();
 
-            desktop.MainWindow = portsView;
-            portsView.Show();
+            desktop.MainWindow = portsWindow;
+            portsWindow.Show();
         }
 
         base.OnFrameworkInitializationCompleted();

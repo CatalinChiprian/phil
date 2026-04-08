@@ -19,8 +19,8 @@ public partial class MainWindow : Window
 
     private void OnDisconnected()
     {
-        PortsView portsView = new PortsView();
-        portsView.Show();
+        PortsWindow portsWindow = new PortsWindow();
+        portsWindow.Show();
 
         Close();
     }

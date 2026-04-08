@@ -6,13 +6,13 @@ using PHIL_GUI.Views;
 
 namespace PHIL_GUI;
 
-public partial class PortsView : Window
+public partial class PortsWindow : Window
 {
-    public PortsView()
+    public PortsWindow()
     {
         InitializeComponent();
 
-        PortsViewModel portsViewModel = App.Services.GetRequiredService<PortsViewModel>();
+        PortsWindowViewModel portsViewModel = App.Services.GetRequiredService<PortsWindowViewModel>();
         portsViewModel.Connected += OnConnected;
         Closed += (s,e) => portsViewModel.Connected -= OnConnected;
 
