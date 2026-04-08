@@ -48,16 +48,18 @@
                         <!-- Front -->
                         <Button Grid.Row="0" Grid.Column="2" Classes="btn btn-svg"
                                 Command="{Binding MoveForwardCommand}">
-                            <Path Data="M6 8L2 8L2 6L8 5.24536e-07L14 6L14 8L10 8L10 16L6 16L6 8Z"
+                            <Path Classes="svg"
                                   Width="9"
-                                  Height="9"/>
+                                  Height="9"
+                                  Data="M6 8L2 8L2 6L8 5.24536e-07L14 6L14 8L10 8L10 16L6 16L6 8Z"/>
                         </Button>
                         <!-- Left -->
                         <Button Grid.Row="2" Grid.Column="0" Classes="btn btn-svg"
                                 Command="{Binding MoveLeftCommand}">
-                            <Path Data="M6 8L2 8L2 6L8 5.24536e-07L14 6L14 8L10 8L10 16L6 16L6 8Z"
+                            <Path Classes="svg"
                                   Width="9"
-                                  Height="9">
+                                  Height="9"
+                                  Data="M6 8L2 8L2 6L8 5.24536e-07L14 6L14 8L10 8L10 16L6 16L6 8Z">
                                 <Path.RenderTransform>
                                     <RotateTransform Angle="270"/>
                                 </Path.RenderTransform>
@@ -66,9 +68,10 @@
                         <!-- Right -->
                         <Button Grid.Row="2" Grid.Column="4" Classes="btn btn-svg"
                                 Command="{Binding MoveRightCommand}">
-                            <Path Data="M6 8L2 8L2 6L8 5.24536e-07L14 6L14 8L10 8L10 16L6 16L6 8Z"
+                            <Path Classes="svg"
                                   Width="9"
-                                  Height="9">
+                                  Height="9"
+                                  Data="M6 8L2 8L2 6L8 5.24536e-07L14 6L14 8L10 8L10 16L6 16L6 8Z">
                                 <Path.RenderTransform>
                                     <RotateTransform Angle="90"/>
                                 </Path.RenderTransform>
@@ -77,9 +80,10 @@
                         <!-- Backward -->
                         <Button Grid.Row="4" Grid.Column="2" Classes="btn btn-svg"
                                 Command="{Binding MoveBackwardCommand}" IsEnabled="False">
-                            <Path Data="M6 8L2 8L2 6L8 5.24536e-07L14 6L14 8L10 8L10 16L6 16L6 8Z"
+                            <Path Classes="svg"
                                   Width="9"
-                                  Height="9">
+                                  Height="9"
+                                  Data="M6 8L2 8L2 6L8 5.24536e-07L14 6L14 8L10 8L10 16L6 16L6 8Z">
                                 <Path.RenderTransform>
                                     <RotateTransform Angle="180"/>
                                 </Path.RenderTransform>

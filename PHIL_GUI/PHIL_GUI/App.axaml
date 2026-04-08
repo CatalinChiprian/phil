@@ -539,6 +539,12 @@
             <Setter Property="Margin" Value="2"/>
         </Style>
 
+        <Style Selector="Path.svg">
+			<Setter Property="Stretch" Value="Fill"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+        </Style>
+
         <Style Selector="Button.btn-svg">
 			<Setter Property="Width" Value="32"/>
             <Setter Property="Height" Value="32"/>
@@ -574,6 +580,23 @@
             <Setter Property="Background" Value="{StaticResource Surface2}"/>
             <Setter Property="Padding" Value="3,6"/>
             <Setter Property="Height" Value="32"/>
+        </Style>
+
+        <Style Selector="TextBox.terminal">
+			<Setter Property="FontFamily" Value="avares://PHIL_GUI/Assets/Fonts/SpaceMono-Regular.ttf#Space Mono"/>
+            <Setter Property="IsReadOnly" Value="True"/>
+            <Setter Property="Background" Value="{StaticResource Surface2}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource BorderColor}"/>
+            <Setter Property="Foreground" Value="{StaticResource Text}"/>
+            <Setter Property="AcceptsReturn" Value="True"/>
+            <Setter Property="TextWrapping" Value="Wrap"/>
+            <Setter Property="Height" Value="150"/>
+            <Setter Property="Focusable" Value="False"/>
+        </Style>
+
+        <Style Selector="TextBox.terminal:pointerover /template/ Border#PART_BorderElement">
+            <Setter Property="Background" Value="{StaticResource Surface2}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource BorderColor}"/>
         </Style>
     </Application.Styles>
 </Application>

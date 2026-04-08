@@ -1,6 +1,7 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="using:PHIL_GUI.ViewModels"
+        xmlns:views="using:PHIL_GUI.Views"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="600"
@@ -14,40 +15,59 @@
         Title="Settings - PHIL">
     <DockPanel>
 
-        <Border DockPanel.Dock="Left" Classes="sidebar" Padding="15,20" Width="200">
+        <Border DockPanel.Dock="Left"
+                Classes="sidebar"
+                Padding="15,20"
+                Width="200">
 			<StackPanel Orientation="Vertical"
                         Spacing="15" >
+
+<!--                Add Section and Pages here. For example:
+
+                <StackPanel Orientation="Vertical">
+                    <TextBlock Classes="subtitle" Text="GENERAL" LetterSpacing="2"/>
+                    <ListBox Classes="nav"
+                             ItemsSource="{Binding GeneralPages}"
+                             SelectedItem="{Binding SelectedPage}">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                                    <Path Width="14" Height="14" Data="{Binding IconData}"/>
+                                    <TextBlock Text="{Binding Title}" FontSize="13" LetterSpacing="0.7"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </StackPanel>-->
+
                 <StackPanel Orientation="Vertical">
                     <TextBlock Classes="subtitle" Text="DEVELOPER" LetterSpacing="2"/>
                     <ListBox Classes="nav"
+                             ItemsSource="{Binding DeveloperPages}"
                              SelectedItem="{Binding SelectedPage}">
-                        <ListBoxItem>
-							<StackPanel Orientation="Horizontal"
-                                        Spacing="8"
-                                        VerticalAlignment="Center">
-                                <Path Stretch="Fill"
-                                      Width="14" Height="14"
-                                      Data="M4.6 15c-.9-2.6-.6-4.6-.5-5.4 2.4-1.5 5.3-2 8-1.3.7-.3 1.5-.5
-                                      2.3-.6-.1-.3-.2-.5-.3-.8h2l1.2-3.2-.9-.4-1 2.6h-1.8C13 4.8 12.1 4 11.1
-                                      3.4l2.1-2.1-.7-.7L10.1 3c-.7 0-1.5 0-2.3.1L5.4.7l-.7.7 2.1 2.1C5.7 4.1
-                                      4.9 4.9 4.3 6H2.5l-1-2.6-.9.4L1.8 7h2C3.3 8.3 3 9.6 3 11H1v1h2c0 1 .2 2 .5
-                                      3H1.8L.6 18.3l.9.3 1-2.7h1.4c.4.8 2.1 4.5 5.8 3.9-.3-.2-.5-.5-.7-.8-2.9
-                                      0-4.4-3.5-4.4-4zM9 3.9c2 0 3.7 1.6 4.4 3.8-2.9-1-6.2-.8-9 .6.7-2.6 2.5-4.4
-                                      4.6-4.4zm14.8 19.2l-4.3-4.3c2.1-2.5 1.8-6.3-.7-8.4s-6.3-1.8-8.4.7-1.8 6.3.7
-                                      8.4c2.2 1.9 5.4 1.9 7.7 0l4.3 4.3c.2.2.5.2.7 0 .2-.2.2-.5 0-.7zm-8.8-3c-2.8
-                                      0-5.1-2.3-5.1-5.1s2.3-5.1 5.1-5.1 5.1 2.3 5.1 5.1-2.3 5.1-5.1 5.1z"/>
-                                <TextBlock Text="{Binding DebugPage.Title}" FontSize="13" LetterSpacing="0.7"/>
-                            </StackPanel>
-
-                        </ListBoxItem>
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                                    <Path Classes="svg"
+                                          Width="20"
+                                          Height="20"
+                                          Data="{Binding IconData}"/>
+                                    <TextBlock Text="{Binding Title}" FontSize="13" LetterSpacing="0.7"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
                     </ListBox>
                 </StackPanel>
-                
             </StackPanel>
         </Border>
 
-        <Panel>
-			
-        </Panel>
+        <ContentControl Content="{Binding CurrentPage}"
+                        IsVisible="{Binding CurrentPage, Converter={x:Static ObjectConverters.IsNotNull}}">
+            <ContentControl.DataTemplates>
+                <DataTemplate DataType="vm:DebugViewModel">
+                    <views:DebugView />
+                </DataTemplate>
+            </ContentControl.DataTemplates>
+        </ContentControl>
     </DockPanel>
 </Window>

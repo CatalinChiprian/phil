@@ -36,9 +36,4 @@
         <DependentUpon>PortsWindow.axaml</DependentUpon>
       </Compile>
     </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="ViewModels\SettingsWindow\ViewModels\" />
-      <Folder Include="Views\SettingsWindow\Views\" />
-    </ItemGroup>
 </Project>
