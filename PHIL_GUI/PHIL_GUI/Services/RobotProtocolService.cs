@@ -63,7 +63,7 @@ namespace PHIL_GUI.Services
             serialPort = serial;
             robotState = new RobotState();
             serial.MessageReceived += OnMessageReceived;
-            serial.GetStartUpMessage += GetSetupInformation;
+            //serial.GetStartUpMessage += GetSetupInformation;
         }
 
         public void Send(string command)

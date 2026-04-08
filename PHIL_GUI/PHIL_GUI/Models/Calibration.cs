@@ -23,6 +23,9 @@ namespace PHIL_GUI.Models
                 SetProperty(ref rmsL, value);
 
                 OnPropertyChanged(nameof(rmsL));
+                OnPropertyChanged(nameof(rmsLColor));
+                OnPropertyChanged(nameof(rmsColor));
+                OnPropertyChanged(nameof(IsCalibrated));
             }
         }
 
@@ -35,6 +38,9 @@ namespace PHIL_GUI.Models
                 SetProperty(ref rmsR, value);
 
                 OnPropertyChanged(nameof(RmsRText));
+                OnPropertyChanged(nameof(rmsRColor));
+                OnPropertyChanged(nameof(rmsColor));
+                OnPropertyChanged(nameof(IsCalibrated));
             }
         }
 

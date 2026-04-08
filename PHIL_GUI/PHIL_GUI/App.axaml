@@ -11,6 +11,7 @@
 
 
     <Application.Resources>
+        <SolidColorBrush x:Key="Wall">#AA000000</SolidColorBrush>
         <SolidColorBrush x:Key="Bg">#f4f6f4</SolidColorBrush>
         <SolidColorBrush x:Key="Surface">#ffffff</SolidColorBrush>
         <SolidColorBrush x:Key="Surface2">#eef1ee</SolidColorBrush>
