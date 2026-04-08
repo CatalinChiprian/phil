@@ -15,28 +15,38 @@ namespace PHIL_GUI.Models
         public int Count => Points.Count();
         public ObservableCollection<CalibrationPoint> Points { get; } = new ObservableCollection<CalibrationPoint>();
 
-        private double rmsLValue;
-        public double RmsLValue { 
-            get => rmsLValue;
-            set => SetProperty(ref rmsLValue, value);
+        private double? rmsL;
+        public double? RmsL { 
+            get => rmsL;
+            set
+            {
+                SetProperty(ref rmsL, value);
+
+                OnPropertyChanged(nameof(rmsL));
+            }
         }
 
-        private double rmsRValue;
-        public double RmsRValue
+        private double? rmsR;
+        public double? RmsR
         {
-            get => rmsRValue;
-            set => SetProperty(ref rmsRValue, value); 
+            get => rmsR;
+            set
+            {
+                SetProperty(ref rmsR, value);
+
+                OnPropertyChanged(nameof(RmsRText));
+            }
         }
 
-        public string RmsLText => $"L {RmsLValue:F2}°";
-        public string RmsRText => $"R {RmsRValue:F2}°";
+        public string RmsLText => RmsL.HasValue ? $"L {RmsL.Value:F2}°" : "L -";
+        public string RmsRText => RmsR.HasValue ? $"L {RmsR.Value:F2}°" : "R -";
 
         private string rmsLColor
         {
             get
             {
-                if (RmsLValue > 1.5) return "Warn";
-                if (RmsLValue > 1.0) return "Caution";
+                if (RmsL > 1.5) return "Warn";
+                if (RmsL > 1.0) return "Caution";
                 return "Accent";
             }
         }
@@ -46,20 +56,21 @@ namespace PHIL_GUI.Models
         {
             get
             {
-                if (RmsRValue > 1.5) return "Warn";
-                if (RmsRValue > 1.0) return "Caution";
+                if (RmsR > 1.5) return "Warn";
+                if (RmsR > 1.0) return "Caution";
                 return "Accent";
             }
         }
         public IBrush RmsRColor => Application.Current.Resources[rmsRColor] as IBrush;
 
-        public string RmsDisplayText => $"L {RmsLValue:F2}°  R {RmsRValue:F2}°";
+        public string RmsDisplayText => RmsL.HasValue && RmsR.HasValue ? $"L {RmsL:F2}°  R {RmsR:F2}°" : "L - R -";
 
         private string rmsColor
         {
             get
             {
-                double worst = Math.Max(RmsLValue, RmsRValue);
+                if (!RmsL.HasValue && !RmsR.HasValue) return "Muted"; 
+                double worst = Math.Max(Math.Abs(RmsL!.Value), Math.Abs(RmsR!.Value));
                 if (worst > 1.5) return "Warn";
                 if (worst > 1.0) return "Caution";
                 return "Accent";
@@ -69,6 +80,8 @@ namespace PHIL_GUI.Models
 
         private string pointsColor => Count < 10 ? "Warn" : Count < 20 ? "Caution" : "Accent";
         public IBrush PointsColor => Application.Current.Resources[pointsColor] as IBrush;
+
+        public bool IsCalibrated => RmsL.HasValue && RmsR.HasValue;
 
         public Calibration()
         {
