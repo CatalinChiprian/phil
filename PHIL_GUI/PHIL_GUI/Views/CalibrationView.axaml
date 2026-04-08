@@ -23,28 +23,11 @@
 
     <DockPanel>
         <Border Classes="toolbar" DockPanel.Dock="Top">
-		    <DockPanel>
-                <StackPanel Orientation="Horizontal" DockPanel.Dock="Right" VerticalAlignment="Center" Spacing="5">
-				    <StackPanel Orientation="Horizontal" Spacing="10">
-                        <StackPanel>
-                            <TextBlock Classes="subtitle" LetterSpacing="1.5" Text="RMS L"/>
-						    <TextBlock Classes="metric-value" 
-                                       Text="{Binding Calibration.RmsLText}"
-                                       Foreground="{Binding Calibration.RmsLColor}"
-                                       />
-                        </StackPanel>
-
-                        <StackPanel>
-                            <TextBlock Classes="subtitle" LetterSpacing="1.5" Text="RMS R"/>
-						    <TextBlock Classes="metric-value" 
-                                       Text="{Binding Calibration.RmsRText}"
-                                       Foreground="{Binding Calibration.RmsRColor}"
-                                       />
-                        </StackPanel>
-                    </StackPanel>
-                </StackPanel>
-
-			    <StackPanel Orientation="Horizontal" DockPanel.Dock="Left" Spacing="15" VerticalAlignment="Center">
+		    <Grid ColumnDefinitions="*,Auto" Margin="20,10">
+			    <StackPanel Grid.Column="0"
+                            Orientation="Horizontal"
+                            Spacing="15"
+                            VerticalAlignment="Center">
 					<TextBlock Classes="subtitle" LetterSpacing="2" Text="BASIC MOVEMENT" VerticalAlignment="Center"/>
                     <Grid Width="98" Height="98">
                         <Grid.RowDefinitions>
@@ -144,7 +127,30 @@
                                 Command="{Binding SolveMappingCommand}"/>
                     </StackPanel>
                 </StackPanel>
-            </DockPanel>
+
+                <StackPanel Grid.Column="1"
+                            Orientation="Horizontal"
+                            VerticalAlignment="Center"
+                            Spacing="5">
+				    <StackPanel Orientation="Horizontal" Spacing="10">
+                        <StackPanel>
+                            <TextBlock Classes="subtitle" LetterSpacing="1.5" Text="RMS L"/>
+						    <TextBlock Classes="metric-value" 
+                                       Text="{Binding Calibration.RmsLText}"
+                                       Foreground="{Binding Calibration.RmsLColor}"
+                                       />
+                        </StackPanel>
+
+                        <StackPanel>
+                            <TextBlock Classes="subtitle" LetterSpacing="1.5" Text="RMS R"/>
+						    <TextBlock Classes="metric-value" 
+                                       Text="{Binding Calibration.RmsRText}"
+                                       Foreground="{Binding Calibration.RmsRColor}"
+                                       />
+                        </StackPanel>
+                    </StackPanel>
+                </StackPanel>
+            </Grid>
         </Border>
 
         <Grid ColumnDefinitions="*, Auto">
