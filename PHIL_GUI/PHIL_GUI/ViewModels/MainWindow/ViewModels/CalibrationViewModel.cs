@@ -119,11 +119,10 @@ namespace PHIL_GUI.ViewModels
 
         void SelectWell(string well)
         {
-            CurrentWell.Type = WellType.Standard;
-            CurrentWell.Name = well;
             WellItem selectedWell = WellPlate.SelectWell(well);
             SelectedCalibrationPoint = selectedWell.Calibration;
 
+            OnPropertyChanged(nameof(HasSelectedCalibrationPoint));
             OnPropertyChanged(nameof(RecordEnabled));
         }
 
@@ -134,6 +133,9 @@ namespace PHIL_GUI.ViewModels
             string moveCmd = "w";
             if (SelectedCalibrationPoint.IsSolved) moveCmd = "q";
             RobotProtocol.Send($"{moveCmd}{SelectedCalibrationPoint.Name.ToLower()}");
+
+            CurrentWell.Type = WellType.Standard;
+            CurrentWell.Name = SelectedCalibrationPoint.Name;
         }
 
         void RecordPosition()

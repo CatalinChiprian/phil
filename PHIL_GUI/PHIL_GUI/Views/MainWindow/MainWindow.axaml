@@ -143,7 +143,10 @@
                         <ListBox.ItemTemplate>
                             <DataTemplate>
                                 <StackPanel Orientation="Horizontal" Spacing="8">
-                                    <Ellipse Width="5" Height="5"/>
+                                    <Path Classes="svg"
+                                          Width="15"
+                                          Height="15"
+                                          Data="{Binding IconData}"/>
                                     <TextBlock Text="{Binding Title}"/>
                                 </StackPanel>
                             </DataTemplate>
@@ -223,9 +226,6 @@
             <ContentControl.DataTemplates>
                 <DataTemplate DataType="vm:WellsViewModel">
                     <views:WellsView />
-                </DataTemplate>
-                <DataTemplate DataType="vm:BasicControlsViewModel">
-                    <views:BasicControlsView />
                 </DataTemplate>
                 <DataTemplate DataType="vm:CalibrationViewModel">
                     <views:CalibrationView />

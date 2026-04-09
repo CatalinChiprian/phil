@@ -21,9 +21,6 @@
                 Width="200">
 			<StackPanel Orientation="Vertical"
                         Spacing="15" >
-
-<!--                Add Section and Pages here. For example:
-
                 <StackPanel Orientation="Vertical">
                     <TextBlock Classes="subtitle" Text="GENERAL" LetterSpacing="2"/>
                     <ListBox Classes="nav"
@@ -32,13 +29,16 @@
                         <ListBox.ItemTemplate>
                             <DataTemplate>
                                 <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
-                                    <Path Width="14" Height="14" Data="{Binding IconData}"/>
+                                    <Path Classes="svg"
+                                          Width="20"
+                                          Height="20"
+                                          Data="{Binding IconData}"/>
                                     <TextBlock Text="{Binding Title}" FontSize="13" LetterSpacing="0.7"/>
                                 </StackPanel>
                             </DataTemplate>
                         </ListBox.ItemTemplate>
                     </ListBox>
-                </StackPanel>-->
+                </StackPanel>
 
                 <StackPanel Orientation="Vertical">
                     <TextBlock Classes="subtitle" Text="DEVELOPER" LetterSpacing="2"/>

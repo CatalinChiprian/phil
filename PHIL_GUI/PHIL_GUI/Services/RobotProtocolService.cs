@@ -71,6 +71,11 @@ namespace PHIL_GUI.Services
             serialPort.SendMessage(command);
         }
 
+        public void ClearReceivedData()
+        {
+            ReceivedData = "";
+        }
+
         public void MoveUp()
         {
             Send("u");

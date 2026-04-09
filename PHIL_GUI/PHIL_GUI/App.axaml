@@ -256,7 +256,7 @@
             <Setter Property="Foreground" Value="{StaticResource Muted}"/>
         </Style>
 
-        <Style Selector="ListBox.nav ListBoxItem Ellipse">
+        <Style Selector="ListBox.nav ListBoxItem Path">
 			<Setter Property="Fill" Value="{StaticResource Muted}"/>
         </Style>
 
@@ -269,12 +269,8 @@
             <Setter Property="Foreground" Value="{StaticResource Text}"/>
         </Style>
 
-         <Style Selector="ListBox.nav ListBoxItem Ellipse">
-			<Setter Property="Fill" Value="{StaticResource Muted}"/>
-        </Style>
-
-        <Style Selector="ListBox.nav ListBoxItem Path">
-			<Setter Property="Fill" Value="{StaticResource Muted}"/>
+         <Style Selector="ListBox.nav ListBoxItem:pointerover Path">
+            <Setter Property="Fill" Value="{StaticResource Text}"/>
         </Style>
 
         <Style Selector="ListBox.nav ListBoxItem:selected /template/ ContentPresenter">
@@ -285,10 +281,6 @@
 
         <Style Selector="ListBox.nav ListBoxItem:selected TextBlock">
             <Setter Property="Foreground" Value="{StaticResource Accent}"/>
-        </Style>
-
-        <Style Selector="ListBox.nav ListBoxItem:selected Ellipse">
-			<Setter Property="Fill" Value="{StaticResource Accent}"/>
         </Style>
 
         <Style Selector="ListBox.nav ListBoxItem:selected Path">

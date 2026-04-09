@@ -11,8 +11,23 @@
             <TextBlock Text="Serial Monitor" 
                        FontWeight="SemiBold" 
                        FontSize="16"/>
-            <TextBox Classes="terminal"
-                     Text="{Binding ReceivedData}"/>
+
+
+            <Grid>
+                <TextBox Classes="terminal"
+                         Text="{Binding ReceivedData}"
+                         AcceptsReturn="True"
+                         TextWrapping="Wrap"/>
+
+                <Button Classes="btn btn-secondary"
+                        Content="Copy"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Top"
+                        Margin="0,4,4,0"
+                        Click="CopyButton_Click">
+                </Button>
+            </Grid>
+
 
             <StackPanel Orientation="Horizontal"
                         Spacing="10"
@@ -20,11 +35,11 @@
                         HorizontalAlignment="Center">
                 <Button Classes="btn btn-secondary"
                         Content="Clear log"
-                        Command="{Binding}"
+                        Command="{Binding ClearLogCommand}"
                         Padding="30,6"/>
                 <Button Classes="btn btn-secondary"
                         Content="Save log..."
-                        Command="{Binding}"
+                        Click="SaveLogButton_Click"
                         Padding="30,6"/>
             </StackPanel>
         </StackPanel>
