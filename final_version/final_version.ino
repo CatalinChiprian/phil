@@ -596,23 +596,35 @@
           switch(column) {
             
             case 1: 
-              moveToWell(5.125, -38.625, "a1"); // Motor L, Motor R, Well name
+              moveToWell(-4.125, -30.375, "a1"); // Motor L, Motor R, Well name
             break;
 
             case 3: 
-              moveToWell(17, -46.25, "a3"); // Motor L, Motor R, Well name
+              moveToWell(7.625, -37.875, "a3"); // Motor L, Motor R, Well name
+            break;
+
+            case 5:
+              moveToWell(17.375, -44.625, "a5"); // Motor L, Motor R, Well name
             break;
 
             case 6:
-              moveToWell(31.25, -56.5, "a6"); // Motor L, Motor R, Well name
+              moveToWell(20.75, -48.375, "a6"); // Motor L, Motor R, Well name
+            break;
+
+            case 7:
+              moveToWell(25.625, -51.375, "a7"); // Motor L, Motor R, Well name
             break;
 
             case 9:
-              moveToWell(44.125, -66.875, "a9"); // Motor L, Motor R, Well name
+              moveToWell(33.875, -58.125, "a9"); // Motor L, Motor R, Well name
+            break;
+
+            case 11:
+              moveToWell(43.625, -67.875, "a11"); // Motor L, Motor R, Well name
             break;
 
             case 12:
-              moveToWell(59.5, -81.5, "a12"); // Motor L, Motor R, Well name
+              moveToWell(47.375, -72.375, "a12"); // Motor L, Motor R, Well name
             break;
 
             default:
@@ -625,23 +637,31 @@
           switch(column) {
             
             case 1: 
-              moveToWell(7.375, -32.625, "b1"); // Motor L, Motor R, Well name
+              moveToWell(-2.875, -24.375, "b1"); // Motor L, Motor R, Well name
+            break;
+
+            case 2: 
+              moveToWell(5.125, -30.375, "b2"); // Motor L, Motor R, Well name
             break;
 
             case 3: 
-              moveToWell(19.75, -42, "b3"); // Motor L, Motor R, Well name
+              moveToWell(9.5, -33.75, "b3"); // Motor L, Motor R, Well name
             break;
 
             case 6:
-              moveToWell(33.25, -53.25, "b6"); // Motor L, Motor R, Well name
+              moveToWell(23.75, -45, "b6"); // Motor L, Motor R, Well name
+            break;
+
+            case 8:
+              moveToWell(31.625, -52.125, "b8"); // Motor L, Motor R, Well name
             break;
 
             case 9:
-              moveToWell(46, -64.5, "b9"); // Motor L, Motor R, Well name
+              moveToWell(34.625, -55.125, "b9"); // Motor L, Motor R, Well name
             break;
 
             case 12:
-              moveToWell(60.625, -78.375, "b12"); // Motor L, Motor R, Well name
+              moveToWell(50.375, -70.875, "b12"); // Motor L, Motor R, Well name
             break;
 
             default:
@@ -654,23 +674,35 @@
           switch(column) {
             
             case 1: 
-              moveToWell(11.875, -28.875, "c1"); // Motor L, Motor R, Well name
+              moveToWell(2.125, -20.625, "c1"); // Motor L, Motor R, Well name
             break;
 
             case 3: 
-              moveToWell(23.125, -38.625, "c3"); // Motor L, Motor R, Well name
+              moveToWell(12.625, -30.375, "c3"); // Motor L, Motor R, Well name
+            break;
+
+            case 5: 
+              moveToWell(21.5, -38.5, "c5"); // Motor L, Motor R, Well name
             break;
 
             case 6:
-              moveToWell(36.625, -50.625, "c6"); // Motor L, Motor R, Well name
+              moveToWell(25.625, -41.875, "c6"); // Motor L, Motor R, Well name
+            break;
+
+            case 7:
+              moveToWell(29.375, -45.625, "c7"); // Motor L, Motor R, Well name
             break;
 
             case 9:
-              moveToWell(48.25, -62.25, "c9"); // Motor L, Motor R, Well name
+              moveToWell(37.25, -53.5, "c9"); // Motor L, Motor R, Well name
+            break;
+
+            case 11:
+              moveToWell(46.125, -62.375, "c11"); // Motor L, Motor R, Well name
             break;
 
             case 12:
-              moveToWell(64.75, -77.25, "c12"); // Motor L, Motor R, Well name
+              moveToWell(51, -67.25, "c12"); // Motor L, Motor R, Well name
             break;
 
             default:
@@ -683,23 +715,35 @@
         switch(column) {
             
             case 1: 
-              moveToWell(15.5, -23.25, "d1"); // Motor L, Motor R, Well name
+              moveToWell(5.875, -15.125, "d1"); // Motor L, Motor R, Well name
+            break;
+
+            case 2: 
+              moveToWell(11.125, -21.875, "d2"); // Motor L, Motor R, Well name
             break;
 
             case 3: 
-              moveToWell(26.75, -35.25, "d3"); // Motor L, Motor R, Well name
+              moveToWell(15.25, -26, "d3"); // Motor L, Motor R, Well name
             break;
 
             case 6:
-              moveToWell(39.5, -48, "d6"); // Motor L, Motor R, Well name
+              moveToWell(30.875, -35.875, "d6"); // Motor L, Motor R, Well name
+            break;
+
+            case 7:
+              moveToWell(34.625, -39.625, "d7"); // Motor L, Motor R, Well name
             break;
 
             case 9:
-              moveToWell(51.125, -59.625, "d9"); // Motor L, Motor R, Well name
+              moveToWell(42.5, -47.5, "d9"); // Motor L, Motor R, Well name
+            break;
+
+            case 11:
+              moveToWell(51.375, -56.375, "d11"); // Motor L, Motor R, Well name
             break;
 
             case 12:
-              moveToWell(65.375, -74.625, "d12"); // Motor L, Motor R, Well name        
+              moveToWell(56.25, -61.25, "d12"); // Motor L, Motor R, Well name        
             break;
 
             default:
@@ -853,7 +897,8 @@
       return -1;
     }
 
-    digitalWrite(ena[2], LOW);
+    enableRMotor();
+
     stepperR.setSpeed(10 * currentMicrosteps);
     while(digitalRead(limitSwitchR) == HIGH){
       stepperR.runSpeed();
@@ -861,14 +906,15 @@
 
     stepperR.setSpeed(-10 * currentMicrosteps);
 
-    stepperR.moveTo(stepperR.currentPosition() - 700);
+    stepperR.moveTo(stepperR.currentPosition() - 600);
     while(stepperR.distanceToGo() != 0) {
       stepperR.run();
     }
 
     stepperR.setCurrentPosition(0);
 
-    digitalWrite(ena[1], LOW);
+    enableLMotor();
+
     stepperL.setSpeed(-10 * currentMicrosteps);
     while(digitalRead(limitSwitchL) == HIGH){
       stepperL.runSpeed();
@@ -878,11 +924,11 @@
 
     stepperL.setCurrentPosition(0);
 
-    digitalWrite(ena[1], HIGH);
+    disableLMotor();
 
-    stepperR.moveTo(stepperL.currentPosition() + 63.5 * currentMicrosteps);
+    stepperR.move(450);
 
-    while (stepperL.distanceToGo() != 0 || stepperR.distanceToGo() != 0) {
+    while (stepperR.distanceToGo() != 0) {
       stepperR.run();
     }
 

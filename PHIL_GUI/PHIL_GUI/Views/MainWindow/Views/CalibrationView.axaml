@@ -79,7 +79,7 @@
                         </Button>
                         <!-- Backward -->
                         <Button Grid.Row="4" Grid.Column="2" Classes="btn btn-svg"
-                                Command="{Binding MoveBackwardCommand}" IsEnabled="False">
+                                Command="{Binding MoveBackwardCommand}">
                             <Path Classes="svg"
                                   Width="9"
                                   Height="9"

@@ -93,9 +93,6 @@ namespace PHIL_GUI.Services
 
         public void MoveBackward()
         {
-            // Disabled until backward movement is fixed
-            return;
-
             Send("b");
         }
 
