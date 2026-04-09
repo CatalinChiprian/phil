@@ -64,6 +64,9 @@
         <ContentControl Content="{Binding CurrentPage}"
                         IsVisible="{Binding CurrentPage, Converter={x:Static ObjectConverters.IsNotNull}}">
             <ContentControl.DataTemplates>
+                <DataTemplate DataType="vm:PlateViewModel">
+                    <views:PlateView />
+                </DataTemplate>
                 <DataTemplate DataType="vm:DebugViewModel">
                     <views:DebugView />
                 </DataTemplate>

@@ -2,7 +2,6 @@ using Avalonia.Controls;
 using Avalonia.Platform.Storage;
 using PHIL_GUI.ViewModels;
 using System.IO;
-using static CommunityToolkit.Mvvm.ComponentModel.__Internals.__TaskExtensions.TaskAwaitableWithoutEndValidation;
 
 namespace PHIL_GUI.Views;
 

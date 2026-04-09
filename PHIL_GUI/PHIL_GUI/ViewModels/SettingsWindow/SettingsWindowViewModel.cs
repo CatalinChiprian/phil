@@ -15,6 +15,8 @@ namespace PHIL_GUI.ViewModels
             get => selectedPage;
             set
             {
+                if (value == null) return;
+
                 SetProperty(ref selectedPage, value);
 
                 CurrentPage = value.ViewModel;
@@ -45,7 +47,7 @@ namespace PHIL_GUI.ViewModels
         {
             GeneralPages = new List<PageItem>()
             {
-                new PageItem("Plate", null, PlateIconData), // Change VM
+                new PageItem("Plate", new PlateViewModel(), PlateIconData),
             };
 
             DeveloperPages = new List<PageItem>()

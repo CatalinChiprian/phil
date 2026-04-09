@@ -2,13 +2,11 @@
 /* Created by Victoria Shvets
 Based on Phillip Dettinger work availible on https://github.com/CSDGroup/PHIL.git */
 
-using Avalonia.Controls.Shapes;
 using PHIL_GUI.Commands;
 using PHIL_GUI.Models;
 using PHIL_GUI.ViewModels.Base;
 using System;
 using System.Collections.Generic;
-using System.Runtime.Intrinsics.Arm;
 using System.Windows.Input;
 
 namespace PHIL_GUI.ViewModels
