@@ -97,7 +97,7 @@
                             </ItemsControl>
 
                             <Border Grid.Row="2" Grid.Column="1" ClipToBounds="False">
-                                <ItemsControl ItemsSource="{Binding WellPlate.Wells96}" ClipToBounds="False">
+                                <ItemsControl ItemsSource="{Binding WellPlateItem96.Wells}" ClipToBounds="False">
                                     <ItemsControl.ItemsPanel>
                                         <ItemsPanelTemplate>
                                             <UniformGrid Rows="8" Columns="12"/>
@@ -163,7 +163,7 @@
 
                             <Border Grid.Row="2" Grid.Column="1" ClipToBounds="False">
                                 <Panel>
-                                    <ItemsControl ItemsSource="{Binding WellPlate.WellsOoC}" ClipToBounds="False">
+                                    <ItemsControl ItemsSource="{Binding WellPlateOoC.Wells}" ClipToBounds="False">
                                         <ItemsControl.ItemsPanel>
                                             <ItemsPanelTemplate>
                                                 <UniformGrid Rows="4" Columns="6"/>

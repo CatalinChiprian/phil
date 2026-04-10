@@ -14,7 +14,9 @@ namespace PHIL_GUI.ViewModels
         public Position Position => RobotProtocol.RobotState.Position;
         public Calibration Calibration => RobotProtocol.RobotState.Calibration;
 
-        public WellPlateItem WellPlate { get; } = new WellPlateItem();
+        public IWellPlateItem WellPlate { get; } = new WellPlateItemOoC();
+        public WellPlateItemOoC? WellPlateOoC => WellPlate as WellPlateItemOoC;
+        public WellPlateItem96? WellPlateItem96 => WellPlate as WellPlateItem96;
 
         public string TopNotificationText
         {

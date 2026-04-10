@@ -209,7 +209,7 @@
                             </ItemsControl>
 
                             <Border Grid.Row="2" Grid.Column="1" ClipToBounds="False">
-                                <ItemsControl ItemsSource="{Binding WellPlate.Wells96}" ClipToBounds="False">
+                                <ItemsControl ItemsSource="{Binding WellPlateItem96.Wells}" ClipToBounds="False">
                                     <ItemsControl.ItemsPanel>
                                         <ItemsPanelTemplate>
                                             <UniformGrid Rows="8" Columns="12"/>
@@ -279,7 +279,7 @@
 
                             <Border Grid.Row="2" Grid.Column="1" ClipToBounds="False">
                                 <Panel>
-                                    <ItemsControl ItemsSource="{Binding WellPlate.WellsOoC}" ClipToBounds="False">
+                                    <ItemsControl ItemsSource="{Binding WellPlateOoC.Wells}" ClipToBounds="False">
                                         <ItemsControl.ItemsPanel>
                                             <ItemsPanelTemplate>
                                                 <UniformGrid Rows="4" Columns="6"/>
@@ -431,7 +431,7 @@
                     </DataGrid>
 
                     <Border Grid.Row="3" Background="{StaticResource Surface2}" BorderThickness="1,1,0,0"
-                            IsVisible="{Binding HasSelectedCalibrationPoint}">
+                            IsVisible="{Binding IsWellMenuVisibile}">
                         <StackPanel Margin="14, 16" Spacing="10">
 
                             <StackPanel Orientation="Horizontal" Spacing="5">

@@ -11,8 +11,8 @@ namespace PHIL_GUI.Models
 
     public enum PlateType
     {
-        Well96,
-        OrganOnChip
+        OrganOnChip,
+        Well96
     };
     public class Settings : ObservableObject
     {
