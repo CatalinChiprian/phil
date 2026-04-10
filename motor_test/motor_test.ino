@@ -1,6 +1,9 @@
 // Define stepper motor connections and steps per revolution:
-#define dirPin A13
-#define stepPin A14
+//
+//PUMP 1: 11,12
+//PUMP 2: 8,9
+#define dirPin 11
+#define stepPin 12
 #define stepsPerRevolution 200
 
 void setup() {

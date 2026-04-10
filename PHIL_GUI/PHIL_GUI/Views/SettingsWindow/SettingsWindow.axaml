@@ -12,6 +12,7 @@
         Width="600"
         Height="400"
         CanResize="False"
+        Topmost="True"
         Title="Settings - PHIL">
     <DockPanel>
 

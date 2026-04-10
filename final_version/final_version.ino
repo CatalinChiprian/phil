@@ -18,10 +18,7 @@
   const float WELL_DX = 9.0;
   const float WELL_DY = 9.0;
 
-  float plateX0 = 0.0;
-  float plateY0 = 0.0;
-
-  const int MAX_CAL = 96;
+  const int MAX_CAL = 32;
   float calX[MAX_CAL], calY[MAX_CAL], calL[MAX_CAL], calR[MAX_CAL];
   int calCount = 0;
 
@@ -47,9 +44,9 @@
   int M2 = 26; 
   int M3 = 27; 
 
-  int ena[] = {10, 47, 50, 13};
-  int step[] = {9, 46, 49, 12};
-  int dir[] = {8, 45, 48, 11};   
+  int ena[] = {44, 47, 50, 53, 13, 10};
+  int step[] = {43, 46, 49, 52, 12, 9};
+  int dir[] = {42, 45, 48, 51, 11, 8};   
 
   long lastR;
   long lastL;
@@ -58,6 +55,9 @@
   AccelStepper stepperL(1, step[1], dir[1]);
   AccelStepper stepperR(1, step[2], dir[2]);
   AccelStepper stepperZ2(1, step[3], dir[3]);
+
+  AccelStepper stepperP1(1, step[4], dir[4]);
+  AccelStepper stepperP2(1, step[5], dir[5]);
 
 
   int limitSwitchL = 31; // Target Limit Switch L
@@ -78,6 +78,8 @@
   bool ZMotorsCurrentlyEnabled = false;
   bool LMotorCurrentlyEnabled = false;
   bool RMotorCurrentlyEnabled = false;
+  bool P1MotorCurrentlyEnabled = false;
+  bool P2MotorCurrentlyEnabled = false;
   const unsigned long MOTOR_TIMEOUT = 5000;
   bool emergencyStopRequested = false;
 
@@ -106,10 +108,16 @@
     stepperZ1.setMaxSpeed(1000 * currentMicrosteps);
     stepperZ2.setMaxSpeed(1000 * currentMicrosteps);
 
+    stepperP1.setMaxSpeed(1000 * currentMicrosteps);
+    stepperP2.setMaxSpeed(1000 * currentMicrosteps);
+
     stepperL.setAcceleration(500 * currentMicrosteps);
     stepperR.setAcceleration(500 * currentMicrosteps);
     stepperZ1.setAcceleration(500 * currentMicrosteps);
     stepperZ2.setAcceleration(500 * currentMicrosteps);
+
+    stepperP1.setAcceleration(500 * currentMicrosteps);
+    stepperP2.setAcceleration(500 * currentMicrosteps);
   
     if (!loadPositions()) {
       calibrate();
@@ -264,6 +272,46 @@
     }
   }
 
+  void aspirateP1() {
+    enableP1Motor();
+
+    stepperP1.moveTo(stepperP1.currentPosition() - steps);
+
+    while(stepperP1.distanceToGo() != 0) {
+      stepperP1.run();
+    }
+  }
+
+  void dispenseP1() {
+    enableP1Motor();
+
+    stepperP1.moveTo(stepperP1.currentPosition() + steps);
+
+    while(stepperP1.distanceToGo() != 0) {
+      stepperP1.run();
+    }
+  }
+
+  void aspirateP2() {
+    enableP2Motor();
+
+    stepperP2.moveTo(stepperP2.currentPosition() - steps);
+
+    while(stepperP2.distanceToGo() != 0) {
+      stepperP2.run();
+    }
+  }
+
+  void dispenseP2() {
+    enableP2Motor();
+    
+    stepperP2.moveTo(stepperP2.currentPosition() + steps);
+
+    while(stepperP2.distanceToGo() != 0) {
+      stepperP2.run();
+    }
+  }
+
   void loop() {
     checkFaults();
     basic_controls(); 
@@ -329,6 +377,22 @@
             moveDown();
             Serial.print("PHIL moved down \n");
             savePositions();
+          break;
+
+          case 'i':
+          {
+            char arg = received.charAt(1);
+            if (arg == '1') aspirateP1();
+            else if (arg == '2') aspirateP2();
+          }
+          break;
+
+          case 'o':
+          {
+            char arg = received.charAt(1);
+            if (arg == '1') dispenseP1();
+            else if (arg == '2') dispenseP2();
+          }
           break;
 
           case 'h': // Home
@@ -496,7 +560,7 @@
             Serial.println("Calibration cleared");
           break;
 
-          case 'o':
+          case 'k':
             enableLMotor();
             enableRMotor();
 
@@ -941,7 +1005,9 @@
     if (areMotorsCurrentlyEnabled()) return;
     enableZMotors();
     enableLMotor();
-    enableRMotor(); 
+    enableRMotor();
+    enableP1Motor();
+    enableP2Motor();
   }
 
   void enableZMotors() {
@@ -952,7 +1018,21 @@
     lastMotorActivityTime = millis(); 
   }
 
-    void enableLMotor() {
+  void enableP1Motor() {
+    digitalWrite(ena[4], LOW);
+
+    P1MotorCurrentlyEnabled = true;
+    lastMotorActivityTime = millis(); 
+  }
+
+  void enableP2Motor() {
+    digitalWrite(ena[5], LOW);
+
+    P2MotorCurrentlyEnabled = true;
+    lastMotorActivityTime = millis(); 
+  }
+
+  void enableLMotor() {
     digitalWrite(ena[1], LOW);
 
     LMotorCurrentlyEnabled = true;
@@ -971,6 +1051,20 @@
     digitalWrite(ena[3], HIGH);
 
     ZMotorsCurrentlyEnabled = false;
+    lastMotorActivityTime = millis(); 
+  }
+
+  void disableP1Motor() {
+    digitalWrite(ena[4], HIGH);
+
+    P1MotorCurrentlyEnabled = false;
+    lastMotorActivityTime = millis(); 
+  }
+
+  void disableP2Motor() {
+    digitalWrite(ena[5], HIGH);
+
+    P2MotorCurrentlyEnabled = false;
     lastMotorActivityTime = millis(); 
   }
 
@@ -993,6 +1087,8 @@
     disableLMotor();
     disableRMotor();
     disableZMotors();
+    disableP1Motor();
+    disableP2Motor();
   }
 
   void autoDisableMotors() {
@@ -1000,7 +1096,9 @@
     bool isMoving = (stepperL.distanceToGo() != 0 || 
                     stepperR.distanceToGo() != 0 || 
                     stepperZ1.distanceToGo() != 0 || 
-                    stepperZ2.distanceToGo() != 0);
+                    stepperZ2.distanceToGo() != 0 ||
+                    stepperP1.distanceToGo() != 0 ||
+                    stepperP2.distanceToGo() != 0);
     
     if(!isMoving) {
       if(areMotorsCurrentlyEnabled() && (millis() - lastMotorActivityTime > MOTOR_TIMEOUT)) {
@@ -1010,7 +1108,8 @@
   }
 
   bool areMotorsCurrentlyEnabled() {
-    return ZMotorsCurrentlyEnabled || LMotorCurrentlyEnabled || RMotorCurrentlyEnabled;
+    return ZMotorsCurrentlyEnabled || LMotorCurrentlyEnabled || RMotorCurrentlyEnabled ||
+           P1MotorCurrentlyEnabled || P2MotorCurrentlyEnabled;
   }
 
   void emergencyStop() {
@@ -1018,6 +1117,8 @@
     stepperR.stop();
     stepperZ1.stop();
     stepperZ2.stop();
+    stepperP1.stop();
+    stepperP2.stop();
     disableAllMotors();
     lastMotorActivityTime = 0;
     emergencyStopRequested = true;
@@ -1189,13 +1290,13 @@
 
     int r = row - 'a';  // a=0, b=1, ... h=7
     
-    x = plateX0 + (col - 1) * WELL_DX;
-    y = plateY0 + r * WELL_DY;
+    x =  (col - 1) * WELL_DX;
+    y =  r * WELL_DY;
   }
 
   void XYToWell(float x, float y, String &wellName) {
-    int col = (x - plateX0) / WELL_DX;
-    int row = (y - plateY0) / WELL_DY;
+    int col = x / WELL_DX;
+    int row = y / WELL_DY;
     char rowChar = 'a' + row;
 
     wellName = rowChar + String(col + 1);
