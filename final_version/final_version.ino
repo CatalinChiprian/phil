@@ -44,6 +44,10 @@
   int M2 = 26; 
   int M3 = 27; 
 
+  int P1 = 22;
+  int P2 = 23;
+  int P3 = 24;
+
   int ena[] = {44, 47, 50, 53, 13, 10};
   int step[] = {43, 46, 49, 52, 12, 9};
   int dir[] = {42, 45, 48, 51, 11, 8};   
@@ -59,6 +63,7 @@
   AccelStepper stepperP1(1, step[4], dir[4]);
   AccelStepper stepperP2(1, step[5], dir[5]);
 
+  float UL_PER_STEP = 0.1099f;
 
   int limitSwitchL = 31; // Target Limit Switch L
   int limitSwitchR = 30; // Target Limit Switch R
@@ -103,21 +108,21 @@
     pinMode(M3, OUTPUT); 
     digitalWrite(M3, Sttngs[microIndex][2]);
 
-    stepperL.setMaxSpeed(1000 * currentMicrosteps);
-    stepperR.setMaxSpeed(1000 * currentMicrosteps);
-    stepperZ1.setMaxSpeed(1000 * currentMicrosteps);
-    stepperZ2.setMaxSpeed(1000 * currentMicrosteps);
+    // Pumps are hardcoded to full step
+    pinMode(P1, OUTPUT); 
+    digitalWrite(P1, Sttngs[0][0]); 
+    pinMode(P2, OUTPUT); 
+    digitalWrite(P2, Sttngs[0][1]); 
+    pinMode(P3, OUTPUT); 
+    digitalWrite(P3, Sttngs[0][2]);
 
-    stepperP1.setMaxSpeed(1000 * currentMicrosteps);
-    stepperP2.setMaxSpeed(1000 * currentMicrosteps);
+    stepperZ1.setMaxSpeed(2000 * currentMicrosteps);
+    stepperZ2.setMaxSpeed(2000 * currentMicrosteps);
+    stepperZ1.setAcceleration(1500 * currentMicrosteps);
+    stepperZ2.setAcceleration(1500 * currentMicrosteps);
 
-    stepperL.setAcceleration(500 * currentMicrosteps);
-    stepperR.setAcceleration(500 * currentMicrosteps);
-    stepperZ1.setAcceleration(500 * currentMicrosteps);
-    stepperZ2.setAcceleration(500 * currentMicrosteps);
-
-    stepperP1.setAcceleration(500 * currentMicrosteps);
-    stepperP2.setAcceleration(500 * currentMicrosteps);
+    setNormalMovementSpeed();
+    setNormalPumpSpeed();
   
     if (!loadPositions()) {
       calibrate();
@@ -231,7 +236,7 @@
     bool z1LimitHit = false;
     bool z2LimitHit = false;
 
-    long s = steps;
+    long s = 8 * currentMicrosteps;
     stepperZ1.moveTo(s + stepperZ1.currentPosition());
     stepperZ2.moveTo(s + stepperZ2.currentPosition());
 
@@ -262,7 +267,7 @@
   void moveDown() {
     enableZMotors();
 
-    long s = steps;
+    long s = 8 * currentMicrosteps;
     stepperZ1.moveTo(-s + stepperZ1.currentPosition());
     stepperZ2.moveTo(-s + stepperZ2.currentPosition());
 
@@ -272,27 +277,46 @@
     }
   }
 
-  void aspirateP1() {
+  long uLToSteps(float microliters) {
+    return (long)(microliters / UL_PER_STEP);
+  }
+
+  void aspirateP1(int microliters = 20) {
     enableP1Motor();
 
-    stepperP1.moveTo(stepperP1.currentPosition() - steps);
+    long stepsNeeded = uLToSteps(microliters);
+
+    stepperP1.moveTo(stepperP1.currentPosition() - stepsNeeded);
 
     while(stepperP1.distanceToGo() != 0) {
       stepperP1.run();
     }
+
+    Serial.print("PUMP1:aspirated="); Serial.print(microliters);
+    Serial.println("uL");
+    Serial.print("Which is ");
+    Serial.print(stepsNeeded);
+    Serial.println(" steps");
   }
 
-  void dispenseP1() {
+  void dispenseP1(int microliters = 20) {
     enableP1Motor();
 
-    stepperP1.moveTo(stepperP1.currentPosition() + steps);
+    long stepsNeeded = uLToSteps(microliters);
 
-    while(stepperP1.distanceToGo() != 0) {
-      stepperP1.run();
+    if (stepsNeeded > 0) {
+        stepperP1.moveTo(stepperP1.currentPosition() + stepsNeeded);
+        while(stepperP1.distanceToGo() != 0) stepperP1.run();
     }
+
+    Serial.print("PUMP1:dispensed="); Serial.print(microliters);
+    Serial.println("uL");
+    Serial.print("Which is ");
+    Serial.print(stepsNeeded);
+    Serial.println(" total steps");
   }
 
-  void aspirateP2() {
+  void aspirateP2(int amount = 20) {
     enableP2Motor();
 
     stepperP2.moveTo(stepperP2.currentPosition() - steps);
@@ -302,14 +326,21 @@
     }
   }
 
-  void dispenseP2() {
+  void dispenseP2(int microliters = 20) {
     enableP2Motor();
     
-    stepperP2.moveTo(stepperP2.currentPosition() + steps);
+    long stepsNeeded = uLToSteps(microliters);
 
-    while(stepperP2.distanceToGo() != 0) {
-      stepperP2.run();
+    if (stepsNeeded > 0) {
+        stepperP2.moveTo(stepperP2.currentPosition() + stepsNeeded);
+        while(stepperP2.distanceToGo() != 0) stepperP2.run();
     }
+
+    Serial.print("PUMP2:dispensed="); Serial.print(microliters);
+    Serial.println("uL");
+    Serial.print("Which is ");
+    Serial.print(stepsNeeded);
+    Serial.println(" total steps");
   }
 
   void loop() {
@@ -382,16 +413,20 @@
           case 'i':
           {
             char arg = received.charAt(1);
-            if (arg == '1') aspirateP1();
-            else if (arg == '2') aspirateP2();
+            String amountChar = received.substring(2);
+            int amount = amountChar.toInt();
+            if (arg == '1') aspirateP1(amount);
+            else if (arg == '2') aspirateP2(amount);
           }
           break;
 
           case 'o':
           {
             char arg = received.charAt(1);
-            if (arg == '1') dispenseP1();
-            else if (arg == '2') dispenseP2();
+            String amountChar = received.substring(2);
+            int amount = amountChar.toInt();
+            if (arg == '1') dispenseP1(amount);
+            else if (arg == '2') dispenseP2(amount);
           }
           break;
 
@@ -903,7 +938,7 @@
       stepperL.run();
     }
 
-    setNormalSpeed(); 
+    setNormalMovementSpeed(); 
   }
 
   int calibrate() {
@@ -987,18 +1022,32 @@
   }
 
 
-  void setSlowSpeed() {
+  void setSlowMovementSpeed() {
     stepperL.setMaxSpeed(200 * currentMicrosteps);
     stepperR.setMaxSpeed(200 * currentMicrosteps);
     stepperL.setAcceleration(100 * currentMicrosteps);
     stepperR.setAcceleration(100 * currentMicrosteps);
   }
 
-  void setNormalSpeed() {
+  void setNormalMovementSpeed() {
     stepperL.setMaxSpeed(1000 * currentMicrosteps);
     stepperR.setMaxSpeed(1000 * currentMicrosteps);
     stepperL.setAcceleration(500 * currentMicrosteps);
     stepperR.setAcceleration(500 * currentMicrosteps);
+  }
+
+  void setSlowPumpSpeed() {
+    stepperP1.setMaxSpeed(200);
+    stepperP2.setMaxSpeed(200);
+    stepperP1.setAcceleration(100);
+    stepperP2.setAcceleration(100);
+  }
+
+  void setNormalPumpSpeed() {
+    stepperP1.setMaxSpeed(1000);
+    stepperP2.setMaxSpeed(1000);
+    stepperP1.setAcceleration(500);
+    stepperP2.setAcceleration(500);
   }
 
   void enableAllMotors() {
@@ -1165,7 +1214,7 @@
     stepperL.setSpeed(0);
     stepperR.setSpeed(0);
 
-    setNormalSpeed();
+    setNormalMovementSpeed();
   }
 
   void savePositions() {

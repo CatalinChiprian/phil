@@ -23,6 +23,8 @@ namespace PHIL_GUI.ViewModels
         public ICommand GoToSelectedWellCommand { get; }
         public ICommand DeleteRecordPositionCommand { get; }
         public ICommand CancelCommand { get; }
+        public ICommand PumpAspirate { get; }
+        public ICommand PumpDispense { get; }
         public bool IsDecreaseStepSizeEnabled => RobotProtocol.RobotState.Settings.StepSize > 0.1;
         public bool RecordEnabled
         {
@@ -67,12 +69,14 @@ namespace PHIL_GUI.ViewModels
             MoveRightCommand = new RelayCommand(RobotProtocol.MoveRight);
             DecreaseStepSize = new RelayCommand(() => RobotProtocol.Send("-"));
             IncreaseStepSize = new RelayCommand(() => RobotProtocol.Send("+"));
-            WellsPositionCommand = new RelayCommand<string>(w => SelectWell(w));
+            WellsPositionCommand = new RelayCommand<string>(SelectWell);
             RecordPositionCommand = new RelayCommand(RecordPosition);
             SolveMappingCommand = new RelayCommand(SolveMapping);
             GoToSelectedWellCommand = new RelayCommand(GoToSelectedWell);
             DeleteRecordPositionCommand = new RelayCommand(DeleteRecordPosition);
             CancelCommand = new RelayCommand(Cancel);
+            PumpAspirate = new RelayCommand<string>(Aspirate);
+            PumpDispense = new RelayCommand<string>(Dispense);
 
             Calibration.Points.CollectionChanged += Points_CollectionChanged;
             Settings.PropertyChanged += Settings_PropertyChanged;
@@ -180,6 +184,16 @@ namespace PHIL_GUI.ViewModels
 
             OnPropertyChanged(nameof(IsWellMenuVisibile));
             OnPropertyChanged(nameof(RecordEnabled));
+        }
+
+        void Aspirate(string pumpNumber)
+        {
+            RobotProtocol.Send($"i{pumpNumber}");
+        }
+
+        void Dispense(string pumpNumber)
+        {
+            RobotProtocol.Send($"o{pumpNumber}");
         }
 
         void UpdateWellClass(CalibrationPoint point)
