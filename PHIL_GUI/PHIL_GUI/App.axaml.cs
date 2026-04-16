@@ -22,6 +22,7 @@ public partial class App : Application
     {
         ServiceCollection services = new ServiceCollection();
         services.AddSingleton<SerialPortService>();
+        services.AddSingleton<AppSettingsService>();
         services.AddSingleton<RobotProtocolService>();
         services.AddTransient<PortsWindowViewModel>();
         services.AddTransient<MainWindowViewModel>();

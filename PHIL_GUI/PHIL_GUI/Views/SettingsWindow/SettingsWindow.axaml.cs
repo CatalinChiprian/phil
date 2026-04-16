@@ -15,4 +15,9 @@ public partial class SettingsWindow : Window
 
         DataContext = settingsViewModel;
     }
+
+    private void BottomBarButton_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        Close();
+    }
 }

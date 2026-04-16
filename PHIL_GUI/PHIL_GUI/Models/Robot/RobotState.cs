@@ -2,7 +2,7 @@
 {
     public class RobotState
     {
-        public Settings Settings { get; } = new Settings();
+        public RobotSettings Settings { get; } = new RobotSettings();
         public LimitSwitches Limit { get; } = new LimitSwitches();
         public Calibration Calibration { get; } = new Calibration();
         public Position Position { get; } = new Position();

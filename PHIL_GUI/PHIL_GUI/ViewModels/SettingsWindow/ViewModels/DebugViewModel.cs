@@ -7,7 +7,7 @@ namespace PHIL_GUI.ViewModels
     public class DebugViewModel : ViewModelBase
     {
         public ICommand ClearLogCommand { get; set; }
-        public string ReceivedData => RobotProtocol.ReceivedData;
+        public string ReceivedData => RobotProtocolService.ReceivedData;
 
         public DebugViewModel()
         {
@@ -16,7 +16,7 @@ namespace PHIL_GUI.ViewModels
 
         private void ClearLog()
         {
-            RobotProtocol.ClearReceivedData();
+            RobotProtocolService.ClearReceivedData();
 
             OnPropertyChanged(nameof(ReceivedData));
         }

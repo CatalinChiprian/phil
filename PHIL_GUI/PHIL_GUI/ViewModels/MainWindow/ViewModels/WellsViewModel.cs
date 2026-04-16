@@ -9,12 +9,13 @@ namespace PHIL_GUI.ViewModels
     {
         public ICommand WellsPositionCommand { get; }
 
-        public Well CurrentWell => RobotProtocol.RobotState.CurrentWell;
-        public Settings Settings => RobotProtocol.RobotState.Settings;
-        public Position Position => RobotProtocol.RobotState.Position;
-        public Calibration Calibration => RobotProtocol.RobotState.Calibration;
+        public Well CurrentWell => RobotProtocolService.RobotState.CurrentWell;
+        public RobotSettings RobotSettings => RobotProtocolService.RobotState.Settings;
+        public AppSettings AppSettings => AppSettingsService.AppSettings;
+        public Position Position => RobotProtocolService.RobotState.Position;
+        public Calibration Calibration => RobotProtocolService.RobotState.Calibration;
 
-        public IWellPlateItem WellPlate { get; } = new WellPlateItemOoC();
+        public IWellPlateItem WellPlate { get; private set; }
         public WellPlateItemOoC? WellPlateOoC => WellPlate as WellPlateItemOoC;
         public WellPlateItem96? WellPlateItem96 => WellPlate as WellPlateItem96;
 
@@ -22,10 +23,10 @@ namespace PHIL_GUI.ViewModels
         {
             get
             {
-                if (Settings.State == MoveState.EmergencyStopped)
-                    return $"Emergency stop - L: {RobotProtocol.RobotState.Position.L}, R: {Position.R}";
+                if (RobotSettings.State == MoveState.EmergencyStopped)
+                    return $"Emergency stop - L: {RobotProtocolService.RobotState.Position.L}, R: {Position.R}";
 
-                if (Settings.State == MoveState.Moving)
+                if (RobotSettings.State == MoveState.Moving)
                     return $"Moving to {CurrentWell.Name}...";
 
                 if (CurrentWell.Type == WellType.Standard)
@@ -37,25 +38,27 @@ namespace PHIL_GUI.ViewModels
                 return $"Stopped - L: {Position.L}, R: {Position.R}";
             }
         }
-        public string CalPointsText => $"{Calibration.Points.Count}/{(Settings.Is96Well ? Calibration.MAX_COUNT_96 : Calibration.MAX_COUNT_OOC)}";
 
         public WellsViewModel()
         {
+            WellPlate = AppSettings.Is96Well ? new WellPlateItem96() : new WellPlateItemOoC();
+
             WellsPositionCommand = new RelayCommand<string>(w => GoToWell(w));
-            Settings.PropertyChanged += Settings_PropertyChanged;
+            AppSettings.PropertyChanged += AppSettings_PropertyChanged; ;
+            RobotSettings.PropertyChanged += RobotSettings_PropertyChanged;
             CurrentWell.PropertyChanged += CurrentWell_PropertyChanged;
         }
 
-        private void Settings_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+        private void AppSettings_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
-            if (e.PropertyName == nameof(Settings.State))
-                OnPropertyChanged(nameof(TopNotificationText));
+            if (e.PropertyName == nameof(AppSettings.SelectedPlateType))
+                OverrideWellPlate();
+        }
 
-            if (e.PropertyName == nameof(Settings.SelectedPlateType))
-            {
-                OnPropertyChanged(nameof(CalPointsText));
-                WellPlate.PlateType = Settings.SelectedPlateType;
-            }
+        private void RobotSettings_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(RobotSettings.State))
+                OnPropertyChanged(nameof(TopNotificationText));
         }
 
         private void CurrentWell_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -75,9 +78,29 @@ namespace PHIL_GUI.ViewModels
         {
             CurrentWell.Type = WellType.Standard;
             CurrentWell.Name = well;
-            Settings.State = MoveState.Moving;
+            RobotSettings.State = MoveState.Moving;
             WellPlate.SelectWell(well);
-            RobotProtocol.Send($"q{well.ToLower()}");
+            RobotProtocolService.Send($"q{well.ToLower()}");
+        }
+
+        void OverrideWellPlate()
+        {
+            string selectedWellName = CurrentWell.Name;
+
+            if (AppSettings.Is96Well)
+            {
+                WellPlate = new WellPlateItem96();
+
+                OnPropertyChanged(nameof(WellPlateItem96));
+            }
+            else
+            {
+                WellPlate = new WellPlateItemOoC();
+
+                OnPropertyChanged(nameof(WellPlateOoC));
+            }
+
+            WellPlate.SelectWell(selectedWellName);
         }
     }
 }

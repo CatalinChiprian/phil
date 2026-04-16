@@ -6,12 +6,11 @@
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="PHIL_GUI.Views.DebugView"
              x:DataType="vm:DebugViewModel">
-    <StackPanel Margin="20" Spacing="15">
+    <StackPanel Margin="10,20" Spacing="15">
         <StackPanel Spacing="8">
             <TextBlock Text="Serial Monitor" 
                        FontWeight="SemiBold" 
                        FontSize="16"/>
-
 
             <Grid>
                 <TextBox Classes="terminal"
@@ -27,7 +26,6 @@
                         Click="CopyButton_Click">
                 </Button>
             </Grid>
-
 
             <StackPanel Orientation="Horizontal"
                         Spacing="10"

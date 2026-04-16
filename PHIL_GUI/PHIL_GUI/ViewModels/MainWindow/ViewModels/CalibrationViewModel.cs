@@ -25,7 +25,7 @@ namespace PHIL_GUI.ViewModels
         public ICommand CancelCommand { get; }
         public ICommand PumpAspirate { get; }
         public ICommand PumpDispense { get; }
-        public bool IsDecreaseStepSizeEnabled => RobotProtocol.RobotState.Settings.StepSize > 0.1;
+        public bool IsDecreaseStepSizeEnabled => RobotProtocolService.RobotState.Settings.StepSize > 0.1;
         public bool RecordEnabled
         {
             get
@@ -36,9 +36,9 @@ namespace PHIL_GUI.ViewModels
             }
         }
         public bool SolveEnabled => Calibration.Points.Count >= Calibration.MIN_COUNT;
-        public Settings Settings => RobotProtocol.RobotState.Settings;
-        public Calibration Calibration => RobotProtocol.RobotState.Calibration;
-        public Well CurrentWell => RobotProtocol.RobotState.CurrentWell;
+        public RobotSettings Settings => RobotProtocolService.RobotState.Settings;
+        public Calibration Calibration => RobotProtocolService.RobotState.Calibration;
+        public Well CurrentWell => RobotProtocolService.RobotState.CurrentWell;
 
         private CalibrationPoint? selectedCalibrationPoint;
         public CalibrationPoint? SelectedCalibrationPoint
@@ -59,16 +59,15 @@ namespace PHIL_GUI.ViewModels
         public bool IsWellMenuVisibile => WellPlate.SelectedWellName != null;
         public IWellPlateItem WellPlate { get; } = new WellPlateItemOoC(true);
         public WellPlateItemOoC? WellPlateOoC => WellPlate as WellPlateItemOoC;
-        public WellPlateItem96? WellPlateItem96 => WellPlate as WellPlateItem96;
 
         public CalibrationViewModel()
         {
-            MoveForwardCommand = new RelayCommand(RobotProtocol.MoveForward);
-            MoveBackwardCommand = new RelayCommand(RobotProtocol.MoveBackward);
-            MoveLeftCommand = new RelayCommand(RobotProtocol.MoveLeft);
-            MoveRightCommand = new RelayCommand(RobotProtocol.MoveRight);
-            DecreaseStepSize = new RelayCommand(() => RobotProtocol.Send("-"));
-            IncreaseStepSize = new RelayCommand(() => RobotProtocol.Send("+"));
+            MoveForwardCommand = new RelayCommand(RobotProtocolService.MoveForward);
+            MoveBackwardCommand = new RelayCommand(RobotProtocolService.MoveBackward);
+            MoveLeftCommand = new RelayCommand(RobotProtocolService.MoveLeft);
+            MoveRightCommand = new RelayCommand(RobotProtocolService.MoveRight);
+            DecreaseStepSize = new RelayCommand(() => RobotProtocolService.Send("-"));
+            IncreaseStepSize = new RelayCommand(() => RobotProtocolService.Send("+"));
             WellsPositionCommand = new RelayCommand<string>(SelectWell);
             RecordPositionCommand = new RelayCommand(RecordPosition);
             SolveMappingCommand = new RelayCommand(SolveMapping);
@@ -138,7 +137,7 @@ namespace PHIL_GUI.ViewModels
             string wellName = WellPlate.SelectedWellName;
 
             if (isSolved) moveCmd = "q";
-            RobotProtocol.Send($"{moveCmd}{wellName.ToLower()}");
+            RobotProtocolService.Send($"{moveCmd}{wellName.ToLower()}");
 
             CurrentWell.Type = WellType.Standard;
             CurrentWell.Name = wellName;
@@ -152,7 +151,7 @@ namespace PHIL_GUI.ViewModels
             Calibration.Points.Add(point);
             SelectedCalibrationPoint = point;
 
-            RobotProtocol.Send($"z {WellPlate.SelectedWellName.ToLower()}");
+            RobotProtocolService.Send($"z {WellPlate.SelectedWellName.ToLower()}");
 
             OnPropertyChanged(nameof(RecordEnabled));
         }
@@ -161,7 +160,7 @@ namespace PHIL_GUI.ViewModels
         {
             if (Calibration.Points.Count < Calibration.MIN_COUNT) return;
 
-            RobotProtocol.Send("z solve");
+            RobotProtocolService.Send("z solve");
         }
 
         void DeleteRecordPosition()
@@ -171,9 +170,9 @@ namespace PHIL_GUI.ViewModels
             SelectedCalibrationPoint.ErrorLeft = null;
             SelectedCalibrationPoint.ErrorRight = null;
 
-            RobotProtocol.Send($"z delete {SelectedCalibrationPoint.Name.ToLower()}");
+            RobotProtocolService.Send($"z delete {SelectedCalibrationPoint.Name.ToLower()}");
 
-            RobotProtocol.Send($"z {WellPlate.SelectedWellName.ToLower()}");
+            RobotProtocolService.Send($"z {WellPlate.SelectedWellName.ToLower()}");
         }
 
         void Cancel()
@@ -188,12 +187,12 @@ namespace PHIL_GUI.ViewModels
 
         void Aspirate(string pumpNumber)
         {
-            RobotProtocol.Send($"i{pumpNumber}");
+            RobotProtocolService.Send($"i{pumpNumber}");
         }
 
         void Dispense(string pumpNumber)
         {
-            RobotProtocol.Send($"o{pumpNumber}");
+            RobotProtocolService.Send($"o{pumpNumber}");
         }
 
         void UpdateWellClass(CalibrationPoint point)

@@ -9,10 +9,10 @@ namespace PHIL_GUI.Models
 {
     public class Calibration : ObservableObject
     {
-        public const int MAX_COUNT_96 = 40;
         public const int MAX_COUNT_OOC = 32;
         public const int MIN_COUNT = 10;
         public int Count => Points.Count();
+        public string CalPointsText => $"{Count}/{(MAX_COUNT_OOC)}";
         public ObservableCollection<CalibrationPoint> Points { get; } = new ObservableCollection<CalibrationPoint>();
 
         private double? rmsL;

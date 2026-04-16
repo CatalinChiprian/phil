@@ -14,21 +14,8 @@ namespace PHIL_GUI.Models
         OrganOnChip,
         Well96
     };
-    public class Settings : ObservableObject
+    public class RobotSettings : ObservableObject
     {
-        private PlateType selectedPlateType;
-        public PlateType SelectedPlateType
-        {
-            get => selectedPlateType;
-            set
-            {
-                SetProperty(ref selectedPlateType, value);
-                OnPropertyChanged(nameof(Is96Well));
-            }
-        }
-
-        public bool Is96Well => SelectedPlateType == PlateType.Well96;
-
         private MoveState state;
         public MoveState State
         {

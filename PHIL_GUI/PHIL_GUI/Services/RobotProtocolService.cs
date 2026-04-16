@@ -304,42 +304,5 @@ namespace PHIL_GUI.Services
 
             robotState.Calibration.Points.Add(point);
         }
-
-
-        //private void ParseAlert(string msg, AlertLevel level)
-        //{
-        //    // "WARNING:LIMIT_HIT,Z1=1,Z2=0"
-        //    // "ERROR:HOME_FAILED,Homing timed out..."
-        //    var body = msg.Substring(msg.IndexOf(':') + 1);
-        //    var comma = body.IndexOf(',');
-
-        //    var code = comma >= 0 ? body.Substring(0, comma) : body;
-        //    var detail = comma >= 0 ? body.Substring(comma + 1) : "";
-
-        //    Dispatcher.UIThread.Post(() => {
-        //        Alerts.Insert(0, new RobotAlert
-        //        {
-        //            Level = level,
-        //            Code = code,
-        //            Message = detail
-        //        });
-
-        //        // Cap history
-        //        while (Alerts.Count > 50) Alerts.RemoveAt(Alerts.Count - 1);
-
-        //        // Surface the most recent alert for status bar binding
-        //        LatestAlert = Alerts[0];
-        //    });
-
-        //public enum AlertLevel { Info, Warning, Error }
-
-        //public class RobotAlert
-        //{
-        //    public AlertLevel Level { get; set; }
-        //    public string Code { get; set; }  // e.g. "LIMIT_HIT"
-        //    public string Message { get; set; }
-        //    public DateTime Time { get; set; } = DateTime.Now;
-        //}
-
     }
 }

@@ -24,4 +24,9 @@ public partial class MainWindow : Window
 
         Close();
     }
+
+    private void SettingsButton_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        new SettingsWindow().ShowDialog(this);
+    }
 }

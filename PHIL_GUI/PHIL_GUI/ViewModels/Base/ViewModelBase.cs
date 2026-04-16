@@ -7,14 +7,18 @@ namespace PHIL_GUI.ViewModels.Base;
 
 public class ViewModelBase : INotifyPropertyChanged
 {
-    protected readonly RobotProtocolService robotProtocol;
-    public RobotProtocolService RobotProtocol => robotProtocol;
+    protected readonly AppSettingsService appSettingsService;
+    public AppSettingsService AppSettingsService => appSettingsService;
+
+    protected readonly RobotProtocolService robotProtocolService;
+    public RobotProtocolService RobotProtocolService => robotProtocolService;
 
     public event PropertyChangedEventHandler? PropertyChanged;
 
     protected ViewModelBase()
     {
-        robotProtocol = App.Services.GetRequiredService<RobotProtocolService>();
+        appSettingsService = App.Services.GetRequiredService<AppSettingsService>();
+        robotProtocolService = App.Services.GetRequiredService<RobotProtocolService>();
     }
 
     protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)

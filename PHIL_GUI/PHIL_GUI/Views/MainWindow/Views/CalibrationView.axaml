@@ -162,84 +162,8 @@
 		    <Border Grid.Column="0" Background="{StaticResource Bg}" Padding="30,20">
                 <Viewbox Stretch="Uniform">
                     <Panel>
-
-                        <!-- 96-Well Plate -->
-                        <Grid IsVisible="{Binding Settings.Is96Well}" RowDefinitions="Auto, Auto, Auto" ColumnDefinitions="Auto, Auto">
-
-                            <StackPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" 
-                                        Orientation="Horizontal" Spacing="10" Margin="0,0,0,16">
-                                <TextBlock Classes="subtitle" Text="96-WELL PLATE" FontSize="10" LetterSpacing="1.5"/>
-                                <Border Classes="badge" Padding="8,3">
-                                    <TextBlock Text="8 × 12" FontSize="9"/>
-                                </Border>
-                            </StackPanel>
-
-                            <ItemsControl Grid.Row="1" Grid.Column="1"
-                                            ItemsSource="{Binding WellPlate.ColHeaders}">
-                                <ItemsControl.ItemsPanel>
-                                    <ItemsPanelTemplate>
-                                        <UniformGrid Columns="12" Rows="1"/>
-                                    </ItemsPanelTemplate>
-                                </ItemsControl.ItemsPanel>
-                                <ItemsControl.ItemTemplate>
-                                    <DataTemplate>
-                                        <TextBlock Classes="subtitle" Text="{Binding}" 
-                                                    Width="44"
-                                                    TextAlignment="Center"
-                                                    VerticalAlignment="Center"
-                                                    HorizontalAlignment="Center"
-                                                    Margin="0,0,0,6"/>
-                                    </DataTemplate>
-                                </ItemsControl.ItemTemplate>
-                            </ItemsControl>
-
-                            <ItemsControl Grid.Row="2" Grid.Column="0"
-                                            ItemsSource="{Binding WellPlate.RowHeaders}">
-                                <ItemsControl.ItemsPanel>
-                                    <ItemsPanelTemplate>
-                                        <UniformGrid Rows="8" Columns="1"/>
-                                    </ItemsPanelTemplate>
-                                </ItemsControl.ItemsPanel>
-                                <ItemsControl.ItemTemplate>
-                                    <DataTemplate>
-                                        <TextBlock Classes="subtitle" Text="{Binding}" 
-                                                    Width="10"
-                                                    TextAlignment="Center"
-                                                    VerticalAlignment="Center"
-                                                    HorizontalAlignment="Center"
-                                                    Margin="0,0,10,0"/>
-                                    </DataTemplate>
-                                </ItemsControl.ItemTemplate>
-                            </ItemsControl>
-
-                            <Border Grid.Row="2" Grid.Column="1" ClipToBounds="False">
-                                <ItemsControl ItemsSource="{Binding WellPlateItem96.Wells}" ClipToBounds="False">
-                                    <ItemsControl.ItemsPanel>
-                                        <ItemsPanelTemplate>
-                                            <UniformGrid Rows="8" Columns="12"/>
-                                        </ItemsPanelTemplate>
-                                    </ItemsControl.ItemsPanel>
-                                    <ItemsControl.ItemTemplate>
-                                        <DataTemplate>
-                                            <Button Content="{Binding Name}"
-                                                    Classes="well"
-                                                    Classes.ok="{Binding Calibration?.IsOk}"
-                                                    Classes.caution="{Binding Calibration?.IsCaution}"
-                                                    Classes.warn="{Binding Calibration?.IsWarn}"
-                                                    Classes.no-record="{Binding IsCalibrated, Converter={x:Static BoolConverters.Not}}"
-                                                    Classes.active="{Binding IsSelected}"
-                                                    IsVisible="{Binding IsVisible}"
-                                                    Command="{Binding $parent[ItemsControl].((vm:CalibrationViewModel)DataContext).WellsPositionCommand}"
-                                                    CommandParameter="{Binding Name}"/>
-                                        </DataTemplate>
-                                    </ItemsControl.ItemTemplate>
-                                </ItemsControl>
-                            </Border>
-                        </Grid>
-
                         <!-- Organ-on-Chip Plate -->
-                        <Grid IsVisible="{Binding Settings.Is96Well, Converter={x:Static BoolConverters.Not}}"
-                                RowDefinitions="Auto, Auto, Auto" ColumnDefinitions="Auto, Auto">
+                        <Grid RowDefinitions="Auto, Auto, Auto" ColumnDefinitions="Auto, Auto">
 
                             <StackPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
                                         Orientation="Horizontal" Spacing="10" Margin="0,0,0,16">

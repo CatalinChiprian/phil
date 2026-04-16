@@ -76,7 +76,7 @@
                             Command="{Binding DisconnectCommand}"/>
 
                     <Button Classes="btn btn-svg"
-                            Command="{Binding OpenSettingsCommand}">
+                            Click="SettingsButton_Click">
                         <Path Stretch="Fill"
                               Width="15"
                               Height="15"
@@ -198,22 +198,6 @@
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" DockPanel.Dock="Right" 
                             HorizontalAlignment="Right" Spacing="8">
-                    <StackPanel Orientation="Horizontal"
-                                Spacing="0">
-					    <Button Classes="toggle-btn"
-                                Classes.active="{Binding Settings.Is96Well}"
-                                CornerRadius="4 0 0 4"
-                                Content="96-Well"
-                                Command="{Binding SelectWell96Command}"/>
-
-					    <Button Classes="toggle-btn"
-                                Classes.active="{Binding Settings.Is96Well, Converter={x:Static BoolConverters.Not}}"
-                                CornerRadius="0 4 4 0"
-                                Content="Organ-on-Chip"
-                                Command="{Binding SelectOrganOnChipCommand}"/>
-                    </StackPanel>
-
-                    <Border Width="1" Height="25" Background="{StaticResource BorderColor}"/>
 
                     <Button Classes="btn btn-emergency" Content="Emergency Stop" FontWeight="SemiBold"
                             Command="{Binding EmergencyStopCommand}" FontSize="10"/>

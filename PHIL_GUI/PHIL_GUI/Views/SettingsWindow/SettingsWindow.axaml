@@ -4,7 +4,7 @@
         xmlns:views="using:PHIL_GUI.Views"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="600"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600"
         x:Class="PHIL_GUI.SettingsWindow"
         x:DataType="vm:SettingsWindowViewModel"
         Icon="/Assets/applied-nanotechnology.ico"
@@ -15,6 +15,24 @@
         Topmost="True"
         Title="Settings - PHIL">
     <DockPanel>
+
+        <Border DockPanel.Dock="Bottom"
+                Classes="toolbar"
+                BorderThickness="0,1,0,0">
+            <DockPanel>
+                <StackPanel Orientation="Horizontal" DockPanel.Dock="Right" Spacing="8">
+					<Button Classes="btn btn-secondary" Content="Cancel"
+                            Click="BottomBarButton_Click"/>
+					<Button Classes="btn btn-primary" Content="Save changes"
+                            Command="{Binding SaveChangesCommand}"
+                            Click="BottomBarButton_Click"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" DockPanel.Dock="Right" 
+                            HorizontalAlignment="Right" Spacing="8">
+
+                </StackPanel>
+            </DockPanel>
+        </Border>
 
         <Border DockPanel.Dock="Left"
                 Classes="sidebar"

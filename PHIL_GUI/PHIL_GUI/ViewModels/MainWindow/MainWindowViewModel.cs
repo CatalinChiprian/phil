@@ -20,13 +20,10 @@ namespace PHIL_GUI.ViewModels
 
         public Action Disconnected;
         public ICommand DisconnectCommand { get; }
-        public ICommand OpenSettingsCommand { get; }
         public ICommand MoveUpCommand { get; }
         public ICommand MoveDownCommand { get; }
         public ICommand GoHomeCommand { get; }
         public ICommand CalibrateHomeCommand { get; }
-        public ICommand SelectWell96Command { get; }
-        public ICommand SelectOrganOnChipCommand { get; }
         public ICommand EmergencyStopCommand { get; }
         public List<PageItem> Pages { get; }
         private PageItem selectedPage;
@@ -50,13 +47,13 @@ namespace PHIL_GUI.ViewModels
             set => SetProperty(ref currentPage, value);
         }
 
-        public Well CurrentWell => RobotProtocol.RobotState.CurrentWell;
-        public LimitSwitches Limit => RobotProtocol.RobotState.Limit;
-        public Settings Settings => RobotProtocol.RobotState.Settings;
+        public Well CurrentWell => RobotProtocolService.RobotState.CurrentWell;
+        public LimitSwitches Limit => RobotProtocolService.RobotState.Limit;
+        public RobotSettings Settings => RobotProtocolService.RobotState.Settings;
 
         public MainWindowViewModel()
         {
-            ConnectedPort = RobotProtocol.SerialPort.PortName;
+            ConnectedPort = RobotProtocolService.SerialPort.PortName;
 
             Pages = new List<PageItem>
             {
@@ -68,25 +65,17 @@ namespace PHIL_GUI.ViewModels
             SelectedPage = Pages[0];
 
             DisconnectCommand = new RelayCommand(Disconnect);
-            OpenSettingsCommand = new RelayCommand(OpenSettings);
-            MoveUpCommand = new RelayCommand(RobotProtocol.MoveUp);
-            MoveDownCommand = new RelayCommand(RobotProtocol.MoveDown);
-            GoHomeCommand = new RelayCommand(RobotProtocol.GoHome);
-            CalibrateHomeCommand = new RelayCommand(RobotProtocol.CalibrateHome);
-            SelectWell96Command = new RelayCommand(() => Settings.SelectedPlateType = PlateType.Well96);
-            SelectOrganOnChipCommand = new RelayCommand(() => Settings.SelectedPlateType = PlateType.OrganOnChip);
-            EmergencyStopCommand = new RelayCommand(RobotProtocol.EmergencyStop);
+            MoveUpCommand = new RelayCommand(RobotProtocolService.MoveUp);
+            MoveDownCommand = new RelayCommand(RobotProtocolService.MoveDown);
+            GoHomeCommand = new RelayCommand(RobotProtocolService.GoHome);
+            CalibrateHomeCommand = new RelayCommand(RobotProtocolService.CalibrateHome);
+            EmergencyStopCommand = new RelayCommand(RobotProtocolService.EmergencyStop);
         }
 
         private void Disconnect()
         {
-            RobotProtocol.SerialPort.Disconnect();
+            RobotProtocolService.SerialPort.Disconnect();
             Disconnected?.Invoke();
-        }
-
-        private void OpenSettings()
-        {
-            new SettingsWindow().Show();
         }
     }
 }
