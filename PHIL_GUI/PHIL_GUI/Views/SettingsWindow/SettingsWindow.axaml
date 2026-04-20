@@ -48,10 +48,11 @@
                         <ListBox.ItemTemplate>
                             <DataTemplate>
                                 <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
-                                    <Path Classes="svg"
-                                          Width="20"
-                                          Height="20"
-                                          Data="{Binding IconData}"/>
+                                    <Viewbox Width="20" Height="20" Stretch="Uniform">
+                                        <Path Classes="svg"
+                                              Stretch="Uniform"
+                                              Data="{Binding IconData}"/>
+                                        </Viewbox>
                                     <TextBlock Text="{Binding Title}" FontSize="13" LetterSpacing="0.7"/>
                                 </StackPanel>
                             </DataTemplate>
