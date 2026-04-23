@@ -281,7 +281,7 @@
     return (long)(microliters / UL_PER_STEP);
   }
 
-  void aspirateP1(int microliters = 20) {
+  void aspirateP1(int microliters) {
     enableP1Motor();
 
     long stepsNeeded = uLToSteps(microliters);
@@ -299,7 +299,7 @@
     Serial.println(" steps");
   }
 
-  void dispenseP1(int microliters = 20) {
+  void dispenseP1(int microliters) {
     enableP1Motor();
 
     long stepsNeeded = uLToSteps(microliters);
@@ -316,17 +316,25 @@
     Serial.println(" total steps");
   }
 
-  void aspirateP2(int amount = 20) {
+  void aspirateP2(int microliters) {
     enableP2Motor();
 
-    stepperP2.moveTo(stepperP2.currentPosition() - steps);
+    long stepsNeeded = uLToSteps(microliters);
+
+    stepperP2.moveTo(stepperP2.currentPosition() - stepsNeeded);
 
     while(stepperP2.distanceToGo() != 0) {
       stepperP2.run();
     }
+
+    Serial.print("PUMP2:aspirated="); Serial.print(microliters);
+    Serial.println("uL");
+    Serial.print("Which is ");
+    Serial.print(stepsNeeded);
+    Serial.println(" steps");
   }
 
-  void dispenseP2(int microliters = 20) {
+  void dispenseP2(int microliters) {
     enableP2Motor();
     
     long stepsNeeded = uLToSteps(microliters);
