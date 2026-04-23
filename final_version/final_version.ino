@@ -144,8 +144,8 @@
     // stepperL.move(-4 * currentMicrosteps);
     // stepperR.move(5 * currentMicrosteps);
     long s = steps * times;
-    stepperL.moveTo(-s + stepperL.currentPosition());
-    stepperR.moveTo(s + stepperR.currentPosition());
+    stepperL.moveTo(s + stepperL.currentPosition());
+    stepperR.moveTo(-s + stepperR.currentPosition());
 
     while(stepperR.distanceToGo() != 0 || stepperL.distanceToGo() != 0) {
       stepperL.run();
@@ -160,8 +160,8 @@
     // stepperL.move(4 * currentMicrosteps);
     // stepperR.move(-5 * currentMicrosteps);
     long s = steps * times;
-    stepperL.moveTo(s + stepperL.currentPosition());
-    stepperR.moveTo(-s + stepperR.currentPosition());
+    stepperL.moveTo(-s + stepperL.currentPosition());
+    stepperR.moveTo(s + stepperR.currentPosition());
 
     while(stepperR.distanceToGo() != 0 || stepperL.distanceToGo() != 0) {
       stepperL.run();
@@ -178,8 +178,8 @@
     // stepperL.move(-4 * times * currentMicrosteps);
     // stepperR.move(-3 * times * currentMicrosteps);
     long s = steps * times;
-    stepperL.moveTo(-s + stepperL.currentPosition());
-    stepperR.moveTo(-s + stepperR.currentPosition());
+    stepperL.moveTo(s + stepperL.currentPosition());
+    stepperR.moveTo(s + stepperR.currentPosition());
 
     while(stepperR.distanceToGo() != 0 || stepperL.distanceToGo() != 0) {
 
@@ -209,8 +209,8 @@
     // stepperR.move(3 * times * currentMicrosteps);
 
     long s = steps * times;
-    stepperL.moveTo(s + stepperL.currentPosition());
-    stepperR.moveTo(s + stepperR.currentPosition());
+    stepperL.moveTo(-s + stepperL.currentPosition());
+    stepperR.moveTo(-s + stepperR.currentPosition());
 
     while(stepperR.distanceToGo() != 0 || stepperL.distanceToGo() != 0) {
       
@@ -237,8 +237,8 @@
     bool z2LimitHit = false;
 
     long s = 8 * currentMicrosteps;
-    stepperZ1.moveTo(s + stepperZ1.currentPosition());
-    stepperZ2.moveTo(s + stepperZ2.currentPosition());
+    stepperZ1.moveTo(-s + stepperZ1.currentPosition());
+    stepperZ2.moveTo(-s + stepperZ2.currentPosition());
 
     while (stepperZ1.distanceToGo() != 0 || stepperZ2.distanceToGo() != 0) {
 
@@ -268,8 +268,8 @@
     enableZMotors();
 
     long s = 8 * currentMicrosteps;
-    stepperZ1.moveTo(-s + stepperZ1.currentPosition());
-    stepperZ2.moveTo(-s + stepperZ2.currentPosition());
+    stepperZ1.moveTo(s + stepperZ1.currentPosition());
+    stepperZ2.moveTo(s + stepperZ2.currentPosition());
 
     while(stepperZ1.distanceToGo() != 0 || stepperZ2.distanceToGo() != 0) {
       stepperZ1.run();
