@@ -5,6 +5,19 @@
   #include <AccelStepper.h>
   #include <MultiStepper.h>
 
+  #define WELL_HOME 255
+  #define MAGIC 0xCC
+  #define POS_ADDR_L   0
+  #define POS_ADDR_R   4
+  #define POS_ADDR_Z1  8
+  #define POS_ADDR_Z2  12
+
+
+  enum State {
+    SETUP,
+    RUNNING
+  } currentState;
+
   int myMICROS = 1;
   char Sttngs[][3] = {
     {LOW,  LOW, LOW}, // Full step
@@ -15,28 +28,21 @@
     {HIGH,  HIGH,  HIGH}
   };
 
-  const float WELL_DX = 9.0;
-  const float WELL_DY = 9.0;
+  const int16_t WELL_DX = 9.0;
+  const int16_t WELL_DY = 9.0;
 
   const int MAX_CAL = 32;
-  float calX[MAX_CAL], calY[MAX_CAL], calL[MAX_CAL], calR[MAX_CAL];
-  int calCount = 0;
+  int16_t calX[MAX_CAL], calY[MAX_CAL], calL[MAX_CAL], calR[MAX_CAL];
+  uint8_t calCount = 0;
 
   const int TERMS = 10;
-  float ML[TERMS] = {0};
-  float MR[TERMS] = {0};
+  int16_t ML[TERMS] = {0};
+  int16_t MR[TERMS] = {0};
   bool mapReady = false;
 
-  const int WELL_NAME_ADDR = 500;
-  const int WELL_NAME_MAX = 5;
+  const int WELL_ADDR = 500;
 
-  struct {
-    String wellName;
-    float x;
-    float y;
-    float lDeg;
-    float rDeg;
-  } currentWell;
+  uint8_t  wellIndex;// 0–N‑1 = wells, 255 = HOME
 
   int MICROoptions[] = {1, 2, 4, 8, 16, 32};
 
@@ -63,7 +69,7 @@
   AccelStepper stepperP1(1, step[4], dir[4]);
   AccelStepper stepperP2(1, step[5], dir[5]);
 
-  float UL_PER_STEP = 0.1099f;
+  int16_t UL_PER_STEP = 0.1099f;
 
   int limitSwitchL = 31; // Target Limit Switch L
   int limitSwitchR = 30; // Target Limit Switch R
@@ -76,7 +82,7 @@
   int microIndex = 3; // 0=full, 1=half, 2=1/4, 3=1/8, 4=1/16, 5=1/32
   int currentMicrosteps = MICROoptions[microIndex]; 
 
-  float times = 0.10;
+  int16_t times_x10 = 1;
   const long steps = 4 * currentMicrosteps;
 
   unsigned long lastMotorActivityTime = 0;
@@ -135,6 +141,7 @@
     printStepSize();
 
     emergencyStopRequested = false;
+    currentState = RUNNING;
   }
 
   void moveBackward() {
@@ -143,7 +150,7 @@
 
     // stepperL.move(-4 * currentMicrosteps);
     // stepperR.move(5 * currentMicrosteps);
-    long s = steps * times;
+    long s = steps * times_x10 / 10;
     stepperL.moveTo(-s + stepperL.currentPosition());
     stepperR.moveTo(s + stepperR.currentPosition());
 
@@ -159,7 +166,7 @@
 
     // stepperL.move(4 * currentMicrosteps);
     // stepperR.move(-5 * currentMicrosteps);
-    long s = steps * times;
+    long s = steps * times_x10 / 10;
     stepperL.moveTo(s + stepperL.currentPosition());
     stepperR.moveTo(-s + stepperR.currentPosition());
 
@@ -177,7 +184,7 @@
 
     // stepperL.move(-4 * times * currentMicrosteps);
     // stepperR.move(-3 * times * currentMicrosteps);
-    long s = steps * times;
+    long s = steps * times_x10 / 10;
     stepperL.moveTo(-s + stepperL.currentPosition());
     stepperR.moveTo(-s + stepperR.currentPosition());
 
@@ -208,7 +215,7 @@
     // stepperL.move(4 * times * currentMicrosteps);
     // stepperR.move(3 * times * currentMicrosteps);
 
-    long s = steps * times;
+    long s = steps * times_x10 / 10;
     stepperL.moveTo(s + stepperL.currentPosition());
     stepperR.moveTo(s + stepperR.currentPosition());
 
@@ -277,7 +284,7 @@
     }
   }
 
-  long uLToSteps(float microliters) {
+  long uLToSteps(int16_t microliters) {
     return (long)(microliters / UL_PER_STEP);
   }
 
@@ -496,7 +503,7 @@
                     int col = received.substring(10).toInt();
                     
                     // Find the point
-                    float x, y;
+                    int16_t x, y;
                     wellToXY(row, col, x, y);
                     
                     int foundIdx = -1;
@@ -536,15 +543,15 @@
                 Serial.println(")");
               }
                 if (mapReady && calCount > 0) {
-                  float rmsL=0, rmsR=0, maxErrL=0, maxErrR=0;
+                  int16_t rmsL=0, rmsR=0, maxErrL=0, maxErrR=0;
                   Serial.println("--- Residuals ---");
                   for (int i=0; i<calCount; i++) {
-                    float x = calX[i], y = calY[i];
-                    float b[TERMS] = { 1.0f, x, y, x*x, x*y, y*y, x*x*x, x*x*y, x*y*y, y*y*y };
-                    float predL = dot10(ML, b);
-                    float predR = dot10(MR, b);
-                    float errL  = calL[i] - predL;
-                    float errR  = calR[i] - predR;
+                    int16_t x = calX[i], y = calY[i];
+                    int16_t b[TERMS] = { 1.0f, x, y, x*x, x*y, y*y, x*x*x, x*x*y, x*y*y, y*y*y };
+                    int16_t predL = dot10(ML, b);
+                    int16_t predR = dot10(MR, b);
+                    int16_t errL  = calL[i] - predL;
+                    int16_t errR  = calR[i] - predR;
                     rmsL += errL*errL;
                     rmsR += errR*errR;
                     if (fabs(errL) > maxErrL) maxErrL = fabs(errL);
@@ -620,12 +627,12 @@
           break;
 
           case '+':
-            times += 0.10;
+            times_x10 += 1;
             printStepSize();
           break;
 
           case '-':
-            times -= 0.10;
+            times_x10 -= 1;
             printStepSize();
           break;
         }
@@ -713,7 +720,7 @@
       stepperL.run();
     }
 
-    saveCurrentWell("HOME", 0, 0, 0, 0);
+    saveCurrentWell("HOME");
   }
 
   void wells(char row, int column) {  
@@ -994,7 +1001,7 @@
 
     stepperR.setCurrentPosition(0);
 
-    saveCurrentWell("HOME", 0, 0, 0, 0);
+    saveCurrentWell("HOME");
 
     disableAllMotors();
 
@@ -1013,19 +1020,7 @@
       stepperL.run();
     }
 
-    interruptibleDelay(1000);
-    
-    char row = wellName.charAt(0);
-    String columnStr = wellName.substring(1);  
-    int col = columnStr.toInt();
-
-    float x, y;
-    wellToXY(row, col, x, y);
-
-    float Ldeg = stepsToDegrees(stepperL.currentPosition());
-    float Rdeg = stepsToDegrees(stepperR.currentPosition());
-
-    saveCurrentWell(wellName, x, y, Ldeg, Rdeg);
+    saveCurrentWell(wellName);
     printCurrentWell();
   }
 
@@ -1226,10 +1221,10 @@
   }
 
   void savePositions() {
-    EEPROM.put(0, stepperL.currentPosition());
-    EEPROM.put(4, stepperR.currentPosition());
-    EEPROM.put(8, stepperZ1.currentPosition());
-    EEPROM.put(12, stepperZ2.currentPosition());
+    EEPROM.put(POS_ADDR_L, (int16_t)stepperL.currentPosition());
+    EEPROM.put(POS_ADDR_R, (int16_t)stepperR.currentPosition());
+    EEPROM.put(POS_ADDR_Z1, (int16_t)stepperZ1.currentPosition());
+    EEPROM.put(POS_ADDR_Z2, (int16_t)stepperZ2.currentPosition());
 
     byte ok = 123;
     EEPROM.put(16, ok);
@@ -1244,11 +1239,11 @@
       return false;
     }
 
-    long L, R, Z1, Z2;
-    EEPROM.get(0, L);
-    EEPROM.get(4, R);
-    EEPROM.get(8, Z1);
-    EEPROM.get(12, Z2);
+    int16_t L, R, Z1, Z2;
+    EEPROM.get(POS_ADDR_L, L);
+    EEPROM.get(POS_ADDR_R, R);
+    EEPROM.get(POS_ADDR_Z1, Z1);
+    EEPROM.get(POS_ADDR_Z2, Z2);
 
     stepperL.setCurrentPosition(L);
     stepperR.setCurrentPosition(R);
@@ -1264,20 +1259,19 @@
   }
 
   void saveCalibration() {
+    if (currentState == SETUP) return;
+
     int addr = 20;
-    byte magic = 0xCC;
+    byte magic = MAGIC;
     EEPROM.put(addr, magic);  addr += sizeof(magic);
 
-    for (int i = 0; i < TERMS; i++) { EEPROM.put(addr, ML[i]); addr += sizeof(float); }
-    for (int i = 0; i < TERMS; i++) { EEPROM.put(addr, MR[i]); addr += sizeof(float); }
-
-    EEPROM.put(addr, calCount);  addr += sizeof(int);
+    EEPROM.put(addr, calCount);  addr += sizeof(uint8_t);
 
     for (int i = 0; i < calCount; i++) {
-      EEPROM.put(addr, calX[i]);  addr += sizeof(float);
-      EEPROM.put(addr, calY[i]);  addr += sizeof(float);
-      EEPROM.put(addr, calL[i]);  addr += sizeof(float);
-      EEPROM.put(addr, calR[i]);  addr += sizeof(float);
+      EEPROM.put(addr, calX[i]);  addr += sizeof(int16_t);
+      EEPROM.put(addr, calY[i]);  addr += sizeof(int16_t);
+      EEPROM.put(addr, calL[i]);  addr += sizeof(int16_t);
+      EEPROM.put(addr, calR[i]);  addr += sizeof(int16_t);
     }
 
     Serial.println("Calibration saved to EEPROM");
@@ -1289,13 +1283,10 @@
     byte magic;
     EEPROM.get(addr, magic);  addr += sizeof(magic);
 
-    if (magic != 0xCC) {
+    if (magic != MAGIC) {
       Serial.println("No valid calibration in EEPROM");
       return false;
     }
-
-    for (int i = 0; i < TERMS; i++) { EEPROM.get(addr, ML[i]); addr += sizeof(float); }
-    for (int i = 0; i < TERMS; i++) { EEPROM.get(addr, MR[i]); addr += sizeof(float); }
 
     EEPROM.get(addr, calCount);  addr += sizeof(int);
     if (calCount < 0 || calCount > MAX_CAL) {
@@ -1305,38 +1296,17 @@
     }
 
     for (int i = 0; i < calCount; i++) {
-      EEPROM.get(addr, calX[i]);  addr += sizeof(float);
-      EEPROM.get(addr, calY[i]);  addr += sizeof(float);
-      EEPROM.get(addr, calL[i]);  addr += sizeof(float);
-      EEPROM.get(addr, calR[i]);  addr += sizeof(float);
+      EEPROM.get(addr, calX[i]);  addr += sizeof(int16_t);
+      EEPROM.get(addr, calY[i]);  addr += sizeof(int16_t);
+      EEPROM.get(addr, calL[i]);  addr += sizeof(int16_t);
+      EEPROM.get(addr, calR[i]);  addr += sizeof(int16_t);
     }
 
-    mapReady = true;
-    Serial.print("CAL_COUNT:"); Serial.println(calCount);
-    for (int i = 0; i < calCount; i++) {
-      Serial.print("CAL_PT:");
-      Serial.print(i); Serial.print(",");
-      Serial.print(calX[i], 2); Serial.print(",");
-      Serial.print(calY[i], 2); Serial.print(",");
-      Serial.print(calL[i], 2); Serial.print(",");
-      Serial.println(calR[i], 2);
-    }
-    Serial.print("CAL_COEFFS_L:");
-    for (int i = 0; i < TERMS; i++) { 
-      Serial.print(ML[i], 5); 
-      if (i < TERMS-1) Serial.print(","); 
-    }
-    Serial.println();
-    Serial.print("CAL_COEFFS_R:");
-    for (int i = 0; i < TERMS; i++) { 
-      Serial.print(MR[i], 5); 
-      if (i < TERMS-1) Serial.print(","); 
-    }
-    Serial.println();
+    solveMapping();
     return true;
   }
 
-  void wellToXY(char row, int col, float &x, float &y) {
+  void wellToXY(char row, int col, int16_t &x, int16_t &y) {
     row = tolower(row);
 
     if (col < 1 || col > 12 || row < 'a' || row > 'h') {
@@ -1351,7 +1321,7 @@
     y =  r * WELL_DY;
   }
 
-  void XYToWell(float x, float y, String &wellName) {
+  void XYToWell(int16_t x, int16_t y, String &wellName) {
     int col = x / WELL_DX;
     int row = y / WELL_DY;
     char rowChar = 'a' + row;
@@ -1360,14 +1330,14 @@
   }
 
 
-  void xyToAngles(float x, float y, float &Ldeg, float &Rdeg) {
+  void xyToAngles(int16_t x, int16_t y, int16_t &Ldeg, int16_t &Rdeg) {
     if (!mapReady) {
       Serial.println("Angle map not ready!");
       Ldeg = 0; Rdeg = 0;
       return;
     }
     // Basis vector for quadratic model
-    float b[TERMS] = { 1.0f, x, y, x*x, x*y, y*y, x*x*x, x*x*y, x*y*y, y*y*y };
+    int16_t b[TERMS] = { 1.0f, x, y, x*x, x*y, y*y, x*x*x, x*x*y, x*y*y, y*y*y };
     Ldeg = dot10(ML, b);
     Rdeg = dot10(MR, b);
   }
@@ -1380,7 +1350,7 @@
         return;
     }
 
-    float x, y;
+    int16_t x, y;
     wellToXY(row, col, x, y);
 
     calX[calCount] = x;
@@ -1399,37 +1369,37 @@
   }
 
 
-  inline float dot10(const float a[TERMS], const float b[TERMS]) {
+  inline int16_t dot10(const int16_t a[TERMS], const int16_t b[TERMS]) {
     return a[0]*b[0] + a[1]*b[1] + a[2]*b[2] + a[3]*b[3] + a[4]*b[4]
         + a[5]*b[5] + a[6]*b[6] + a[7]*b[7] + a[8]*b[8] + a[9]*b[9];
   }
 
-  bool solve10(float A[TERMS][TERMS], float b[TERMS], float x[TERMS]) {
-    float M[TERMS][TERMS+1];
+  bool solve10(int16_t A[TERMS][TERMS], int16_t b[TERMS], int16_t x[TERMS]) {
+    int16_t M[TERMS][TERMS+1];
     for (int i=0;i<TERMS;i++){
       for (int j=0;j<TERMS;j++) M[i][j] = A[i][j];
       M[i][TERMS] = b[i];
     }
     for (int col=0; col<TERMS; col++) {
       int piv = col;
-      float best = fabs(M[piv][col]);
+      int16_t best = fabs(M[piv][col]);
       for (int r=col+1; r<TERMS; r++) {
-        float v = fabs(M[r][col]);
+        int16_t v = fabs(M[r][col]);
         if (v > best) { best = v; piv = r; }
       }
       if (best < 1e-9) return false;
       if (piv != col) {
         for (int c=col; c<=TERMS; c++) {
-          float tmp = M[col][c];
+          int16_t tmp = M[col][c];
           M[col][c] = M[piv][c];
           M[piv][c] = tmp;
         }
       }
-      float div = M[col][col];
+      int16_t div = M[col][col];
       for (int c=col; c<=TERMS; c++) M[col][c] /= div;
       for (int r=0; r<TERMS; r++) {
         if (r == col) continue;
-        float f = M[r][col];
+        int16_t f = M[r][col];
         for (int c=col; c<=TERMS; c++) M[r][c] -= f * M[col][c];
       }
     }
@@ -1447,15 +1417,15 @@
 
     // Normal equations: (A^T A) c = (A^T y)
     // A rows are basis b = [1, x, y, x^2, x*y, y^2]
-    float ATA[TERMS][TERMS] = {0};
-    float ATyL[TERMS] = {0};
-    float ATyR[TERMS] = {0};
+    int16_t ATA[TERMS][TERMS] = {0};
+    int16_t ATyL[TERMS] = {0};
+    int16_t ATyR[TERMS] = {0};
 
     for (int i=0; i<calCount; i++) {
-      float x = calX[i], y = calY[i];
-      float b[TERMS] = { 1.0f, x, y, x*x, x*y, y*y, x*x*x, x*x*y, x*y*y, y*y*y };
-      float L = calL[i];
-      float R = calR[i];
+      int16_t x = calX[i], y = calY[i];
+      int16_t b[TERMS] = { 1.0f, x, y, x*x, x*y, y*y, x*x*x, x*x*y, x*y*y, y*y*y };
+      int16_t L = calL[i];
+      int16_t R = calR[i];
 
       // Accumulate ATA = Σ b*b^T
       for (int r=0; r<TERMS; r++) {
@@ -1470,7 +1440,7 @@
       }
     }
 
-    float MLtmp[TERMS], MRtmp[TERMS];
+    int16_t MLtmp[TERMS], MRtmp[TERMS];
     bool okL = solve10(ATA, ATyL, MLtmp);
     bool okR = solve10(ATA, ATyR, MRtmp);
 
@@ -1495,22 +1465,22 @@
     return true;
   }
 
-  float clampZero(float v, float eps = 5e-4f) {
+  int16_t clampZero(int16_t v, int16_t eps = 5e-4f) {
       return fabs(v) < eps ? 0.0f : v;
   }
 
   void printCalibrationPoints() {
     Serial.print("CAL_COUNT:"); Serial.println(calCount);
-    float maxErrL = 0, maxErrR = 0, rmsL = 0, rmsR = 0;
+    int16_t maxErrL = 0, maxErrR = 0, rmsL = 0, rmsR = 0;
     for (int i=0; i<calCount; i++) {
-      float x = calX[i], y = calY[i];
+      int16_t x = calX[i], y = calY[i];
       String wellName;
       XYToWell(calX[i], calY[i], wellName);
-      float b[TERMS] = { 1.0f, x, y, x*x, x*y, y*y, x*x*x, x*x*y, x*y*y, y*y*y };
-      float predL = dot10(ML, b);
-      float predR = dot10(MR, b);
-      float errL  = calL[i] - predL;
-      float errR  = calR[i] - predR;
+      int16_t b[TERMS] = { 1.0f, x, y, x*x, x*y, y*y, x*x*x, x*x*y, x*y*y, y*y*y };
+      int16_t predL = dot10(ML, b);
+      int16_t predR = dot10(MR, b);
+      int16_t errL  = calL[i] - predL;
+      int16_t errR  = calR[i] - predR;
       rmsL += errL*errL; rmsR += errR*errR;
       if (fabs(errL) > maxErrL) maxErrL = fabs(errL);
       if (fabs(errR) > maxErrR) maxErrR = fabs(errR);
@@ -1539,14 +1509,34 @@
     Serial.print(",MAX_R="); Serial.println(maxErrR, 3);
   }
 
-  long degToSteps(float deg) {
-    float stepsPerRev = 200.0 * currentMicrosteps;
+  long degToSteps(int16_t deg) {
+    int16_t stepsPerRev = 200.0 * currentMicrosteps;
     return (long)(deg * (stepsPerRev / 360.0));
   }
 
-  float stepsToDegrees(long steps) {
-    float stepsPerRev = 200.0f * currentMicrosteps;
-    return (float)steps * (360.0f / stepsPerRev);
+  int16_t stepsToDegrees(long steps) {
+    int16_t stepsPerRev = 200.0f * currentMicrosteps;
+    return (int16_t)steps * (360.0f / stepsPerRev);
+  }
+
+  uint8_t wellNameToIndex(String wellName) {
+      if (wellName == "HOME") return WELL_HOME;
+
+      char row = wellName.charAt(0);
+      String columnStr = wellName.substring(1);  
+      int column = columnStr.toInt();
+
+      return (row - 'a') * 12 + (column - 1);
+  }
+
+  String wellIndexToName(uint8_t wellIndex) {
+      if (wellIndex == WELL_HOME) {
+          return "HOME";
+      }
+
+      char row = 'A' + (wellIndex / 12);
+      int  col = (wellIndex % 12) + 1;
+      return String(row) + String(col);
   }
 
   void goToCalculatedWell(char row, int col) {
@@ -1558,10 +1548,12 @@
     enableLMotor();
     enableRMotor();
 
-    float x, y;
+    int16_t x = 0;
+    int16_t y = 0;
     wellToXY(row, col, x, y);
 
-    float Ldeg, Rdeg;
+    int16_t Ldeg = 0;
+    int16_t Rdeg = 0;
     xyToAngles(x, y, Ldeg, Rdeg);
 
     long Lsteps = degToSteps(Ldeg);
@@ -1575,71 +1567,56 @@
         stepperR.run();
     }
 
-    saveCurrentWell(String(row) + String(col), x, y, Ldeg, Rdeg);
+    saveCurrentWell(String(row) + String(col));
     printCurrentWell();
   }
 
-  void saveCurrentWell(String wellName, float x, float y, float Ldeg, float Rdeg) {
-    for (int i = 0; i < WELL_NAME_MAX; i++) {
-        EEPROM.write(WELL_NAME_ADDR + i, i < wellName.length() ? wellName.charAt(i) : '\0');
-    }
+  void saveCurrentWell(String wellName) {  
+    wellIndex = wellNameToIndex(wellName);
 
-    currentWell.wellName = wellName;
-    currentWell.x = x;
-    currentWell.y = y;
-    currentWell.lDeg = Ldeg;
-    currentWell.rDeg = Rdeg;
+    EEPROM.put(WELL_ADDR, wellIndex);
   }
 
   void loadCurrentWell() {
-    char name[WELL_NAME_MAX];
-    for (int i = 0; i < WELL_NAME_MAX; i++) {
-        name[i] = EEPROM.read(WELL_NAME_ADDR + i);
-    }
-    name[WELL_NAME_MAX - 1] = '\0';
-
-    if (strcmp(name, "HOME") == 0) {
-      currentWell.wellName = "HOME";
-      currentWell.x = 0;
-      currentWell.y = 0;
-      currentWell.lDeg = 0;
-      currentWell.rDeg = 0;
-
-      Serial.println("WELL:HOME");
-    return;
-  }
-
-    if (name[0] < 'a' || name[0] > 'h') return;
-
-    char row = name[0];
-    int col = String(name + 1).toInt();
-    if (col < 1 || col > 12) return;
-
-    float x, y;
-    wellToXY(row, col, x, y);
-
-    float Ldeg = stepsToDegrees(stepperL.currentPosition());
-    float Rdeg = stepsToDegrees(stepperR.currentPosition());
-
-    currentWell.wellName = String(row) + String(col);
-    currentWell.x = x;
-    currentWell.y = y;
-    currentWell.lDeg = Ldeg;
-    currentWell.rDeg = Rdeg;
+    wellIndex = EEPROM.read(WELL_ADDR);
 
     printCurrentWell();
   }
 
   void printCurrentWell() {
-    Serial.print("WELL:"); Serial.print(currentWell.wellName);
-    Serial.print(",X="); Serial.print(currentWell.x, 2);
-    Serial.print(",Y="); Serial.print(currentWell.y, 2);
-    Serial.print(",L="); Serial.print(currentWell.lDeg, 2);
-    Serial.print(",R="); Serial.println(currentWell.rDeg, 2);
+    String wellName = wellIndexToName(wellIndex);
+    Serial.print("WELL:"); Serial.print(wellName);
+
+    int16_t x = 0;
+    int16_t y = 0;
+    int16_t Ldeg = 0;
+    int16_t Rdeg = 0;
+
+    if (wellName != "HOME") {
+      char row = tolower(wellName[0]);
+      if (row < 'a' || row > 'h') return;
+
+      int col = wellName.substring(1).toInt();
+      if (col < 1 || col > 12) return;
+
+      
+      wellToXY(row, col, x, y);
+
+      Ldeg = stepsToDegrees(stepperL.currentPosition());
+      Rdeg = stepsToDegrees(stepperR.currentPosition());
+    }
+
+    Serial.print(",X="); Serial.print(x);
+    Serial.print(",Y="); Serial.print(y);
+    Serial.print(",L="); Serial.print(Ldeg);
+    Serial.print(",R="); Serial.println(Rdeg);
   }
 
   void printStepSize() {
-    Serial.print("STEP_SIZE:"); Serial.println(times, 2);
+    Serial.print("STEP_SIZE:");
+    Serial.print(times_x10 / 10);
+    Serial.print(".");
+    Serial.println(times_x10 % 10);
   }
 
   void printMicroSteps() {
