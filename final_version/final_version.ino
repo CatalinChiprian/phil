@@ -7,12 +7,12 @@
   #include <Wire.h>
   #include "RTClib.h"
 
-  #define WELL_HOME 255
-  #define MAGIC 0xCC
-  #define POS_ADDR_L   0
-  #define POS_ADDR_R   4
-  #define POS_ADDR_Z1  8
-  #define POS_ADDR_Z2  12
+  #define WELL_HOME   255
+  #define MAGIC       0xCC
+  #define POS_ADDR_L  0
+  #define POS_ADDR_R  4
+  #define POS_ADDR_Z1 8
+  #define POS_ADDR_Z2 12
 
 
   enum State {
@@ -34,12 +34,12 @@
   const int16_t WELL_DY = 9.0;
 
   const int MAX_CAL = 32;
-  int16_t calX[MAX_CAL], calY[MAX_CAL], calL[MAX_CAL], calR[MAX_CAL];
+  int32_t calX[MAX_CAL], calY[MAX_CAL], calL[MAX_CAL], calR[MAX_CAL];
   uint8_t calCount = 0;
 
   const int TERMS = 10;
-  int16_t ML[TERMS] = {0};
-  int16_t MR[TERMS] = {0};
+  float ML[TERMS] = {0};
+  float MR[TERMS] = {0};
   bool mapReady = false;
 
   const int WELL_ADDR = 500;
@@ -166,8 +166,6 @@
     enableLMotor();
     enableRMotor();
 
-    // stepperL.move(-4 * currentMicrosteps);
-    // stepperR.move(5 * currentMicrosteps);
     long s = steps * times_x10 / 10;
     stepperL.moveTo(-s + stepperL.currentPosition());
     stepperR.moveTo(s + stepperR.currentPosition());
@@ -182,8 +180,6 @@
     enableLMotor();
     enableRMotor();
 
-    // stepperL.move(4 * currentMicrosteps);
-    // stepperR.move(-5 * currentMicrosteps);
     long s = steps * times_x10 / 10;
     stepperL.moveTo(s + stepperL.currentPosition());
     stepperR.moveTo(-s + stepperR.currentPosition());
@@ -200,8 +196,6 @@
 
     bool lLimitHit = false;
 
-    // stepperL.move(-4 * times * currentMicrosteps);
-    // stepperR.move(-3 * times * currentMicrosteps);
     long s = steps * times_x10 / 10;
     stepperL.moveTo(-s + stepperL.currentPosition());
     stepperR.moveTo(-s + stepperR.currentPosition());
@@ -229,9 +223,6 @@
     enableRMotor();
 
     bool rLimitHit = false;
-
-    // stepperL.move(4 * times * currentMicrosteps);
-    // stepperR.move(3 * times * currentMicrosteps);
 
     long s = steps * times_x10 / 10;
     stepperL.moveTo(s + stepperL.currentPosition());
@@ -521,7 +512,8 @@
                     int col = received.substring(10).toInt();
                     
                     // Find the point
-                    int16_t x, y;
+                    int16_t x = 0;
+                    int16_t y = 0;
                     wellToXY(row, col, x, y);
                     
                     int foundIdx = -1;
@@ -554,22 +546,22 @@
               Serial.println("--- Calibration Data ---");
               for (int i=0; i<calCount; i++) {
                 Serial.print("Pt "); Serial.print(i);
-                Serial.print(": XY("); Serial.print(calX[i],2);
-                Serial.print(",");     Serial.print(calY[i],2);
-                Serial.print(") Ang(");Serial.print(calL[i],2);
-                Serial.print(",");     Serial.print(calR[i],2);
+                Serial.print(": XY("); Serial.print(calX[i]);
+                Serial.print(",");     Serial.print(calY[i]);
+                Serial.print(") Ang(");Serial.print(calL[i]);
+                Serial.print(",");     Serial.print(calR[i]);
                 Serial.println(")");
               }
                 if (mapReady && calCount > 0) {
-                  int16_t rmsL=0, rmsR=0, maxErrL=0, maxErrR=0;
+                  float rmsL=0, rmsR=0, maxErrL=0, maxErrR=0;
                   Serial.println("--- Residuals ---");
                   for (int i=0; i<calCount; i++) {
-                    int16_t x = calX[i], y = calY[i];
-                    int16_t b[TERMS] = { 1.0f, x, y, x*x, x*y, y*y, x*x*x, x*x*y, x*y*y, y*y*y };
-                    int16_t predL = dot10(ML, b);
-                    int16_t predR = dot10(MR, b);
-                    int16_t errL  = calL[i] - predL;
-                    int16_t errR  = calR[i] - predR;
+                    float x = calX[i], y = calY[i];
+                    float b[TERMS] = { 1.0f, x, y, x*x, x*y, y*y, x*x*x, x*x*y, x*y*y, y*y*y };
+                    float predL = dot10(ML, b);
+                    float predR = dot10(MR, b);
+                    float errL  = calL[i] - predL;
+                    float errR  = calR[i] - predR;
                     rmsL += errL*errL;
                     rmsR += errR*errR;
                     if (fabs(errL) > maxErrL) maxErrL = fabs(errL);
@@ -1286,10 +1278,10 @@
     EEPROM.put(addr, calCount);  addr += sizeof(uint8_t);
 
     for (int i = 0; i < calCount; i++) {
-      EEPROM.put(addr, calX[i]);  addr += sizeof(int16_t);
-      EEPROM.put(addr, calY[i]);  addr += sizeof(int16_t);
-      EEPROM.put(addr, calL[i]);  addr += sizeof(int16_t);
-      EEPROM.put(addr, calR[i]);  addr += sizeof(int16_t);
+      EEPROM.put(addr, calX[i]);  addr += sizeof(int32_t);
+      EEPROM.put(addr, calY[i]);  addr += sizeof(int32_t);
+      EEPROM.put(addr, calL[i]);  addr += sizeof(int32_t);
+      EEPROM.put(addr, calR[i]);  addr += sizeof(int32_t);
     }
 
     Serial.println("Calibration saved to EEPROM");
@@ -1314,10 +1306,10 @@
     }
 
     for (int i = 0; i < calCount; i++) {
-      EEPROM.get(addr, calX[i]);  addr += sizeof(int16_t);
-      EEPROM.get(addr, calY[i]);  addr += sizeof(int16_t);
-      EEPROM.get(addr, calL[i]);  addr += sizeof(int16_t);
-      EEPROM.get(addr, calR[i]);  addr += sizeof(int16_t);
+      EEPROM.get(addr, calX[i]);  addr += sizeof(int32_t);
+      EEPROM.get(addr, calY[i]);  addr += sizeof(int32_t);
+      EEPROM.get(addr, calL[i]);  addr += sizeof(int32_t);
+      EEPROM.get(addr, calR[i]);  addr += sizeof(int32_t);
     }
 
     solveMapping();
@@ -1355,7 +1347,7 @@
       return;
     }
     // Basis vector for quadratic model
-    int16_t b[TERMS] = { 1.0f, x, y, x*x, x*y, y*y, x*x*x, x*x*y, x*y*y, y*y*y };
+    float b[TERMS] = { 1.0f, x, y, x*x, x*y, y*y, x*x*x, x*x*y, x*y*y, y*y*y };
     Ldeg = dot10(ML, b);
     Rdeg = dot10(MR, b);
   }
@@ -1368,7 +1360,8 @@
         return;
     }
 
-    int16_t x, y;
+    int16_t x = 0;
+    int16_t y = 0;
     wellToXY(row, col, x, y);
 
     calX[calCount] = x;
@@ -1380,44 +1373,44 @@
     Serial.print("CAL_REC:");
     Serial.print(row); Serial.print(col); Serial.print(",");
     //XY
-    Serial.print(x, 2); Serial.print(",");
-    Serial.print(y, 2); Serial.println();
+    Serial.print(x); Serial.print(",");
+    Serial.print(y); Serial.println();
     
     Serial.print("CAL_COUNT:"); Serial.println(++calCount);
   }
 
 
-  inline int16_t dot10(const int16_t a[TERMS], const int16_t b[TERMS]) {
+  inline float dot10(const float a[TERMS], const float b[TERMS]) {
     return a[0]*b[0] + a[1]*b[1] + a[2]*b[2] + a[3]*b[3] + a[4]*b[4]
         + a[5]*b[5] + a[6]*b[6] + a[7]*b[7] + a[8]*b[8] + a[9]*b[9];
   }
 
-  bool solve10(int16_t A[TERMS][TERMS], int16_t b[TERMS], int16_t x[TERMS]) {
-    int16_t M[TERMS][TERMS+1];
+  bool solve10(float A[TERMS][TERMS], float b[TERMS], float x[TERMS]) {
+    float M[TERMS][TERMS+1];
     for (int i=0;i<TERMS;i++){
       for (int j=0;j<TERMS;j++) M[i][j] = A[i][j];
       M[i][TERMS] = b[i];
     }
     for (int col=0; col<TERMS; col++) {
       int piv = col;
-      int16_t best = fabs(M[piv][col]);
+      float best = fabs(M[piv][col]);
       for (int r=col+1; r<TERMS; r++) {
-        int16_t v = fabs(M[r][col]);
+        float v = fabs(M[r][col]);
         if (v > best) { best = v; piv = r; }
       }
       if (best < 1e-9) return false;
       if (piv != col) {
         for (int c=col; c<=TERMS; c++) {
-          int16_t tmp = M[col][c];
+          float tmp = M[col][c];
           M[col][c] = M[piv][c];
           M[piv][c] = tmp;
         }
       }
-      int16_t div = M[col][col];
+      float div = M[col][col];
       for (int c=col; c<=TERMS; c++) M[col][c] /= div;
       for (int r=0; r<TERMS; r++) {
         if (r == col) continue;
-        int16_t f = M[r][col];
+        float f = M[r][col];
         for (int c=col; c<=TERMS; c++) M[r][c] -= f * M[col][c];
       }
     }
@@ -1435,15 +1428,15 @@
 
     // Normal equations: (A^T A) c = (A^T y)
     // A rows are basis b = [1, x, y, x^2, x*y, y^2]
-    int16_t ATA[TERMS][TERMS] = {0};
-    int16_t ATyL[TERMS] = {0};
-    int16_t ATyR[TERMS] = {0};
+    float ATA[TERMS][TERMS] = {0};
+    float ATyL[TERMS] = {0};
+    float ATyR[TERMS] = {0};
 
     for (int i=0; i<calCount; i++) {
-      int16_t x = calX[i], y = calY[i];
-      int16_t b[TERMS] = { 1.0f, x, y, x*x, x*y, y*y, x*x*x, x*x*y, x*y*y, y*y*y };
-      int16_t L = calL[i];
-      int16_t R = calR[i];
+      float x = calX[i], y = calY[i];
+      float b[TERMS] = { 1.0f, x, y, x*x, x*y, y*y, x*x*x, x*x*y, x*y*y, y*y*y };
+      float L = calL[i];
+      float R = calR[i];
 
       // Accumulate ATA = Σ b*b^T
       for (int r=0; r<TERMS; r++) {
@@ -1458,7 +1451,7 @@
       }
     }
 
-    int16_t MLtmp[TERMS], MRtmp[TERMS];
+    float MLtmp[TERMS], MRtmp[TERMS];
     bool okL = solve10(ATA, ATyL, MLtmp);
     bool okR = solve10(ATA, ATyR, MRtmp);
 
@@ -1483,29 +1476,30 @@
     return true;
   }
 
-  int16_t clampZero(int16_t v, int16_t eps = 5e-4f) {
+  float clampZero(float v, float eps = 5e-4f) {
       return fabs(v) < eps ? 0.0f : v;
   }
 
   void printCalibrationPoints() {
     Serial.print("CAL_COUNT:"); Serial.println(calCount);
-    int16_t maxErrL = 0, maxErrR = 0, rmsL = 0, rmsR = 0;
+    float maxErrL = 0, maxErrR = 0, rmsL = 0, rmsR = 0;
     for (int i=0; i<calCount; i++) {
-      int16_t x = calX[i], y = calY[i];
+      float x = calX[i], y = calY[i];
       String wellName;
       XYToWell(calX[i], calY[i], wellName);
-      int16_t b[TERMS] = { 1.0f, x, y, x*x, x*y, y*y, x*x*x, x*x*y, x*y*y, y*y*y };
-      int16_t predL = dot10(ML, b);
-      int16_t predR = dot10(MR, b);
-      int16_t errL  = calL[i] - predL;
-      int16_t errR  = calR[i] - predR;
+      float b[TERMS] = { 1.0f, x, y, x*x, x*y, y*y, x*x*x, x*x*y, x*y*y, y*y*y };
+      float predL = dot10(ML, b);
+      float predR = dot10(MR, b);
+      float errL  = calL[i] - predL;
+      float errR  = calR[i] - predR;
       rmsL += errL*errL; rmsR += errR*errR;
       if (fabs(errL) > maxErrL) maxErrL = fabs(errL);
       if (fabs(errR) > maxErrR) maxErrR = fabs(errR);
       Serial.print("CAL_PT:");
       Serial.print(wellName); Serial.print(",");
-      Serial.print(calX[i], 2); Serial.print(",");
-      Serial.print(calY[i], 2); 
+      Serial.print((float)calX[i], 2); Serial.print(",");
+      Serial.print((float)calY[i], 2);
+
 
       if (!mapReady) {
         Serial.println();
@@ -1527,12 +1521,12 @@
     Serial.print(",MAX_R="); Serial.println(maxErrR, 3);
   }
 
-  long degToSteps(int16_t deg) {
+  int16_t degToSteps(int16_t deg) {
     int16_t stepsPerRev = 200.0 * currentMicrosteps;
-    return (long)(deg * (stepsPerRev / 360.0));
+    return (int16_t)(deg * (stepsPerRev / 360.0));
   }
 
-  int16_t stepsToDegrees(long steps) {
+  int16_t stepsToDegrees(int16_t steps) {
     int16_t stepsPerRev = 200.0f * currentMicrosteps;
     return (int16_t)steps * (360.0f / stepsPerRev);
   }
