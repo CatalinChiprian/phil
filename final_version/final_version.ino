@@ -4,6 +4,8 @@
   #include <EEPROM.h>
   #include <AccelStepper.h>
   #include <MultiStepper.h>
+  #include <Wire.h>
+  #include "RTClib.h"
 
   #define WELL_HOME 255
   #define MAGIC 0xCC
@@ -69,6 +71,8 @@
   AccelStepper stepperP1(1, step[4], dir[4]);
   AccelStepper stepperP2(1, step[5], dir[5]);
 
+  RTC_DS3231 rtc;
+
   int16_t UL_PER_STEP = 0.1099f;
 
   int limitSwitchL = 31; // Target Limit Switch L
@@ -96,6 +100,20 @@
 
   void setup() {
     Serial.begin(9600);
+    Wire.begin();
+
+    
+    if (!rtc.begin()) {
+        Serial.println("ERROR: RTC not found");
+        while (1);
+    }
+
+    
+    if (rtc.lostPower()) {
+      Serial.println("RTC lost power, setting time...");
+
+      rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
+    }
 
     enableAllMotors();
 
