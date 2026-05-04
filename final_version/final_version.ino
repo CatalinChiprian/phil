@@ -9,10 +9,16 @@
 
   #define WELL_HOME   255
   #define MAGIC       0xCC
+
+  
+  #define EEPROM_CAL_BASE   64
+  #define EEPROM_WELL_BASE  800
+
   #define POS_ADDR_L  0
   #define POS_ADDR_R  4
   #define POS_ADDR_Z1 8
   #define POS_ADDR_Z2 12
+  
 
 
   enum State {
@@ -41,8 +47,6 @@
   float ML[TERMS] = {0};
   float MR[TERMS] = {0};
   bool mapReady = false;
-
-  const int WELL_ADDR = 500;
 
   uint8_t  wellIndex;// 0–N‑1 = wells, 255 = HOME
 
@@ -73,7 +77,7 @@
 
   RTC_DS3231 rtc;
 
-  int16_t UL_PER_STEP = 0.1099f;
+  const float UL_PER_STEP = 0.1099f;
 
   int limitSwitchL = 31; // Target Limit Switch L
   int limitSwitchR = 30; // Target Limit Switch R
@@ -293,8 +297,9 @@
     }
   }
 
-  long uLToSteps(int16_t microliters) {
-    return (long)(microliters / UL_PER_STEP);
+  long uLToSteps(float microliters) {
+    if (UL_PER_STEP <= 0.0f) return 0;
+    return lroundf(microliters / UL_PER_STEP);
   }
 
   void aspirateP1(int microliters) {
@@ -1271,7 +1276,7 @@
   void saveCalibration() {
     if (currentState == SETUP) return;
 
-    int addr = 20;
+    int addr = EEPROM_CAL_BASE;
     byte magic = MAGIC;
     EEPROM.put(addr, magic);  addr += sizeof(magic);
 
@@ -1289,7 +1294,7 @@
   }
 
   bool loadCalibration() {
-    int addr = 20;
+    int addr = EEPROM_CAL_BASE;
     byte magic;
     EEPROM.get(addr, magic);  addr += sizeof(magic);
 
@@ -1298,7 +1303,7 @@
       return false;
     }
 
-    EEPROM.get(addr, calCount);  addr += sizeof(int);
+    EEPROM.get(addr, calCount);  addr += sizeof(uint8_t);
     if (calCount < 0 || calCount > MAX_CAL) {
       Serial.println("Corrupt point count in EEPROM");
       calCount = 0;
@@ -1586,11 +1591,11 @@
   void saveCurrentWell(String wellName) {  
     wellIndex = wellNameToIndex(wellName);
 
-    EEPROM.put(WELL_ADDR, wellIndex);
+    EEPROM.put(EEPROM_WELL_BASE, wellIndex);
   }
 
   void loadCurrentWell() {
-    wellIndex = EEPROM.read(WELL_ADDR);
+    wellIndex = EEPROM.read(EEPROM_WELL_BASE);
 
     printCurrentWell();
   }
