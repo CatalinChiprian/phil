@@ -48,7 +48,7 @@
   float MR[TERMS] = {0};
   bool mapReady = false;
 
-  uint8_t  wellIndex;// 0–N‑1 = wells, 255 = HOME
+  uint8_t wellIndex;// 0–N‑1 = wells, 255 = HOME
 
   int MICROoptions[] = {1, 2, 4, 8, 16, 32};
 
@@ -92,6 +92,9 @@
 
   int16_t times_x10 = 1;
   const long steps = 4 * currentMicrosteps;
+
+  const int16_t ZMotorPumpPosition = -2496;
+  const int16_t ZMotorNormalPosition = -384;
 
   unsigned long lastMotorActivityTime = 0;
   bool ZMotorsCurrentlyEnabled = false;
@@ -297,75 +300,115 @@
     }
   }
 
+  void moveZMotors(int16_t position) {
+    enableZMotors();
+
+    long pos = position;
+    stepperZ1.moveTo(pos);
+    stepperZ2.moveTo(pos);
+
+    while(stepperZ1.distanceToGo() != 0 || stepperZ2.distanceToGo() != 0) {
+      stepperZ1.run();
+      stepperZ2.run();
+    }
+  }
+
   long uLToSteps(float microliters) {
     if (UL_PER_STEP <= 0.0f) return 0;
     return lroundf(microliters / UL_PER_STEP);
   }
 
-  void aspirateP1(int microliters) {
-    enableP1Motor();
+  void dispense(int pump, int microliters, String well) {
 
-    long stepsNeeded = uLToSteps(microliters);
+    if (well.length() > 0) {
+      char row = tolower(well.charAt(0));
+      int col = well.substring(1).toInt();
 
-    stepperP1.moveTo(stepperP1.currentPosition() + stepsNeeded);
-
-    while(stepperP1.distanceToGo() != 0) {
-      stepperP1.run();
+      
+      if (row >= 'a' || row <= 'h' || col >= 1 || col <= 12) {
+        moveZMotors(ZMotorNormalPosition);
+        goToCalculatedWell(row, col);
+        moveZMotors(ZMotorPumpPosition);
+      }
     }
 
-    Serial.print("PUMP1:aspirated="); Serial.print(microliters);
-    Serial.println("uL");
-    Serial.print("Which is ");
-    Serial.print(stepsNeeded);
-    Serial.println(" steps");
-  }
+    AccelStepper pumpStepper;
+    switch (pump) {
+      case 1:
+        enableP1Motor();
+        pumpStepper = stepperP1;
+      break;
+      
+      case 2:
+        enableP2Motor();
+        pumpStepper = stepperP2;
+      break;
 
-  void dispenseP1(int microliters) {
-    enableP1Motor();
+      default:
+      return;
+    }
 
     long stepsNeeded = uLToSteps(microliters);
 
     if (stepsNeeded > 0) {
-        stepperP1.moveTo(stepperP1.currentPosition() - stepsNeeded);
-        while(stepperP1.distanceToGo() != 0) stepperP1.run();
+        pumpStepper.moveTo(pumpStepper.currentPosition() - stepsNeeded);
+        while(pumpStepper.distanceToGo() != 0) pumpStepper.run();
     }
 
-    Serial.print("PUMP1:dispensed="); Serial.print(microliters);
+    moveZMotors(ZMotorNormalPosition);
+
+    Serial.print("PUMP");
+    Serial.print(pump);
+    Serial.print(":dispensed="); Serial.print(microliters);
     Serial.println("uL");
     Serial.print("Which is ");
     Serial.print(stepsNeeded);
     Serial.println(" total steps");
   }
 
-  void aspirateP2(int microliters) {
-    enableP2Motor();
+  void aspirate(int pump, int microliters, String well) {
+
+    if (well.length() > 0) {
+      char row = tolower(well.charAt(0));
+      int col = well.substring(1).toInt();
+
+      
+      if (row >= 'a' || row <= 'h' || col >= 1 || col <= 12) {
+        moveZMotors(ZMotorNormalPosition);
+        goToCalculatedWell(row, col);
+        moveZMotors(ZMotorPumpPosition);
+      }
+    }
+
+    AccelStepper pumpStepper;
+    switch (pump) {
+      case 1:
+        enableP1Motor();
+        pumpStepper = stepperP1;
+      break;
+      
+      case 2:
+        enableP2Motor();
+        pumpStepper = stepperP2;
+      break;
+
+      default:
+      return;
+    }
 
     long stepsNeeded = uLToSteps(microliters);
 
-    stepperP2.moveTo(stepperP2.currentPosition() + stepsNeeded);
+    pumpStepper.moveTo(pumpStepper.currentPosition() + stepsNeeded);
 
-    while(stepperP2.distanceToGo() != 0) {
-      stepperP2.run();
+    while(pumpStepper.distanceToGo() != 0) {
+      pumpStepper.run();
     }
 
-    Serial.print("PUMP2:aspirated="); Serial.print(microliters);
-    Serial.println("uL");
-    Serial.print("Which is ");
-    Serial.print(stepsNeeded);
-    Serial.println(" steps");
-  }
+    moveZMotors(ZMotorNormalPosition);
 
-  void dispenseP2(int microliters) {
-    enableP2Motor();
-    
-    long stepsNeeded = uLToSteps(microliters);
-
-    if (stepsNeeded > 0) {
-        stepperP2.moveTo(stepperP2.currentPosition() - stepsNeeded);
-        while(stepperP2.distanceToGo() != 0) stepperP2.run();
-    }
-
-    Serial.print("PUMP2:dispensed="); Serial.print(microliters);
+    Serial.print("PUMP");
+    Serial.print(pump);
+    Serial.print(":aspirated="); Serial.print(microliters);
     Serial.println("uL");
     Serial.print("Which is ");
     Serial.print(stepsNeeded);
@@ -441,21 +484,23 @@
 
           case 'i':
           {
-            char arg = received.charAt(1);
-            String amountChar = received.substring(2);
-            int amount = amountChar.toInt();
-            if (arg == '1') aspirateP1(amount);
-            else if (arg == '2') aspirateP2(amount);
+            String pumpStr, amountStr, wellStr;
+            split3(received, pumpStr, amountStr, wellStr);
+            int pump = pumpStr.substring(1).toInt();
+            int amount = amountStr.toInt();
+            
+            aspirate(pump, amount, wellStr);
           }
           break;
 
           case 'o':
           {
-            char arg = received.charAt(1);
-            String amountChar = received.substring(2);
-            int amount = amountChar.toInt();
-            if (arg == '1') dispenseP1(amount);
-            else if (arg == '2') dispenseP2(amount);
+            String pumpStr, amountStr, wellStr;
+            split3(received, pumpStr, amountStr, wellStr);
+            int pump = pumpStr.substring(1).toInt();
+            int amount = amountStr.toInt();
+            
+            dispense(pump, amount, wellStr);
           }
           break;
 
@@ -612,7 +657,6 @@
               String columnStr = received.substring(2);  
               int column = columnStr.toInt();
               goToCalculatedWell(row, column);
-              savePositions();
             }
           break;
 
@@ -1585,6 +1629,7 @@
     }
 
     saveCurrentWell(String(row) + String(col));
+    savePositions();
     printCurrentWell();
   }
 
@@ -1638,4 +1683,33 @@
 
   void printMicroSteps() {
     Serial.print("MICROSTEPS:1/"); Serial.println(currentMicrosteps);
+  }
+
+  void split3(const String& input, String& p0, String& p1, String& p2) {
+    p0 = "";
+    p1 = "";
+    p2 = "";
+
+    String s = input;
+    s.trim();
+
+    int start = 0;
+    int count = 0;
+
+    while (start < s.length() && count < 3) {
+      int space = s.indexOf(' ', start);
+      if (space == -1) space = s.length();
+
+      String token = s.substring(start, space);
+      token.trim();
+
+      if (token.length() > 0) {
+        if (count == 0) p0 = token;
+        else if (count == 1) p1 = token;
+        else if (count == 2) p2 = token;
+        count++;
+      }
+
+      start = space + 1;
+    }
   }
