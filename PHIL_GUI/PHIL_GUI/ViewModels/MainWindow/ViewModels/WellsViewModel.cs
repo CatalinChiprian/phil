@@ -80,7 +80,7 @@ namespace PHIL_GUI.ViewModels
             CurrentWell.Name = well;
             RobotSettings.State = MoveState.Moving;
             WellPlate.SelectWell(well);
-            RobotProtocolService.Send($"q{well.ToLower()}");
+            RobotProtocolService.MoveToCalculatedWell(well);
         }
 
         void OverrideWellPlate()

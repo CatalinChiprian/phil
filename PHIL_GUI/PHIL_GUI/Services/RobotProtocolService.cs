@@ -16,6 +16,29 @@ namespace PHIL_GUI.Services
     }
     public class RobotProtocolService : ObservableObject
     {
+        const string MOVE_BACKWARD_CMD = "MOVE_BACKWARD";
+        const string MOVE_FORWARD_CMD = "MOVE_FORWARD";
+        const string MOVE_LEFT_CMD = "MOVE_LEFT";
+        const string MOVE_RIGHT_CMD = "MOVE_RIGHT";
+        const string MOVE_UP_CMD = "MOVE_UP";
+        const string MOVE_DOWN_CMD = "MOVE_DOWN";
+        const string GO_HOME_CMD = "GO_HOME";
+        const string INC_STEP_CMD = "INC_STEP";
+        const string DEC_STEP_CMD = "DEC_STEP";
+        const string ASPIRATE_CMD = "ASPIRATE";
+        const string DISPENSE_CMD = "DISPENSE";
+        const string CALIBRATE_HOME_CMD = "CALIBRATE_HOME";
+        const string MOVE_HARD_WELL_CMD = "MOVE_HARD_WELL";
+        const string MOVE_CALC_WELL_CMD = "MOVE_CALC_WELL";
+        const string RECORD_POINT_CMD = "RECORD_POINT";
+        const string SOLVE_MAP_CMD = "SOLVE_MAP";
+        const string DELETE_POINT_CMD = "DELETE_POINT";
+        const string CLEAR_CALIBRATION_CMD = "CLEAR_CALIBRATION";
+        const string PARK_CMD = "PARK";
+        const string PRINT_WELL_CMD = "PRINT_WELL";
+        const string PRINT_CALIBRATION_CMD = "PRINT_CALIBRATION";
+        const string PRINT_STEPS_CMD = "PRINT_STEPS";
+
         const string WELL_PREFIX = "WELL:";
         const string POS_PREFIX = "POS:";
         const string CAL_PT_PREFIX = "CAL_PT:";
@@ -78,46 +101,91 @@ namespace PHIL_GUI.Services
 
         public void MoveUp()
         {
-            Send("u");
+            Send(MOVE_UP_CMD);
         }
 
         public void MoveDown()
         {
-            Send("d");
+            Send(MOVE_DOWN_CMD);
         }
 
         public void MoveForward()
         {
-            Send("f");
+            Send(MOVE_FORWARD_CMD);
         }
 
         public void MoveBackward()
         {
-            Send("b");
+            Send(MOVE_BACKWARD_CMD);
         }
 
         public void MoveLeft()
         {
-            Send("l");
+            Send(MOVE_LEFT_CMD);
         }
 
         public void MoveRight()
         {
-            Send("r");
+            Send(MOVE_RIGHT_CMD);
+        }
+
+        public void DecreaseStepSize()
+        {
+            Send(DEC_STEP_CMD);
+        }
+
+        public void IncreaseStepSize()
+        {
+            Send(INC_STEP_CMD);
+        }
+
+        public void RecordCalibrationPoint(string wellName)
+        {
+            Send($"{RECORD_POINT_CMD} {wellName}");
+        }
+
+        public void SolveMap()
+        {
+            Send(SOLVE_MAP_CMD);
+        }
+
+        public void DeleteCalibrationPoint(string wellName)
+        {
+            Send($"{DELETE_POINT_CMD} {wellName}");
+        }
+
+        public void Aspirate(string pumpNumber, int volume)
+        {
+            Send($"{ASPIRATE_CMD} {pumpNumber} {volume}");
+        }
+
+        public void Dispense(string pumpNumber, int volume)
+        {
+            Send($"{DISPENSE_CMD} {pumpNumber} {volume}");
+        }
+
+        public void MoveToHardcodedWell(string wellName)
+        {
+            Send($"{MOVE_HARD_WELL_CMD} {wellName}");
+        }
+
+        public void MoveToCalculatedWell(string wellName)
+        {
+            Send($"{MOVE_CALC_WELL_CMD} {wellName}");
         }
 
         public void GoHome()
         {
             robotState.CurrentWell.Type = WellType.Home;
             robotState.Settings.State = MoveState.Moving;
-            Send("h");
+            Send(GO_HOME_CMD);
         }
 
         public void CalibrateHome()
         {
             robotState.CurrentWell.Type = WellType.Home;
             robotState.Settings.State = MoveState.Moving;
-            Send("c");
+            Send(CALIBRATE_HOME_CMD);
         }
 
         public void EmergencyStop()
@@ -131,12 +199,9 @@ namespace PHIL_GUI.Services
         {
             ready = true;
 
-            // Current Well
-            Send("pw");
-            // Curent Calibration Points
-            Send("pm");
-            // Current Step Size
-            Send("ps");
+            Send(PRINT_WELL_CMD);
+            Send(PRINT_CALIBRATION_CMD);
+            Send(PRINT_STEPS_CMD);
         }
 
         private void OnMessageReceived(string message)
@@ -296,13 +361,6 @@ namespace PHIL_GUI.Services
         {
             string d = msg.Substring(MICROSTEPS_PREFIX.Length).Trim();
             robotState.Settings.Microsteps = d;
-        }
-
-        public void RecordCalibrationPoint(string wellName)
-        {
-            CalibrationPoint point = new CalibrationPoint(wellName);
-
-            robotState.Calibration.Points.Add(point);
         }
     }
 }
