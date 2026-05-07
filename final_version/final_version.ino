@@ -7,17 +7,18 @@
   #include <Wire.h>
   #include "RTClib.h"
 
-  #define WELL_HOME   255
+  #define WELL_HOME   0xFF
   #define MAGIC       0xCC
 
-  
-  #define EEPROM_CAL_BASE   64
-  #define EEPROM_WELL_BASE  800
-
-  #define POS_ADDR_L  0
-  #define POS_ADDR_R  4
-  #define POS_ADDR_Z1 8
-  #define POS_ADDR_Z2 12
+  #define POS_ADDR_L                 0
+  #define POS_ADDR_R                 4
+  #define POS_ADDR_Z1                8
+  #define POS_ADDR_Z2                12
+  #define EEPROM_CAL_BASE            64
+  #define EEPROM_WELL_BASE           800
+  #define EEPROM_NEXT_ACTION_ID_ADDR 900
+  #define EEPROM_ACTION_COUNT_ADDR   902
+  #define EEPROM_ACTIONS_ADDR        904
 
   const char MOVE_BACKWARD_CMD[] = "MOVE_BACKWARD";
   const char MOVE_FORWARD_CMD[] = "MOVE_FORWARD";
@@ -41,10 +42,17 @@
   const char PRINT_WELL_CMD[] = "PRINT_WELL";
   const char PRINT_CALIBRATION_CMD[] = "PRINT_CALIBRATION";
   const char PRINT_STEPS_CMD[] = "PRINT_STEPS";
+  const char CREATE_ACTION_CMD[] = "CREATE_ACTION";
+  const char UPDATE_ACTION_CMD[] = "UPDATE_ACTION";
+  const char DEL_ACTION_CMD[] = "DEL_ACTION";
+  const char LINK_ACTION_WELL_CMD[] = "LINK_ACTION_WELL";
+  const char UNLINK_ACTION_WELL_CMD[] = "UNLINK_ACTION_WELL";
+
 
   const uint8_t MAX_WELLS = 96;
   const uint8_t MAX_ACTIONS_PER_WELL = 16;
   const uint16_t MAX_ACTIONS_TOTAL = 128;
+  const uint8_t INVALID = 0xFF;
 
   enum State : uint8_t {
     SETUP,
@@ -62,6 +70,7 @@
   };
 
   struct Action {
+    uint16_t id;
     ActionType type;
     uint8_t pump;
     uint16_t amount_uL;
@@ -69,15 +78,19 @@
     TimeUnit unit;
     uint32_t startEpoch;
     uint32_t endEpoch;
+    bool enabled;
   };
 
   struct WellActions {
-    uint8_t actionIndices[MAX_ACTIONS_PER_WELL];
+    uint8_t actionIds[MAX_ACTIONS_PER_WELL];
     uint8_t count;
   };
 
   Action actions[MAX_ACTIONS_TOTAL];
   WellActions wellActions[MAX_WELLS];
+
+  uint8_t actionCount = 0;
+  uint16_t nextActionId = 0;
 
   int myMICROS = 1;
   char Sttngs[][3] = {
@@ -507,9 +520,9 @@
 
       if (received.length() < 0) return;
 
-      String tokens[10];
+      String tokens[7];
 
-      int count = splitN(received, tokens, 10);
+      int count = splitN(received, tokens, 7);
 
       String cmd = tokens[0];
 
@@ -545,12 +558,14 @@
         times_x10 -= 1;
         printStepSize();
       }
+      // ASPIRATE <pump>* <amount>* <well>
       else if (cmd == ASPIRATE_CMD) {
         int pump = tokens[1].toInt();
         int amount = tokens[2].toInt();
 
         aspirate(pump, amount, tokens[3]);
       }
+      // DISPENSE <pump>* <amount>* <well>
       else if (cmd == DISPENSE_CMD) {
         int pump = tokens[1].toInt();
         int amount = tokens[2].toInt();
@@ -623,6 +638,70 @@
         calCount = 0;
         Serial.println("Calibration cleared");
       }
+      // CREATE_ACTION <actionId>* <actionType>* <amount>* <frequency>* <frequencyUnit>* <start> <end>
+      else if (cmd == CREATE_ACTION_CMD) {
+        for (String token : tokens) {
+          if (token == "") return;
+        }
+
+        ActionType type = (ActionType)tokens[1].toInt();
+        uint8_t pump = tokens[2].toInt();
+        uint16_t amount = tokens[3].toInt();
+        uint16_t frequency = tokens[4].toInt();
+        TimeUnit unit = (TimeUnit)tokens[5].toInt();
+        uint32_t start = 0;
+        uint32_t end = 0;
+
+        if (count > 7) {
+          uint32_t start = tokens[6].toInt();
+          uint32_t end = tokens[7].toInt();
+        }
+
+        createAction(type, pump, amount, frequency, unit, start, end);
+      }
+      // UPDATE_ACTION <actionId>* <actionType>* <amount>* <frequency>* <frequencyUnit>* <start>* <end>*
+      else if (cmd == UPDATE_ACTION_CMD) {
+        uint16_t id = tokens[1].toInt();
+        ActionType type = (ActionType)tokens[2].toInt();
+        uint8_t pump = tokens[3].toInt();
+        uint16_t amount = tokens[4].toInt();
+        uint16_t frequency = tokens[5].toInt();
+        TimeUnit unit = (TimeUnit)tokens[6].toInt();
+        uint32_t start = tokens[7].toInt();
+        uint32_t end = tokens[8].toInt();
+
+        updateAction(id, type, pump, amount, frequency, unit, start, end);
+      }
+      // DEL_ACTION ID
+      else if (cmd == DEL_ACTION_CMD) {
+        uint16_t id = tokens[1].toInt();
+
+        deleteAction(id);
+      }
+      // LINK_ACTION_WELL <actionId> <96bit_mask_hex>
+      else if (cmd == LINK_ACTION_WELL_CMD) {
+        if (count < 3) return;
+        uint16_t id = tokens[1].toInt();
+
+        if (!findActionById(id)) return;
+
+        uint8_t mask[12];
+        if (!parseWellBitmask(tokens[2], mask)) return;
+
+        linkActionByMask(id, mask);
+      }
+      // UNLINK_ACTION_WELL <actionId> <96bit_mask_hex>
+      else if (cmd == UNLINK_ACTION_WELL_CMD) {
+        if (count < 3) return;
+        uint16_t id = tokens[1].toInt();
+
+        if (!findActionById(id)) return;
+
+        uint8_t mask[12];
+        if (!parseWellBitmask(tokens[2], mask)) return;
+
+        unlinkActionByMask(id, mask);
+      }
       else if (cmd == PARK_CMD) {
         enableLMotor();
         enableRMotor();
@@ -646,44 +725,6 @@
       else if (cmd == PRINT_STEPS_CMD) {
         printMicroSteps();
         printStepSize();
-      }
-      else if (cmd == "DEBUG") {
-        Serial.println("--- Calibration Data ---");
-        for (int i=0; i<calCount; i++) {
-          Serial.print("Pt "); Serial.print(i);
-          Serial.print(": XY("); Serial.print(calX[i]);
-          Serial.print(",");     Serial.print(calY[i]);
-          Serial.print(") Ang(");Serial.print(calL[i]);
-          Serial.print(",");     Serial.print(calR[i]);
-          Serial.println(")");
-        }
-          if (mapReady && calCount > 0) {
-            float rmsL=0, rmsR=0, maxErrL=0, maxErrR=0;
-            Serial.println("--- Residuals ---");
-            for (int i=0; i<calCount; i++) {
-              float x = calX[i], y = calY[i];
-              float b[TERMS] = { 1.0f, x, y, x*x, x*y, y*y, x*x*x, x*x*y, x*y*y, y*y*y };
-              float predL = dot10(ML, b);
-              float predR = dot10(MR, b);
-              float errL  = calL[i] - predL;
-              float errR  = calR[i] - predR;
-              rmsL += errL*errL;
-              rmsR += errR*errR;
-              if (fabs(errL) > maxErrL) maxErrL = fabs(errL);
-              if (fabs(errR) > maxErrR) maxErrR = fabs(errR);
-              Serial.print("Pt "); Serial.print(i);
-              Serial.print(": errL="); Serial.print(errL, 3);
-              Serial.print("  errR="); Serial.println(errR, 3);
-            }
-            rmsL = sqrtf(rmsL / calCount);
-            rmsR = sqrtf(rmsR / calCount);
-            Serial.print("RMS  L="); Serial.print(rmsL, 3);
-            Serial.print("  R=");    Serial.println(rmsR, 3);
-            Serial.print("Max  L="); Serial.print(maxErrL, 3);
-            Serial.print("  R=");    Serial.println(maxErrR, 3);
-          } else {
-            Serial.println("(no map solved yet - run 'z solve' first)");
-          }
       }
       else {
         Serial.println("ERR UNKNOWN_COMMAND");
@@ -1687,4 +1728,174 @@
     }
 
     return count;
+  }
+
+  uint16_t createAction(ActionType type, uint8_t pump, uint16_t amount, uint16_t frequency, TimeUnit unit, uint32_t start, uint32_t end) {
+    if (actionCount >= MAX_ACTIONS_TOTAL) return 0;
+    
+    uint8_t slot = findFreeActionSlot();
+    if (slot == INVALID) return 0;
+
+    Action &action = actions[slot];
+
+    action.id = nextActionId++;
+    action.type = type;
+    action.pump = pump;
+    action.amount_uL = amount;
+    action.frequency = frequency;
+    action.unit = unit;
+    action.startEpoch = start;
+    action.endEpoch = end;
+    action.enabled = true;
+
+    saveAction(action, slot);
+    actionCount++;
+    
+    saveActionsState();
+
+    return action.id;
+  }
+
+  void updateAction(uint16_t id, ActionType type, uint8_t pump, uint16_t amount, uint16_t frequency, TimeUnit unit, uint32_t start, uint32_t end) {
+    
+    Action* action = findActionById(id);
+    if (!action) return;
+
+
+    action->type = type;
+    action->pump = pump;
+    action->amount_uL = amount;
+    action->frequency = frequency;
+    action->unit = unit;
+    action->startEpoch = start;
+    action->endEpoch = end;
+
+    uint8_t index = action - actions;
+    saveAction(*action, index);
+  }
+
+  void deleteAction(uint16_t id) {
+    Action* action = findActionById(id);
+    if (!action) return;
+
+    action->enabled = false;
+
+    uint8_t index = action - actions;
+    saveAction(*action, index);
+  }
+
+  Action* findActionById(uint16_t id) {
+    for (uint8_t i = 0; i < MAX_ACTIONS_TOTAL; i++) {
+      if (actions[i].id == id && actions[i].enabled) {
+        return &actions[i];
+      }
+    }
+
+    return nullptr;
+  }
+
+  uint8_t findFreeActionSlot() {
+    for (int i = 0; i < MAX_ACTIONS_TOTAL; i++) {
+      if (!actions[i].enabled) return i;
+    }
+    return INVALID;
+  }
+
+  void saveAction(Action& action, uint8_t slot) {
+    EEPROM.put(EEPROM_ACTIONS_ADDR + (slot) * sizeof(Action), action);
+  }
+
+  void loadActions() {
+    for (uint8_t i = 0; i < MAX_ACTIONS_TOTAL; i++) {
+      EEPROM.get(EEPROM_ACTIONS_ADDR + i * sizeof(Action), actions[i]);
+    }
+  }
+
+  void saveActionsState() {
+    EEPROM.put(EEPROM_NEXT_ACTION_ID_ADDR, nextActionId);
+    EEPROM.put(EEPROM_ACTION_COUNT_ADDR, actionCount);
+  }
+
+  void loadActionsState() {
+    EEPROM.get(EEPROM_NEXT_ACTION_ID_ADDR, nextActionId);
+    EEPROM.get(EEPROM_ACTION_COUNT_ADDR, actionCount);
+
+    if (nextActionId == 0 || nextActionId == 0xFFFF) {
+      nextActionId = 1;
+    }
+    if (actionCount > MAX_ACTIONS_TOTAL) {
+      actionCount = 0;
+    }
+  }
+
+  uint8_t hexNibble(char c) {
+    if (c >= '0' && c <= '9') return c - '0';
+    if (c >= 'A' && c <= 'F') return c - 'A' + 10;
+    if (c >= 'a' && c <= 'f') return c - 'a' + 10;
+    return INVALID;
+  }
+
+  bool parseWellBitmask(const String& hex, uint8_t mask[12]) {
+    if (hex.length() != 24) return false;
+
+    for (uint8_t i = 0; i < 12; i++) {
+      uint8_t hi = hexNibble(hex[i * 2]);
+      uint8_t lo = hexNibble(hex[i * 2 + 1]);
+
+      if (hi == INVALID || lo == INVALID) return false;
+
+      mask[i] = (hi << 4) | lo;
+    }
+
+    return true;
+  }
+
+  void linkActionByMask(uint16_t actionId, const uint8_t mask[12]) {
+    for (uint8_t well = 0; well < MAX_WELLS; well++) {
+      uint8_t byteIdx = well / 8;
+      uint8_t bitIdx  = well % 8;
+
+      if (mask[byteIdx] & (1 << bitIdx)) {
+        linkActionToWell(actionId, well);
+      }
+    }
+  }
+
+  void unlinkActionByMask(uint16_t actionId, const uint8_t mask[12]) {
+    for (uint8_t well = 0; well < MAX_WELLS; well++) {
+      uint8_t byteIdx = well / 8;
+      uint8_t bitIdx  = well % 8;
+
+      if (mask[byteIdx] & (1 << bitIdx)) {
+        unlinkActionFromWell(actionId, well);
+      }
+    }
+  }
+
+  bool linkActionToWell(uint16_t actionId, uint8_t wellIndex) {
+    WellActions &wa = wellActions[wellIndex];
+
+    if (wa.count >= MAX_ACTIONS_PER_WELL) return false;
+
+    for (uint8_t i = 0; i < wa.count; i++) {
+      if (wa.actionIds[i] == actionId) return true;
+    }
+
+    wa.actionIds[wa.count++] = actionId;
+    return true;
+  }
+
+  bool unlinkActionFromWell(uint16_t actionId, uint8_t wellIndex) {
+    WellActions &wa = wellActions[wellIndex];
+
+    for (uint8_t i = 0; i < wa.count; i++) {
+      if (wa.actionIds[i] == actionId) {
+        for (uint8_t j = i; j + 1 < wa.count; j++) {
+          wa.actionIds[j] = wa.actionIds[j + 1];
+        }
+        wa.count--;
+        return true;
+      }
+    }
+    return false;
   }
