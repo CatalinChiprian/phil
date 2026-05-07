@@ -7,5 +7,6 @@
         public Calibration Calibration { get; } = new Calibration();
         public Position Position { get; } = new Position();
         public Well CurrentWell { get; } = new Well();
+        public ActionScheduler ActionScheduler { get; } = new ActionScheduler();
     }
 }

@@ -16,37 +16,39 @@
   #define POS_ADDR_Z2                12
   #define EEPROM_CAL_BASE            64
   #define EEPROM_WELL_BASE           800
+  #define EEPROM_ACTIONS_MAGIC_ADDR  896
   #define EEPROM_NEXT_ACTION_ID_ADDR 900
   #define EEPROM_ACTION_COUNT_ADDR   902
   #define EEPROM_ACTIONS_ADDR        904
+  #define EEPROM_WELL_ACTIONS_ADDR   2000
 
-  const char MOVE_BACKWARD_CMD[] = "MOVE_BACKWARD";
-  const char MOVE_FORWARD_CMD[] = "MOVE_FORWARD";
-  const char MOVE_LEFT_CMD[] = "MOVE_LEFT";
-  const char MOVE_RIGHT_CMD[] = "MOVE_RIGHT";
-  const char MOVE_UP_CMD[] = "MOVE_UP";
-  const char MOVE_DOWN_CMD[] = "MOVE_DOWN";
-  const char GO_HOME_CMD[] = "GO_HOME";
-  const char INC_STEP_CMD[] = "INC_STEP";
-  const char DEC_STEP_CMD[] = "DEC_STEP";
-  const char ASPIRATE_CMD[] = "ASPIRATE";
-  const char DISPENSE_CMD[] = "DISPENSE";
-  const char CALIBRATE_HOME_CMD[] = "CALIBRATE_HOME";
-  const char MOVE_HARD_WELL_CMD[] = "MOVE_HARD_WELL";
-  const char MOVE_CALC_WELL_CMD[] = "MOVE_CALC_WELL";
-  const char RECORD_POINT_CMD[] = "RECORD_POINT";
-  const char SOLVE_MAP_CMD[] = "SOLVE_MAP";
-  const char DELETE_POINT_CMD[] = "DELETE_POINT";
-  const char CLEAR_CALIBRATION_CMD[] = "CLEAR_CALIBRATION";
-  const char PARK_CMD[] = "PARK";
-  const char PRINT_WELL_CMD[] = "PRINT_WELL";
-  const char PRINT_CALIBRATION_CMD[] = "PRINT_CALIBRATION";
-  const char PRINT_STEPS_CMD[] = "PRINT_STEPS";
-  const char CREATE_ACTION_CMD[] = "CREATE_ACTION";
-  const char UPDATE_ACTION_CMD[] = "UPDATE_ACTION";
-  const char DEL_ACTION_CMD[] = "DEL_ACTION";
-  const char LINK_ACTION_WELL_CMD[] = "LINK_ACTION_WELL";
-  const char UNLINK_ACTION_WELL_CMD[] = "UNLINK_ACTION_WELL";
+  const char MOVE_BACKWARD_CMD[] PROGMEM = "MOVE_BACKWARD";
+  const char MOVE_FORWARD_CMD[] PROGMEM = "MOVE_FORWARD";
+  const char MOVE_LEFT_CMD[] PROGMEM = "MOVE_LEFT";
+  const char MOVE_RIGHT_CMD[] PROGMEM = "MOVE_RIGHT";
+  const char MOVE_UP_CMD[] PROGMEM = "MOVE_UP";
+  const char MOVE_DOWN_CMD[] PROGMEM = "MOVE_DOWN";
+  const char GO_HOME_CMD[] PROGMEM = "GO_HOME";
+  const char INC_STEP_CMD[] PROGMEM = "INC_STEP";
+  const char DEC_STEP_CMD[] PROGMEM = "DEC_STEP";
+  const char ASPIRATE_CMD[] PROGMEM = "ASPIRATE";
+  const char DISPENSE_CMD[] PROGMEM = "DISPENSE";
+  const char CALIBRATE_HOME_CMD[] PROGMEM = "CALIBRATE_HOME";
+  const char MOVE_HARD_WELL_CMD[] PROGMEM = "MOVE_HARD_WELL";
+  const char MOVE_CALC_WELL_CMD[] PROGMEM = "MOVE_CALC_WELL";
+  const char RECORD_POINT_CMD[] PROGMEM = "RECORD_POINT";
+  const char SOLVE_MAP_CMD[] PROGMEM = "SOLVE_MAP";
+  const char DELETE_POINT_CMD[] PROGMEM = "DELETE_POINT";
+  const char CLEAR_CALIBRATION_CMD[] PROGMEM = "CLEAR_CALIBRATION";
+  const char PARK_CMD[] PROGMEM = "PARK";
+  const char PRINT_WELL_CMD[] PROGMEM = "PRINT_WELL";
+  const char PRINT_CALIBRATION_CMD[] PROGMEM = "PRINT_CALIBRATION";
+  const char PRINT_STEPS_CMD[] PROGMEM = "PRINT_STEPS";
+  const char CREATE_ACTION_CMD[] PROGMEM = "CREATE_ACTION";
+  const char UPDATE_ACTION_CMD[] PROGMEM = "UPDATE_ACTION";
+  const char DEL_ACTION_CMD[] PROGMEM = "DEL_ACTION";
+  const char LINK_ACTION_WELL_CMD[] PROGMEM = "LINK_ACTION_WELL";
+  const char UNLINK_ACTION_WELL_CMD[] PROGMEM = "UNLINK_ACTION_WELL";
 
 
   const uint8_t MAX_WELLS = 96;
@@ -81,16 +83,16 @@
     bool enabled;
   };
 
-  struct WellActions {
+  struct WellAction {
     uint8_t actionIds[MAX_ACTIONS_PER_WELL];
     uint8_t count;
   };
 
   Action actions[MAX_ACTIONS_TOTAL];
-  WellActions wellActions[MAX_WELLS];
+  WellAction wellActions[MAX_WELLS];
 
   uint8_t actionCount = 0;
-  uint16_t nextActionId = 0;
+  uint16_t nextActionId = 1;
 
   int myMICROS = 1;
   char Sttngs[][3] = {
@@ -228,6 +230,8 @@
     loadCurrentWell();
 
     loadCalibration();
+
+    loadActionsSafe();
 
     printStepSize();
 
@@ -1356,14 +1360,14 @@
     Serial.print("Saved "); Serial.print(calCount); Serial.println(" points");
   }
 
-  bool loadCalibration() {
+  void loadCalibration() {
     int addr = EEPROM_CAL_BASE;
     byte magic;
     EEPROM.get(addr, magic);  addr += sizeof(magic);
 
     if (magic != MAGIC) {
       Serial.println("No valid calibration in EEPROM");
-      return false;
+      return;
     }
 
     EEPROM.get(addr, calCount);  addr += sizeof(uint8_t);
@@ -1381,7 +1385,7 @@
     }
 
     solveMapping();
-    return true;
+    return;
   }
 
   void wellToXY(char row, int col, float &x, float &y) {
@@ -1439,10 +1443,9 @@
     calR[calCount] = stepsToDegrees(stepperR.currentPosition());
 
     Serial.print("CAL_REC:");
-    Serial.print(row); Serial.print(col); Serial.print(",");
-    //XY
-    Serial.print(x); Serial.print(",");
-    Serial.print(y); Serial.println();
+    Serial.print("Name="); Serial.print(row); Serial.print(col);
+    Serial.print(",X="); Serial.print(x);
+    Serial.print(",Y="); Serial.print(y);
     
     Serial.print("CAL_COUNT:"); Serial.println(++calCount);
   }
@@ -1496,9 +1499,9 @@
 
     // Normal equations: (A^T A) c = (A^T y)
     // A rows are basis b = [1, x, y, x^2, x*y, y^2]
-    float ATA[TERMS][TERMS] = {0};
-    float ATyL[TERMS] = {0};
-    float ATyR[TERMS] = {0};
+    static float ATA[TERMS][TERMS] = {0};
+    static float ATyL[TERMS] = {0};
+    static float ATyR[TERMS] = {0};
 
     for (int i=0; i<calCount; i++) {
       float x = calX[i], y = calY[i];
@@ -1560,9 +1563,9 @@
       if (fabs(errL) > maxErrL) maxErrL = fabs(errL);
       if (fabs(errR) > maxErrR) maxErrR = fabs(errR);
       Serial.print("CAL_PT:");
-      Serial.print(wellName); Serial.print(",");
-      Serial.print(calX[i], 2); Serial.print(",");
-      Serial.print(calY[i], 2);
+      Serial.print("Name="); Serial.print(wellName);
+      Serial.print(",X="); Serial.print(calX[i], 2);
+      Serial.print(",Y="); Serial.print(calY[i], 2);
 
 
       if (!mapReady) {
@@ -1570,9 +1573,8 @@
         continue;
       }
       
-      Serial.print(",");
-      Serial.print(clampZero(errL), 3); Serial.print(",");
-      Serial.println(clampZero(errR), 3);
+      Serial.print(",ErrorLeft="); Serial.print(clampZero(errL), 3);
+      Serial.print(",ErrorRight="); Serial.println(clampZero(errR), 3);
     }
     rmsL = sqrtf(rmsL / calCount);
     rmsR = sqrtf(rmsR / calCount);
@@ -1664,7 +1666,6 @@
 
   void printCurrentWell() {
     String wellName = wellIndexToName(wellIndex);
-    Serial.print("WELL:"); Serial.print(wellName);
 
     float x = 0;
     float y = 0;
@@ -1685,6 +1686,8 @@
       Rdeg = stepsToDegrees(stepperR.currentPosition());
     }
 
+    Serial.print("WELL:"); 
+    Serial.print("Name="); Serial.print(wellName);
     Serial.print(",X="); Serial.print(x);
     Serial.print(",Y="); Serial.print(y);
     Serial.print(",L="); Serial.print(Ldeg);
@@ -1731,7 +1734,10 @@
   }
 
   uint16_t createAction(ActionType type, uint8_t pump, uint16_t amount, uint16_t frequency, TimeUnit unit, uint32_t start, uint32_t end) {
-    if (actionCount >= MAX_ACTIONS_TOTAL) return 0;
+    if (actionCount >= MAX_ACTIONS_TOTAL) {
+      Serial.println("ERROR:FAILED TO CREATE ACTION");
+      return 0;
+    }
     
     uint8_t slot = findFreeActionSlot();
     if (slot == INVALID) return 0;
@@ -1753,6 +1759,9 @@
     
     saveActionsState();
 
+    Serial.print("ACTION_CREATED:");
+    Serial.println(action.id);
+
     return action.id;
   }
 
@@ -1772,6 +1781,9 @@
 
     uint8_t index = action - actions;
     saveAction(*action, index);
+
+    Serial.print("ACTION_UPDATED:");
+    Serial.println(action->id);
   }
 
   void deleteAction(uint16_t id) {
@@ -1782,6 +1794,9 @@
 
     uint8_t index = action - actions;
     saveAction(*action, index);
+
+    Serial.print("ACTION_DELETED:");
+    Serial.println(action->id);
   }
 
   Action* findActionById(uint16_t id) {
@@ -1805,15 +1820,88 @@
     EEPROM.put(EEPROM_ACTIONS_ADDR + (slot) * sizeof(Action), action);
   }
 
-  void loadActions() {
-    for (uint8_t i = 0; i < MAX_ACTIONS_TOTAL; i++) {
-      EEPROM.get(EEPROM_ACTIONS_ADDR + i * sizeof(Action), actions[i]);
+  void loadActionsSafe() {
+    byte magic;
+    EEPROM.get(EEPROM_ACTIONS_MAGIC_ADDR, magic);
+
+    if (magic != MAGIC) {
+      initializeEmptyActions();
+      return;
     }
+
+    loadActions();
+    loadActionsState();
+  }
+
+  void initializeEmptyActions() {
+    for (uint8_t i = 0; i < MAX_ACTIONS_TOTAL; i++) {
+      actions[i].enabled = false;
+    }
+
+    for (uint8_t w = 0; w < MAX_WELLS; w++) {
+      wellActions[w].count = 0;
+    }
+
+    saveActionsState();
+    saveWellActions();
+  }
+
+  void loadActions() {
+    int addr = EEPROM_ACTIONS_ADDR;
+    for (uint8_t i = 0; i < MAX_ACTIONS_TOTAL; i++) {
+      EEPROM.get(addr, actions[i]);
+      if (actions[i].enabled) printAction(actions[i]);
+      addr += sizeof(Action);
+    }
+  }
+
+  void printAction(const Action& action) {
+    Serial.print("ACTION:");
+    Serial.print("Id=");Serial.print(action.id);
+    Serial.print(",ActionType="); Serial.print(action.type);
+    Serial.print(",Pump="); Serial.print(action.pump);
+    Serial.print(",Amount="); Serial.print(action.amount_uL);
+    Serial.print(",Frequency="); Serial.print(action.frequency);
+    Serial.print(",Unit="); Serial.print(action.unit);
+    Serial.print(",Start="); Serial.print(action.startEpoch);
+    Serial.print(",End="); Serial.println(action.endEpoch);
+  }
+
+  void saveWellActions() {
+    int addr = EEPROM_WELL_ACTIONS_ADDR;
+    for (uint8_t i = 0; i < MAX_WELLS; i++) {
+      EEPROM.put(addr, wellActions[i]);
+      addr += sizeof(WellAction);
+    }
+  }
+
+  void loadWellActions() {
+    int addr = EEPROM_WELL_ACTIONS_ADDR;
+    for (uint8_t i = 0; i < MAX_WELLS; i++) {
+      EEPROM.get(addr, wellActions[i]);
+      if (wellActions[i].count > 0) printWellAction(wellActions[i], i);
+      addr += sizeof(WellAction);
+    }
+  }
+
+  void printWellAction(const WellAction& wellAction, uint8_t wellIndex) {
+    String wellName = wellIndexToName(wellIndex);
+    Serial.print("WELL_ACTION:");
+    Serial.print("Well="); Serial.print(wellName);
+    Serial.print(",Actions=[");
+    for (uint8_t i = 0; i < wellAction.count; i++) {
+      if (i > 0) Serial.print(',');
+      Serial.print(wellAction.actionIds[i]);
+    }
+    Serial.println("]");
   }
 
   void saveActionsState() {
     EEPROM.put(EEPROM_NEXT_ACTION_ID_ADDR, nextActionId);
     EEPROM.put(EEPROM_ACTION_COUNT_ADDR, actionCount);
+
+    byte magic = MAGIC;
+    EEPROM.put(EEPROM_ACTIONS_MAGIC_ADDR, magic);
   }
 
   void loadActionsState() {
@@ -1873,7 +1961,7 @@
   }
 
   bool linkActionToWell(uint16_t actionId, uint8_t wellIndex) {
-    WellActions &wa = wellActions[wellIndex];
+    WellAction &wa = wellActions[wellIndex];
 
     if (wa.count >= MAX_ACTIONS_PER_WELL) return false;
 
@@ -1886,7 +1974,7 @@
   }
 
   bool unlinkActionFromWell(uint16_t actionId, uint8_t wellIndex) {
-    WellActions &wa = wellActions[wellIndex];
+    WellAction &wa = wellActions[wellIndex];
 
     for (uint8_t i = 0; i < wa.count; i++) {
       if (wa.actionIds[i] == actionId) {

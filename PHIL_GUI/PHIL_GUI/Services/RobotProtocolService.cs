@@ -38,11 +38,18 @@ namespace PHIL_GUI.Services
         const string PRINT_WELL_CMD = "PRINT_WELL";
         const string PRINT_CALIBRATION_CMD = "PRINT_CALIBRATION";
         const string PRINT_STEPS_CMD = "PRINT_STEPS";
+        const string CREATE_ACTION_CMD = "CREATE_ACTION";
+        const string UPDATE_ACTION_CMD = "UPDATE_ACTION";
+        const string DEL_ACTION_CMD = "DEL_ACTION";
+        const string LINK_ACTION_WELL_CMD = "LINK_ACTION_WELL";
+        const string UNLINK_ACTION_WELL_CMD = "UNLINK_ACTION_WELL";
 
         const string WELL_PREFIX = "WELL:";
         const string POS_PREFIX = "POS:";
         const string CAL_PT_PREFIX = "CAL_PT:";
         const string CAL_REC_PREFIX = "CAL_REC:";
+        const string ACTION_PREFIX = "ACTION:";
+        const string WELL_ACTION_PREFIX = "WELL_ACTION:";
         const string RMS_PREFIX = "RMS:";
         const string LIMIT_PRESSED_PREFIX = "LIMIT_PRESSED:";
         const string LIMIT_RELEASED_PREFIX = "LIMIT_RELEASED:";
@@ -223,6 +230,7 @@ namespace PHIL_GUI.Services
             else if (message.StartsWith(CAL_PT_PREFIX)) ParseCalPoint(message);
             else if (message.StartsWith(POS_PREFIX)) ParsePosition(message);
             else if (message.StartsWith(RMS_PREFIX)) ParseRms(message);
+            else if (message.StartsWith(ACTION_PREFIX)) ParseAction(message);
             else if (message.StartsWith(LIMIT_PRESSED_PREFIX)) ParseLimit(message, LimitType.Pressed);
             else if (message.StartsWith(LIMIT_RELEASED_PREFIX)) ParseLimit(message, LimitType.Released);
             else if (message.StartsWith(STEP_SIZE_PREFIX)) ParseStepSize(message);
@@ -240,16 +248,10 @@ namespace PHIL_GUI.Services
 
         private void ParseWellArrival(string msg)
         {
-            string content = msg.Substring(WELL_PREFIX.Length);
-            string[] parts = content.Split(',');
-
-            var kv = parts.Skip(1)
-              .Select(p => p.Split('='))
-              .Where(p => p.Length == 2)
-              .ToDictionary(p => p[0], p => p[1]);
+            var kv = ParseKV(msg, WELL_PREFIX);
 
             robotState.CurrentWell.Type = WellType.Standard;
-            robotState.CurrentWell.Name = parts[0].ToUpper();
+            robotState.CurrentWell.Name = kv["Name"].ToUpper();
             robotState.CurrentWell.X = double.Parse(kv["X"], CultureInfo.InvariantCulture);
             robotState.CurrentWell.Y = double.Parse(kv["Y"], CultureInfo.InvariantCulture);
             robotState.CurrentWell.AngleL = kv["L"];
@@ -260,12 +262,12 @@ namespace PHIL_GUI.Services
 
         private void ParsePosition(string msg)
         {
-            var d = ParseKV(msg, POS_PREFIX);
+            var kv = ParseKV(msg, POS_PREFIX);
 
-            robotState.Position.L = d["L"];
-            robotState.Position.R = d["R"];
-            robotState.Position.Z1 = d["Z1"];
-            robotState.Position.Z2 = d["Z2"].Trim();
+            robotState.Position.L = kv["L"];
+            robotState.Position.R = kv["R"];
+            robotState.Position.Z1 = kv["Z1"];
+            robotState.Position.Z2 = kv["Z2"].Trim();
 
             if (robotState.Settings.State == MoveState.EmergencyStopped) return;
 
@@ -275,28 +277,28 @@ namespace PHIL_GUI.Services
 
         private void ParseCalPoint(string msg)
         {
-            var parts = msg.Substring(CAL_PT_PREFIX.Length).Split(',');
+            var kv = ParseKV(msg, CAL_PT_PREFIX);
             {
-                string name = parts[0].ToUpper();
+                string name = kv["Name"].ToUpper();
                 CalibrationPoint existingPoint = robotState.Calibration.Points.FirstOrDefault(p => p.Name == name);
                 if (existingPoint != null)
                 {
-                    existingPoint.X = (int)double.Parse(parts[1], CultureInfo.InvariantCulture);
-                    existingPoint.Y = (int)double.Parse(parts[2].Trim(), CultureInfo.InvariantCulture);
-                    existingPoint.ErrorLeft = double.Parse(parts[3], CultureInfo.InvariantCulture);
-                    existingPoint.ErrorRight = double.Parse(parts[4].Trim(), CultureInfo.InvariantCulture);
+                    existingPoint.X = (int)double.Parse(kv["X"], CultureInfo.InvariantCulture);
+                    existingPoint.Y = (int)double.Parse(kv["Y"].Trim(), CultureInfo.InvariantCulture);
+                    existingPoint.ErrorLeft = double.Parse(kv["ErrorLeft"], CultureInfo.InvariantCulture);
+                    existingPoint.ErrorRight = double.Parse(kv["ErrorRight"].Trim(), CultureInfo.InvariantCulture);
                 }
                 else
                 {
-                    int x = (int)double.Parse(parts[1], CultureInfo.InvariantCulture);
-                    int y = (int)double.Parse(parts[2].Trim(), CultureInfo.InvariantCulture);
+                    int x = (int)double.Parse(kv["X"], CultureInfo.InvariantCulture);
+                    int y = (int)double.Parse(kv["Y"].Trim(), CultureInfo.InvariantCulture);
                     double? errorLeft = null;
                     double? errorRight = null;
 
-                    if (parts.Length > 3)
+                    if (kv.ContainsKey("ErrorLeft") && kv.ContainsKey("ErrorRight"))
                     {
-                        errorLeft = double.Parse(parts[3], CultureInfo.InvariantCulture);
-                        errorRight = double.Parse(parts[4], CultureInfo.InvariantCulture);
+                        errorLeft = double.Parse(kv["ErrorLeft"], CultureInfo.InvariantCulture);
+                        errorRight = double.Parse(kv["ErrorRight"], CultureInfo.InvariantCulture);
                     }
 
                     CalibrationPoint point = new CalibrationPoint(name, x, y, errorLeft, errorRight);
@@ -308,18 +310,18 @@ namespace PHIL_GUI.Services
 
         private void ParseCalRecorded(string msg)
         {
-            var parts = msg.Substring(CAL_REC_PREFIX.Length).Split(',');
+            var kv = ParseKV(msg, CAL_REC_PREFIX);
             {
 
-                string name = parts[0].ToUpper();
-                int x = (int)double.Parse(parts[1], CultureInfo.InvariantCulture);
-                int y = (int)double.Parse(parts[2].Trim(), CultureInfo.InvariantCulture);
+                string name = kv["Name"].ToUpper();
+                int x = (int)double.Parse(kv["X"], CultureInfo.InvariantCulture);
+                int y = (int)double.Parse(kv["Y"].Trim(), CultureInfo.InvariantCulture);
 
                 CalibrationPoint existingPoint = robotState.Calibration.Points.FirstOrDefault(p => p.Name == name);
                 if (existingPoint != null)
                 {
-                    existingPoint.X = (int)double.Parse(parts[1], CultureInfo.InvariantCulture);
-                    existingPoint.Y = (int)double.Parse(parts[2].Trim(), CultureInfo.InvariantCulture);
+                    existingPoint.X = (int)double.Parse(kv["X"], CultureInfo.InvariantCulture);
+                    existingPoint.Y = (int)double.Parse(kv["Y"].Trim(), CultureInfo.InvariantCulture);
                 }
                 else
                 {
@@ -337,13 +339,30 @@ namespace PHIL_GUI.Services
             robotState.Calibration.RmsR = double.Parse(d["R"], CultureInfo.InvariantCulture);
         }
 
+        private void ParseAction(string msg)
+        {
+            var kv = ParseKV(msg, ACTION_PREFIX);
+            int id = int.Parse(kv["Id"], CultureInfo.InvariantCulture);
+            ActionType type = (ActionType)int.Parse(kv["Type"], CultureInfo.InvariantCulture);
+            int pump = int.Parse(kv["Pump"], CultureInfo.InvariantCulture);
+            int amount = int.Parse(kv["Amount"], CultureInfo.InvariantCulture);
+            int frequency = int.Parse(kv["Frequency"], CultureInfo.InvariantCulture);
+            TimeUnit unit = (TimeUnit)int.Parse(kv["Unit"], CultureInfo.InvariantCulture);
+            long startTime = long.Parse(kv["StartTime"], CultureInfo.InvariantCulture);
+            long endTime = long.Parse(kv["EndTime"], CultureInfo.InvariantCulture);
+
+            ScheduledAction action = new ScheduledAction(id, type, pump, amount, frequency, unit, startTime, endTime);
+
+            RobotState.ActionScheduler.Actions.Add(action);
+        }
+
         private void ParseLimit(string msg, LimitType type)
         {
             string prefix = type == LimitType.Pressed ? LIMIT_PRESSED_PREFIX : LIMIT_RELEASED_PREFIX;
             bool state = type == LimitType.Pressed;
 
-            var d = ParseKV(msg, prefix);
-            var axis = d["AXIS"].Trim();
+            var kv = ParseKV(msg, prefix);
+            var axis = kv["AXIS"].Trim();
 
             if (axis == "Z1") robotState.Limit.Z1 = state;
             else if (axis == "Z2") robotState.Limit.Z2 = state;
