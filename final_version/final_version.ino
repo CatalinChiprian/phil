@@ -1833,6 +1833,10 @@
     Serial.print(F(",Enabled=")); Serial.println(action.enabled);
   }
 
+  void saveWellAction(WellAction& wa, uint8_t wellIndex) {
+    EEPROM.put(EEPROM_WELL_ACTIONS_ADDR + (uint32_t)wellIndex * sizeof(WellAction), wa);
+  }
+
   void saveWellActions() {
     int addr = EEPROM_WELL_ACTIONS_ADDR;
     for (uint8_t i = 0; i < MAX_WELLS; i++) {
@@ -1938,6 +1942,8 @@
     }
 
     wa.actionIds[wa.count++] = actionId;
+
+    saveWellAction(wa, wellIndex);
     return true;
   }
 
@@ -1950,6 +1956,7 @@
           wa.actionIds[j] = wa.actionIds[j + 1];
         }
         wa.count--;
+        saveWellAction(wa, wellIndex);
         return true;
       }
     }
