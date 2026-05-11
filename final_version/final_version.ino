@@ -49,6 +49,7 @@
   const char DEL_ACTION_CMD[] PROGMEM = "DEL_ACTION";
   const char LINK_ACTION_WELL_CMD[] PROGMEM = "LINK_ACTION_WELL";
   const char UNLINK_ACTION_WELL_CMD[] PROGMEM = "UNLINK_ACTION_WELL";
+  const char CLEAR_ACTIONS_CMD[] PROGMEM = "CLEAR_ACTIONS";
 
 
   constexpr uint8_t MAX_WELLS = 96;
@@ -227,13 +228,13 @@
       calibrate();
     }
 
+    printStepSize();
+
     loadCurrentWell();
 
     loadCalibration();
 
     loadActionsSafe();
-
-    printStepSize();
 
     emergencyStopRequested = false;
     currentState = RUNNING;
@@ -706,6 +707,9 @@
         if (!parseWellBitmask(tokens[2], mask)) return;
 
         unlinkActionByMask(id, mask);
+      }
+      else if (strcmp_P(cmd, CLEAR_ACTIONS_CMD) == 0) {
+        clearAllActions();
       }
       else if (strcmp_P(cmd, PARK_CMD) == 0) {
         enableLMotor();
@@ -1795,6 +1799,7 @@
 
   void initializeEmptyActions() {
     for (uint8_t i = 0; i < MAX_ACTIONS_TOTAL; i++) {
+      actions[i].id = 0;
       actions[i].enabled = 0;
     }
 
@@ -1949,4 +1954,28 @@
       }
     }
     return false;
+  }
+
+  void clearAllActions() {
+    Action empty;
+    memset(&empty, 0, sizeof(Action));
+    empty.id = 0;
+    empty.enabled = 0;
+
+    for (uint8_t i = 0; i < MAX_ACTIONS_TOTAL; i++) {
+      actions[i] = empty;
+      EEPROM.put(EEPROM_ACTIONS_ADDR + i * sizeof(Action), empty);
+    }
+
+    for (uint8_t w = 0; w < MAX_WELLS; w++) {
+      wellActions[w].count = 0;
+    }
+
+    actionCount = 0;
+    nextActionId = 1;
+
+    saveActionsState();
+    saveWellActions();
+
+    Serial.println(F("Actions Cleared"));
   }
