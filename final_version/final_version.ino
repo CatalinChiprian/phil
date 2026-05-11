@@ -194,6 +194,8 @@
       rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
     }
 
+    Serial.print(F("TIME=")); Serial.println(rtc.now().unixtime());
+
     enableAllMotors();
 
     pinMode(limitSwitchL, INPUT_PULLUP);
@@ -238,6 +240,7 @@
     loadCalibration();
 
     loadActionsSafe();
+    loadWellActions();
 
     emergencyStopRequested = false;
     currentState = RUNNING;
@@ -524,7 +527,7 @@
 
     if (Serial.available() > 0) {
       char received[96];
-      char* tokens[7];
+      char* tokens[8];
       
       size_t len = Serial.readBytesUntil('\n', received, sizeof(received) - 1);
       if (len == 0) return;
@@ -534,7 +537,7 @@
       uint8_t count = 0;
       char* tok = strtok(received, " ");
 
-      while (tok && count < 7) {
+      while (tok && count < 8) {
         tokens[count++] = tok;
         tok = strtok(nullptr, " ");
       }
@@ -664,9 +667,9 @@
         uint32_t start = 0;
         uint32_t end = 0;
 
-        if (count > 7) {
-          uint32_t start = atoi(tokens[6]);
-          uint32_t end = atoi(tokens[7]);
+        if (count >= 8) {
+          start = strtoul(tokens[6], nullptr, 10);
+          end = strtoul(tokens[7], nullptr, 10);
         }
 
         createAction(type, pump, amount, frequency, unit, start, end);
@@ -1869,7 +1872,7 @@
     uint8_t col;
     wellIndexToRowCol(wellIndex, row, col);
     Serial.print(F("WELL_ACTION:"));
-    Serial.print(F("Well=")); Serial.print(toupper(row)); Serial.print(col);
+    Serial.print(F("Well=")); Serial.print((char)toupper(row)); Serial.print(col);
     Serial.print(F(",Actions=["));
     for (uint8_t i = 0; i < wellAction.count; i++) {
       if (i > 0) Serial.print(',');
