@@ -51,10 +51,10 @@
   const char UNLINK_ACTION_WELL_CMD[] PROGMEM = "UNLINK_ACTION_WELL";
 
 
-  const uint8_t MAX_WELLS = 96;
-  const uint8_t MAX_ACTIONS_PER_WELL = 16;
-  const uint16_t MAX_ACTIONS_TOTAL = 128;
-  const uint8_t INVALID = 0xFF;
+  constexpr uint8_t MAX_WELLS = 96;
+  constexpr uint8_t MAX_ACTIONS_PER_WELL = 16;
+  constexpr uint16_t MAX_ACTIONS_TOTAL = 128;
+  constexpr uint16_t INVALID = 0xFF;
 
   enum State : uint8_t {
     SETUP,
@@ -94,8 +94,8 @@
   uint8_t actionCount = 0;
   uint16_t nextActionId = 1;
 
-  int myMICROS = 1;
-  char Sttngs[][3] = {
+  const uint8_t myMICROS = 1;
+  const char Sttngs[][3] = {
     {LOW,  LOW, LOW}, // Full step
     {HIGH,  LOW, LOW}, // Half step
     {LOW, HIGH,  LOW}, // 1/4 step
@@ -107,7 +107,7 @@
   const float WELL_DX = 9.0;
   const float WELL_DY = 9.0;
 
-  const int MAX_CAL = 32;
+  const uint8_t MAX_CAL = 32;
   float calX[MAX_CAL], calY[MAX_CAL], calL[MAX_CAL], calR[MAX_CAL];
   uint8_t calCount = 0;
 
@@ -118,19 +118,19 @@
 
   uint8_t wellIndex;// 0–N‑1 = wells, 255 = HOME
 
-  int MICROoptions[] = {1, 2, 4, 8, 16, 32};
+  const uint8_t MICROoptions[] = {1, 2, 4, 8, 16, 32};
 
-  int M1 = 25; 
-  int M2 = 26; 
-  int M3 = 27; 
+  const uint8_t M1 = 25; 
+  const uint8_t M2 = 26; 
+  const uint8_t M3 = 27; 
 
-  int P1 = 22;
-  int P2 = 23;
-  int P3 = 24;
+  const uint8_t P1 = 22;
+  const uint8_t P2 = 23;
+  const uint8_t P3 = 24;
 
-  int ena[] = {44, 47, 50, 53, 13, 10};
-  int step[] = {43, 46, 49, 52, 12, 9};
-  int dir[] = {42, 45, 48, 51, 11, 8};   
+  const uint8_t ena[]  = {44, 47, 50, 53, 13, 10};
+  const uint8_t step[] = {43, 46, 49, 52, 12, 9};
+  const uint8_t dir[] = {42, 45, 48, 51, 11, 8};   
 
   long lastR;
   long lastL;
@@ -147,30 +147,30 @@
 
   const float UL_PER_STEP = 0.1099f;
 
-  int limitSwitchL = 31; // Target Limit Switch L
-  int limitSwitchR = 30; // Target Limit Switch R
-  int limitSwitchZ1 = 33; // Target Limit Switch Z
-  int limitSwitchZ2 = 32; // Target Limit Switch Z
+  const uint8_t limitSwitchL = 31; // Target Limit Switch L
+  const uint8_t limitSwitchR = 30; // Target Limit Switch R
+  const uint8_t limitSwitchZ1 = 33; // Target Limit Switch Z
+  const uint8_t limitSwitchZ2 = 32; // Target Limit Switch Z
 
-  int faultR = 37;
-  int faultL = 39;
+  const uint8_t faultR = 37;
+  const uint8_t faultL = 39;
 
-  int microIndex = 3; // 0=full, 1=half, 2=1/4, 3=1/8, 4=1/16, 5=1/32
-  int currentMicrosteps = MICROoptions[microIndex]; 
+  const uint8_t microIndex = 3; // 0=full, 1=half, 2=1/4, 3=1/8, 4=1/16, 5=1/32
+  const uint8_t currentMicrosteps = MICROoptions[microIndex]; 
 
   int16_t times_x10 = 1;
-  const long steps = 4 * currentMicrosteps;
+  const int16_t steps = 4 * currentMicrosteps;
 
   const int16_t ZMotorPumpPosition = -2496;
   const int16_t ZMotorNormalPosition = -384;
 
-  unsigned long lastMotorActivityTime = 0;
+  uint16_t lastMotorActivityTime = 0;
   bool ZMotorsCurrentlyEnabled = false;
   bool LMotorCurrentlyEnabled = false;
   bool RMotorCurrentlyEnabled = false;
   bool P1MotorCurrentlyEnabled = false;
   bool P2MotorCurrentlyEnabled = false;
-  const unsigned long MOTOR_TIMEOUT = 5000;
+  const uint16_t MOTOR_TIMEOUT = 5000;
   bool emergencyStopRequested = false;
 
   void setup() {
@@ -400,14 +400,14 @@
     return lroundf(microliters / UL_PER_STEP);
   }
 
-  void dispense(int pump, int microliters, String well) {
+  void dispense(uint8_t pump, uint16_t microliters, char* well) {
 
-    if (well.length() > 0) {
-      char row = tolower(well.charAt(0));
-      int col = well.substring(1).toInt();
+    if (strlen(well) > 0) {
+      char row = tolower(well[0]);
+      uint8_t col = atoi(well + 1);
 
       
-      if (row >= 'a' || row <= 'h' || col >= 1 || col <= 12) {
+      if (row >= 'a' && row <= 'h' && col >= 1 && col <= 12) {
         moveZMotors(ZMotorNormalPosition);
         goToCalculatedWell(row, col);
         moveZMotors(ZMotorPumpPosition);
@@ -448,14 +448,14 @@
     Serial.println(" total steps");
   }
 
-  void aspirate(int pump, int microliters, String well) {
+  void aspirate(uint8_t pump, uint16_t microliters, char* well) {
 
-    if (well.length() > 0) {
-      char row = tolower(well.charAt(0));
-      int col = well.substring(1).toInt();
+    if (strlen(well) > 0) {
+      char row = tolower(well[0]);
+      uint8_t col = atoi(well + 1);
 
       
-      if (row >= 'a' || row <= 'h' || col >= 1 || col <= 12) {
+      if (row >= 'a' && row <= 'h' && col >= 1 && col <= 12) {
         moveZMotors(ZMotorNormalPosition);
         goToCalculatedWell(row, col);
         moveZMotors(ZMotorPumpPosition);
@@ -519,102 +519,109 @@
   void basic_controls() {
 
     if (Serial.available() > 0) {
-      String received = Serial.readStringUntil('\n');
-      received.trim();
+      char received[128];
+      char* tokens[7];
+      
+      size_t len = Serial.readBytesUntil('\n', received, sizeof(received) - 1);
+      if (len == 0) return;
 
-      if (received.length() < 0) return;
+      received[len] = '\0';
+      
+      uint8_t count = 0;
+      char* tok = strtok(received, " ");
 
-      String tokens[7];
+      while (tok && count < 7) {
+        tokens[count++] = tok;
+        tok = strtok(nullptr, " ");
+      }
 
-      int count = splitN(received, tokens, 7);
+      if (count == 0) return;
 
-      String cmd = tokens[0];
+      char* cmd = tokens[0];
 
-      if (cmd == "") return;
-
-      if (cmd == MOVE_BACKWARD_CMD) {
+      if (strcmp_P(cmd, MOVE_BACKWARD_CMD) == 0) {
         moveBackward();
       }
-      else if (cmd == MOVE_FORWARD_CMD) {
+      else if (strcmp_P(cmd, MOVE_FORWARD_CMD) == 0) {
         moveForward();
       }
-      else if (cmd == MOVE_LEFT_CMD) {
+      else if (strcmp_P(cmd, MOVE_LEFT_CMD) == 0) {
         moveLeft();
       }
-      else if (cmd == MOVE_RIGHT_CMD) {
+      else if (strcmp_P(cmd, MOVE_RIGHT_CMD) == 0) {
         moveRight();
       }
-      else if (cmd == MOVE_UP_CMD) {
+      else if (strcmp_P(cmd, MOVE_UP_CMD) == 0) {
         moveUp();
       }
-      else if (cmd == MOVE_DOWN_CMD) {
+      else if (strcmp_P(cmd, MOVE_DOWN_CMD) == 0) {
         moveDown();
       }
-      else if (cmd == GO_HOME_CMD) {
+      else if (strcmp_P(cmd, GO_HOME_CMD) == 0) {
         goToOrigin();
         disableAllMotors();
       }
-      else if (cmd == INC_STEP_CMD) {
+      else if (strcmp_P(cmd, INC_STEP_CMD) == 0) {
         times_x10 += 1;
         printStepSize();
       }
-      else if (cmd == DEC_STEP_CMD) {
+      else if (strcmp_P(cmd, DEC_STEP_CMD) == 0) {
         times_x10 -= 1;
         printStepSize();
       }
       // ASPIRATE <pump>* <amount>* <well>
-      else if (cmd == ASPIRATE_CMD) {
-        int pump = tokens[1].toInt();
-        int amount = tokens[2].toInt();
+      else if (strcmp_P(cmd, ASPIRATE_CMD) == 0) {
+        uint8_t pump = atoi(tokens[1]);
+        uint16_t amount = atoi(tokens[2]);
 
         aspirate(pump, amount, tokens[3]);
       }
       // DISPENSE <pump>* <amount>* <well>
-      else if (cmd == DISPENSE_CMD) {
-        int pump = tokens[1].toInt();
-        int amount = tokens[2].toInt();
+      else if (strcmp_P(cmd, DISPENSE_CMD) == 0) {
+        uint8_t pump = atoi(tokens[1]);
+        uint16_t amount = atoi(tokens[2]);
 
         dispense(pump, amount, tokens[3]);
       }
-      else if (cmd == CALIBRATE_HOME_CMD) {
+      else if (strcmp_P(cmd, CALIBRATE_HOME_CMD) == 0) {
         calibrate();
       }
-      else if (cmd == MOVE_HARD_WELL_CMD) {
-        String wellStr = tokens[1];
-        if (wellStr == "") return;
-        char row = tolower(wellStr.charAt(0));
-        int column = wellStr.substring(1).toInt(); 
+      else if (strcmp_P(cmd, MOVE_HARD_WELL_CMD) == 0) {
+        char* wellStr = tokens[1];
+        if (strlen(wellStr) == 0) return;
+        char row = tolower(wellStr[0]);
+        uint8_t column = atoi(wellStr + 1);
         goToHardcodedWells(row, column); 
       }
-      else if (cmd == MOVE_CALC_WELL_CMD) {
-        String wellStr = tokens[1];
-        if (wellStr == "") return;
-        char row = tolower(wellStr.charAt(0));
-        int column = wellStr.substring(1).toInt();  
+      else if (strcmp_P(cmd, MOVE_CALC_WELL_CMD) == 0) {
+        char* wellStr = tokens[1];
+        if (strlen(wellStr) == 0) return;
+        char row = tolower(wellStr[0]);
+        uint8_t column = atoi(wellStr + 1); 
         goToCalculatedWell(row, column); 
       }
-      else if (cmd == RECORD_POINT_CMD) {
-        String wellStr = tokens[1];
-        if (wellStr == "") return;
-        char row = tolower(wellStr.charAt(0));
-        int col = wellStr.substring(1).toInt();
-        recordCalibrationPoint(row, col);
+      else if (strcmp_P(cmd, RECORD_POINT_CMD) == 0) {
+        char* wellStr = tokens[1];
+        if (strlen(wellStr) == 0) return;
+        char row = tolower(wellStr[0]);
+        uint8_t column = atoi(wellStr + 1);
+        recordCalibrationPoint(row, column);
       }
-      else if (cmd == SOLVE_MAP_CMD) {
+      else if (strcmp_P(cmd, SOLVE_MAP_CMD) == 0) {
         solveMapping();
       }
-      else if (cmd == DELETE_POINT_CMD) {
-        String wellStr = tokens[1];
-        if (wellStr == "") return;
-        char row = tolower(wellStr.charAt(0));
-        int col = wellStr.substring(1).toInt();
+      else if (strcmp_P(cmd, DELETE_POINT_CMD) == 0) {
+        char* wellStr = tokens[1];
+        if (strlen(wellStr) == 0) return;
+        char row = tolower(wellStr[0]);
+        uint8_t column = atoi(wellStr + 1);
 
         float x = 0;
         float y = 0;
-        wellToXY(row, col, x, y);
+        wellToXY(row, column, x, y);
         
-        int foundIdx = -1;
-        for (int i = 0; i < calCount; i++) {
+        int8_t foundIdx = -1;
+        for (uint8_t i = 0; i < calCount; i++) {
             if (fabs(calX[i] - x) < 0.1f && fabs(calY[i] - y) < 0.1f) {
                 foundIdx = i;
                 break;
@@ -623,8 +630,7 @@
         
         if (foundIdx == -1) return;
 
-        // Shift all points after it down by one
-        for (int i = foundIdx; i < calCount - 1; i++) {
+        for (int8_t i = foundIdx; i < calCount - 1; i++) {
             calX[i] = calX[i+1];
             calY[i] = calY[i+1];
             calL[i] = calL[i+1];
@@ -632,60 +638,61 @@
         }
         calCount--;
 
-        Serial.print("CAL_DELETED:"); Serial.print(row); Serial.print(col);
+        Serial.print("CAL_DELETED:"); Serial.print(row); Serial.print(column);
         Serial.print(",remaining="); Serial.println(calCount);
       }
-      else if (cmd == CLEAR_CALIBRATION_CMD) {
+      else if (strcmp_P(cmd, CLEAR_CALIBRATION_CMD) == 0) {
         EEPROM.put(EEPROM_CAL_BASE, 0x00);
         mapReady = false;
-        for (int i = 0; i < TERMS; i++) { ML[i] = 0; MR[i] = 0; }
+        for (uint8_t i = 0; i < TERMS; i++) { ML[i] = 0; MR[i] = 0; }
         calCount = 0;
         Serial.println("Calibration cleared");
       }
       // CREATE_ACTION <actionId>* <actionType>* <amount>* <frequency>* <frequencyUnit>* <start> <end>
-      else if (cmd == CREATE_ACTION_CMD) {
-        for (String token : tokens) {
-          if (token == "") return;
-        }
+      else if (strcmp_P(cmd, CREATE_ACTION_CMD) == 0) {
+        if (count < 5) return;
 
-        ActionType type = (ActionType)tokens[1].toInt();
-        uint8_t pump = tokens[2].toInt();
-        uint16_t amount = tokens[3].toInt();
-        uint16_t frequency = tokens[4].toInt();
-        TimeUnit unit = (TimeUnit)tokens[5].toInt();
+        ActionType type = (ActionType)atoi(tokens[1]);
+        uint8_t pump = atoi(tokens[2]);
+        uint16_t amount = atoi(tokens[3]);
+        uint16_t frequency = atoi(tokens[4]);
+        TimeUnit unit = (TimeUnit)atoi(tokens[5]);
         uint32_t start = 0;
         uint32_t end = 0;
 
         if (count > 7) {
-          uint32_t start = tokens[6].toInt();
-          uint32_t end = tokens[7].toInt();
+          uint32_t start = atoi(tokens[6]);
+          uint32_t end = atoi(tokens[7]);
         }
 
         createAction(type, pump, amount, frequency, unit, start, end);
       }
       // UPDATE_ACTION <actionId>* <actionType>* <amount>* <frequency>* <frequencyUnit>* <start>* <end>*
-      else if (cmd == UPDATE_ACTION_CMD) {
-        uint16_t id = tokens[1].toInt();
-        ActionType type = (ActionType)tokens[2].toInt();
-        uint8_t pump = tokens[3].toInt();
-        uint16_t amount = tokens[4].toInt();
-        uint16_t frequency = tokens[5].toInt();
-        TimeUnit unit = (TimeUnit)tokens[6].toInt();
-        uint32_t start = tokens[7].toInt();
-        uint32_t end = tokens[8].toInt();
+      else if (strcmp_P(cmd, UPDATE_ACTION_CMD) == 0) {
+        if (count < 8) return;
+
+        uint16_t id = atoi(tokens[1]);
+        ActionType type = (ActionType)atoi(tokens[2]);
+        uint8_t pump = atoi(tokens[3]);
+        uint16_t amount = atoi(tokens[4]);
+        uint16_t frequency = atoi(tokens[5]);
+        TimeUnit unit = (TimeUnit)atoi(tokens[6]);
+        uint32_t start = atoi(tokens[7]);
+        uint32_t end = atoi(tokens[8]);
 
         updateAction(id, type, pump, amount, frequency, unit, start, end);
       }
       // DEL_ACTION ID
-      else if (cmd == DEL_ACTION_CMD) {
-        uint16_t id = tokens[1].toInt();
+      else if (strcmp_P(cmd, DEL_ACTION_CMD) == 0) {
+        uint16_t id = atoi(tokens[1]);
 
         deleteAction(id);
       }
       // LINK_ACTION_WELL <actionId> <96bit_mask_hex>
-      else if (cmd == LINK_ACTION_WELL_CMD) {
+      else if (strcmp_P(cmd, LINK_ACTION_WELL_CMD) == 0) {
         if (count < 3) return;
-        uint16_t id = tokens[1].toInt();
+
+        uint16_t id = atoi(tokens[1]);
 
         if (!findActionById(id)) return;
 
@@ -695,9 +702,9 @@
         linkActionByMask(id, mask);
       }
       // UNLINK_ACTION_WELL <actionId> <96bit_mask_hex>
-      else if (cmd == UNLINK_ACTION_WELL_CMD) {
+      else if (strcmp_P(cmd, UNLINK_ACTION_WELL_CMD) == 0) {
         if (count < 3) return;
-        uint16_t id = tokens[1].toInt();
+        uint16_t id = atoi(tokens[1]);
 
         if (!findActionById(id)) return;
 
@@ -706,7 +713,7 @@
 
         unlinkActionByMask(id, mask);
       }
-      else if (cmd == PARK_CMD) {
+      else if (strcmp_P(cmd, PARK_CMD) == 0) {
         enableLMotor();
         enableRMotor();
 
@@ -720,13 +727,13 @@
 
         savePositions();
       }
-      else if (cmd == PRINT_WELL_CMD) {
+      else if (strcmp_P(cmd, PRINT_WELL_CMD) == 0) {
         printCurrentWell();
       }
-      else if (cmd == PRINT_CALIBRATION_CMD) {
+      else if (strcmp_P(cmd, PRINT_CALIBRATION_CMD) == 0) {
         printCalibrationPoints();
       }
-      else if (cmd == PRINT_STEPS_CMD) {
+      else if (strcmp_P(cmd, PRINT_STEPS_CMD) == 0) {
         printMicroSteps();
         printStepSize();
       }
@@ -800,7 +807,7 @@
     }
   }
   
-  int goToOrigin() {
+  void goToOrigin() {
 
     moveZMotors(ZMotorNormalPosition);
 
@@ -814,11 +821,11 @@
       stepperL.run();
     }
 
-    saveCurrentWell("HOME");
+    saveCurrentWell(WELL_HOME);
     savePositions();
   }
 
-  void goToHardcodedWells(char row, int column) {  
+  void goToHardcodedWells(char row, uint8_t column) {  
 
     if(emergencyStopRequested) {
       emergencyStopRequested = false;  
@@ -1035,7 +1042,7 @@
     }
   }
 
-  int calibrate() {
+  int8_t calibrate() {
     moveZMotors(ZMotorNormalPosition);
 
     disableAllMotors();
@@ -1082,14 +1089,14 @@
 
     stepperR.setCurrentPosition(0);
 
-    saveCurrentWell("HOME");
+    saveCurrentWell(WELL_HOME);
 
     disableAllMotors();
 
     return 1;
   }
 
-  void moveToWell(long moveL, long moveR, String wellName) {
+  void moveToWell(long moveL, long moveR, char* wellName) {
     enableLMotor();
     enableRMotor();
 
@@ -1287,7 +1294,7 @@
     }
   }
 
-  void enterHomingMode(int homingSpeedL, int homingSpeedR) {
+  void enterHomingMode(uint16_t homingSpeedL, uint16_t homingSpeedR) {
     stepperL.stop();
     stepperR.stop();
 
@@ -1349,7 +1356,7 @@
 
     EEPROM.put(addr, calCount);  addr += sizeof(uint8_t);
 
-    for (int i = 0; i < calCount; i++) {
+    for (uint8_t i = 0; i < calCount; i++) {
       EEPROM.put(addr, calX[i]);  addr += sizeof(float);
       EEPROM.put(addr, calY[i]);  addr += sizeof(float);
       EEPROM.put(addr, calL[i]);  addr += sizeof(float);
@@ -1364,7 +1371,6 @@
     int addr = EEPROM_CAL_BASE;
     byte magic;
     EEPROM.get(addr, magic);  addr += sizeof(magic);
-
     if (magic != MAGIC) {
       Serial.println("No valid calibration in EEPROM");
       return;
@@ -1377,7 +1383,7 @@
       return false;
     }
 
-    for (int i = 0; i < calCount; i++) {
+    for (uint8_t i = 0; i < calCount; i++) {
       EEPROM.get(addr, calX[i]);  addr += sizeof(float);
       EEPROM.get(addr, calY[i]);  addr += sizeof(float);
       EEPROM.get(addr, calL[i]);  addr += sizeof(float);
@@ -1388,7 +1394,7 @@
     return;
   }
 
-  void wellToXY(char row, int col, float &x, float &y) {
+  void wellToXY(char row, uint8_t col, float &x, float &y) {
     row = tolower(row);
 
     if (col < 1 || col > 12 || row < 'a' || row > 'h') {
@@ -1397,18 +1403,16 @@
     return;
     }
 
-    int r = row - 'a';  // a=0, b=1, ... h=7
+    uint8_t r = row - 'a';
     
     x =  (col - 1) * WELL_DX;
     y =  r * WELL_DY;
   }
 
-  void XYToWell(float x, float y, String &wellName) {
-    int col = x / WELL_DX;
-    int row = y / WELL_DY;
-    char rowChar = 'a' + row;
-
-    wellName = rowChar + String(col + 1);
+  void XYToWell(float x, float y, char& row, uint8_t& col) {
+    uint8_t rowInt = y / WELL_DY;
+    col = x / WELL_DX;
+    row = 'a' + rowInt;
   }
 
 
@@ -1424,7 +1428,7 @@
     Rdeg = dot10(MR, b);
   }
 
-  void recordCalibrationPoint(char row, int col) {
+  void recordCalibrationPoint(char row, uint8_t col) {
     if (calCount >= MAX_CAL) {
         Serial.print("ERROR:CAL_FULL,Maximum "); 
         Serial.print(MAX_CAL); 
@@ -1458,34 +1462,34 @@
 
   bool solve10(float A[TERMS][TERMS], float b[TERMS], float x[TERMS]) {
     float M[TERMS][TERMS+1];
-    for (int i=0;i<TERMS;i++){
-      for (int j=0;j<TERMS;j++) M[i][j] = A[i][j];
+    for (uint8_t i=0;i<TERMS;i++){
+      for (uint8_t j=0;j<TERMS;j++) M[i][j] = A[i][j];
       M[i][TERMS] = b[i];
     }
-    for (int col=0; col<TERMS; col++) {
-      int piv = col;
+    for (uint8_t col=0; col<TERMS; col++) {
+      uint8_t piv = col;
       float best = fabs(M[piv][col]);
-      for (int r=col+1; r<TERMS; r++) {
+      for (uint8_t r=col+1; r<TERMS; r++) {
         float v = fabs(M[r][col]);
         if (v > best) { best = v; piv = r; }
       }
       if (best < 1e-9) return false;
       if (piv != col) {
-        for (int c=col; c<=TERMS; c++) {
+        for (uint8_t c=col; c<=TERMS; c++) {
           float tmp = M[col][c];
           M[col][c] = M[piv][c];
           M[piv][c] = tmp;
         }
       }
       float div = M[col][col];
-      for (int c=col; c<=TERMS; c++) M[col][c] /= div;
-      for (int r=0; r<TERMS; r++) {
+      for (uint8_t c=col; c<=TERMS; c++) M[col][c] /= div;
+      for (uint8_t r=0; r<TERMS; r++) {
         if (r == col) continue;
         float f = M[r][col];
-        for (int c=col; c<=TERMS; c++) M[r][c] -= f * M[col][c];
+        for (uint8_t c=col; c<=TERMS; c++) M[r][c] -= f * M[col][c];
       }
     }
-    for (int i=0;i<TERMS;i++) x[i] = M[i][TERMS];
+    for (uint8_t i=0;i<TERMS;i++) x[i] = M[i][TERMS];
     return true;
   }
 
@@ -1503,20 +1507,20 @@
     static float ATyL[TERMS] = {0};
     static float ATyR[TERMS] = {0};
 
-    for (int i=0; i<calCount; i++) {
+    for (uint8_t i=0; i<calCount; i++) {
       float x = calX[i], y = calY[i];
       float b[TERMS] = { 1.0f, x, y, x*x, x*y, y*y, x*x*x, x*x*y, x*y*y, y*y*y };
       float L = calL[i];
       float R = calR[i];
 
       // Accumulate ATA = Σ b*b^T
-      for (int r=0; r<TERMS; r++) {
-        for (int c=0; c<TERMS; c++) {
+      for (uint8_t r=0; r<TERMS; r++) {
+        for (uint8_t c=0; c<TERMS; c++) {
           ATA[r][c] += b[r]*b[c];
         }
       }
       // Accumulate ATy = Σ b*y
-      for (int k=0; k<TERMS; k++) {
+      for (uint8_t k=0; k<TERMS; k++) {
         ATyL[k] += b[k]*L;
         ATyR[k] += b[k]*R;
       }
@@ -1533,7 +1537,7 @@
     }
 
     // Commit
-    for (int i=0;i<TERMS;i++) { ML[i] = MLtmp[i]; MR[i] = MRtmp[i]; }
+    for (uint8_t i=0;i<TERMS;i++) { ML[i] = MLtmp[i]; MR[i] = MRtmp[i]; }
     mapReady = true;
     saveCalibration();
 
@@ -1550,10 +1554,11 @@
   void printCalibrationPoints() {
     Serial.print("CAL_COUNT:"); Serial.println(calCount);
     float maxErrL = 0, maxErrR = 0, rmsL = 0, rmsR = 0;
-    for (int i=0; i<calCount; i++) {
+    for (uint8_t i=0; i<calCount; i++) {
       float x = calX[i], y = calY[i];
-      String wellName;
-      XYToWell(calX[i], calY[i], wellName);
+      char row;
+      uint8_t col;
+      XYToWell(calX[i], calY[i], row, col);
       float b[TERMS] = { 1.0f, x, y, x*x, x*y, y*y, x*x*x, x*x*y, x*y*y, y*y*y };
       float predL = dot10(ML, b);
       float predR = dot10(MR, b);
@@ -1563,7 +1568,7 @@
       if (fabs(errL) > maxErrL) maxErrL = fabs(errL);
       if (fabs(errR) > maxErrR) maxErrR = fabs(errR);
       Serial.print("CAL_PT:");
-      Serial.print("Name="); Serial.print(wellName);
+      Serial.print("Name="); Serial.print(row); Serial.print(col);
       Serial.print(",X="); Serial.print(calX[i], 2);
       Serial.print(",Y="); Serial.print(calY[i], 2);
 
@@ -1597,27 +1602,16 @@
     return steps * (360.0f / stepsPerRev);
   }
 
-  uint8_t wellNameToIndex(String wellName) {
-      if (wellName == "HOME") return WELL_HOME;
-
-      char row = wellName.charAt(0);
-      String columnStr = wellName.substring(1);  
-      int column = columnStr.toInt();
-
+  uint8_t wellNameToIndex(char row, uint8_t column) {
       return (row - 'a') * 12 + (column - 1);
   }
 
-  String wellIndexToName(uint8_t wellIndex) {
-      if (wellIndex == WELL_HOME) {
-          return "HOME";
-      }
-
-      char row = 'A' + (wellIndex / 12);
-      int  col = (wellIndex % 12) + 1;
-      return String(row) + String(col);
+  void wellIndexToRowCol(uint8_t wellIndex, char& row, uint8_t& col) {
+      row = 'A' + (wellIndex / 12);
+      col = (wellIndex % 12) + 1;
   }
 
-  void goToCalculatedWell(char row, int col) {
+  void goToCalculatedWell(char row, uint8_t col) {
     if (!mapReady) {
       Serial.println("ERROR:MAP_NOT_READY,Run z solve before moving to wells");
       return;
@@ -1647,14 +1641,14 @@
         stepperR.run();
     }
 
-    saveCurrentWell(String(row) + String(col));
+    uint8_t wellIndex = wellNameToIndex(row, col);
+
+    saveCurrentWell(wellIndex);
     savePositions();
     printCurrentWell();
   }
 
-  void saveCurrentWell(String wellName) {  
-    wellIndex = wellNameToIndex(wellName);
-
+  void saveCurrentWell(uint8_t wellIndex) {  
     EEPROM.put(EEPROM_WELL_BASE, wellIndex);
   }
 
@@ -1665,20 +1659,18 @@
   }
 
   void printCurrentWell() {
-    String wellName = wellIndexToName(wellIndex);
+    char row;
+    uint8_t col;
 
     float x = 0;
     float y = 0;
     float Ldeg = 0;
     float Rdeg = 0;
 
-    if (wellName != "HOME") {
-      char row = tolower(wellName[0]);
+    if (wellIndex != WELL_HOME) {
+      wellIndexToRowCol(wellIndex, row, col);
       if (row < 'a' || row > 'h') return;
-
-      int col = wellName.substring(1).toInt();
       if (col < 1 || col > 12) return;
-
       
       wellToXY(row, col, x, y);
 
@@ -1687,7 +1679,9 @@
     }
 
     Serial.print("WELL:"); 
-    Serial.print("Name="); Serial.print(wellName);
+    Serial.print("Name="); 
+    if (wellIndex == WELL_HOME) Serial.print("HOME");
+    else { Serial.print(row); Serial.print(col); }
     Serial.print(",X="); Serial.print(x);
     Serial.print(",Y="); Serial.print(y);
     Serial.print(",L="); Serial.print(Ldeg);
@@ -1703,34 +1697,6 @@
 
   void printMicroSteps() {
     Serial.print("MICROSTEPS:1/"); Serial.println(currentMicrosteps);
-  }
-
-  uint8_t splitN(const String& input, String out[], uint8_t maxTokens) {
-    for (uint8_t i = 0; i < maxTokens; i++) {
-      out[i] = "";
-    }
-
-    String s = input;
-    s.trim();
-
-    uint8_t count = 0;
-    int start = 0;
-
-    while (start < s.length() && count < maxTokens) {
-      int space = s.indexOf(' ', start);
-      if (space == -1) space = s.length();
-
-      String token = s.substring(start, space);
-      token.trim();
-
-      if (token.length() > 0) {
-        out[count++] = token;
-      }
-
-      start = space + 1;
-    }
-
-    return count;
   }
 
   uint16_t createAction(ActionType type, uint8_t pump, uint16_t amount, uint16_t frequency, TimeUnit unit, uint32_t start, uint32_t end) {
@@ -1810,7 +1776,7 @@
   }
 
   uint8_t findFreeActionSlot() {
-    for (int i = 0; i < MAX_ACTIONS_TOTAL; i++) {
+    for (uint16_t i = 0; i < MAX_ACTIONS_TOTAL; i++) {
       if (!actions[i].enabled) return i;
     }
     return INVALID;
@@ -1885,9 +1851,11 @@
   }
 
   void printWellAction(const WellAction& wellAction, uint8_t wellIndex) {
-    String wellName = wellIndexToName(wellIndex);
+    char row;
+    uint8_t col;
+    wellIndexToRowCol(wellIndex, row, col);
     Serial.print("WELL_ACTION:");
-    Serial.print("Well="); Serial.print(wellName);
+    Serial.print("Well="); Serial.print(toupper(row)); Serial.print(col);
     Serial.print(",Actions=[");
     for (uint8_t i = 0; i < wellAction.count; i++) {
       if (i > 0) Serial.print(',');
@@ -1923,8 +1891,8 @@
     return INVALID;
   }
 
-  bool parseWellBitmask(const String& hex, uint8_t mask[12]) {
-    if (hex.length() != 24) return false;
+  bool parseWellBitmask(const char* hex, uint8_t mask[12]) {
+    if (strlen(hex) != 24) return false;
 
     for (uint8_t i = 0; i < 12; i++) {
       uint8_t hi = hexNibble(hex[i * 2]);
