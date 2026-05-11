@@ -61,26 +61,26 @@
     RUNNING
   } currentState;
 
-  enum ActionType : uint8_t {
-    ASPIRATE,
-    DISPENSE
-  };
+  // enum ActionType : uint8_t {
+  //   ASPIRATE,
+  //   DISPENSE
+  // };
 
-  enum TimeUnit : uint8_t {
-    HOUR,
-    DAY,
-  };
+  // enum TimeUnit : uint8_t {
+  //   HOUR,
+  //   DAY,
+  // };
 
   struct Action {
     uint16_t id;
-    ActionType type;
+    uint8_t type;
     uint8_t pump;
     uint16_t amount_uL;
     uint16_t frequency;
-    TimeUnit unit;
+    uint8_t unit;
     uint32_t startEpoch;
     uint32_t endEpoch;
-    bool enabled;
+    uint8_t enabled;
   };
 
   struct WellAction {
@@ -179,13 +179,13 @@
 
     
     if (!rtc.begin()) {
-        Serial.println("ERROR: RTC not found");
+        Serial.println(F("ERROR: RTC not found"));
         while (1);
     }
 
     
     if (rtc.lostPower()) {
-      Serial.println("RTC lost power, setting time...");
+      Serial.println(F("RTC lost power, setting time..."));
 
       rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
     }
@@ -439,13 +439,10 @@
 
     moveZMotors(ZMotorNormalPosition);
 
-    Serial.print("PUMP");
+    Serial.print(F("PUMP"));
     Serial.print(pump);
-    Serial.print(":dispensed="); Serial.print(microliters);
-    Serial.println("uL");
-    Serial.print("Which is ");
-    Serial.print(stepsNeeded);
-    Serial.println(" total steps");
+    Serial.print(F(":dispensed=")); Serial.print(microliters);
+    Serial.println(F("uL"));
   }
 
   void aspirate(uint8_t pump, uint16_t microliters, char* well) {
@@ -488,13 +485,10 @@
 
     moveZMotors(ZMotorNormalPosition);
 
-    Serial.print("PUMP");
+    Serial.print(F("PUMP"));
     Serial.print(pump);
-    Serial.print(":aspirated="); Serial.print(microliters);
-    Serial.println("uL");
-    Serial.print("Which is ");
-    Serial.print(stepsNeeded);
-    Serial.println(" total steps");
+    Serial.print(F(":aspirated=")); Serial.print(microliters);
+    Serial.println(F("uL"));
   }
 
   void loop() {
@@ -507,10 +501,10 @@
     long currentR = stepperR.currentPosition();
 
     if (currentL != lastL || currentR != lastR) {
-    Serial.print("POS:L="); Serial.print(currentL);
-    Serial.print(",R="); Serial.print(currentR);
-    Serial.print(",Z1="); Serial.print(stepperZ1.currentPosition());
-    Serial.print(",Z2="); Serial.println(stepperZ2.currentPosition());
+    Serial.print(F("POS:L=")); Serial.print(currentL);
+    Serial.print(F(",R=")); Serial.print(currentR);
+    Serial.print(F(",Z1=")); Serial.print(stepperZ1.currentPosition());
+    Serial.print(F(",Z2=")); Serial.println(stepperZ2.currentPosition());
     lastL = currentL;
     lastR = currentR;
 }
@@ -638,25 +632,25 @@
         }
         calCount--;
 
-        Serial.print("CAL_DELETED:"); Serial.print(row); Serial.print(column);
-        Serial.print(",remaining="); Serial.println(calCount);
+        Serial.print(F("CAL_DELETED:")); Serial.print(row); Serial.print(column);
+        Serial.print(F(",remaining=")); Serial.println(calCount);
       }
       else if (strcmp_P(cmd, CLEAR_CALIBRATION_CMD) == 0) {
         EEPROM.put(EEPROM_CAL_BASE, 0x00);
         mapReady = false;
         for (uint8_t i = 0; i < TERMS; i++) { ML[i] = 0; MR[i] = 0; }
         calCount = 0;
-        Serial.println("Calibration cleared");
+        Serial.println(F("Calibration cleared"));
       }
       // CREATE_ACTION <actionId>* <actionType>* <amount>* <frequency>* <frequencyUnit>* <start> <end>
       else if (strcmp_P(cmd, CREATE_ACTION_CMD) == 0) {
         if (count < 5) return;
 
-        ActionType type = (ActionType)atoi(tokens[1]);
+        uint8_t type = atoi(tokens[1]);
         uint8_t pump = atoi(tokens[2]);
         uint16_t amount = atoi(tokens[3]);
         uint16_t frequency = atoi(tokens[4]);
-        TimeUnit unit = (TimeUnit)atoi(tokens[5]);
+        uint8_t unit = atoi(tokens[5]);
         uint32_t start = 0;
         uint32_t end = 0;
 
@@ -672,11 +666,11 @@
         if (count < 8) return;
 
         uint16_t id = atoi(tokens[1]);
-        ActionType type = (ActionType)atoi(tokens[2]);
+        uint8_t type = atoi(tokens[2]);
         uint8_t pump = atoi(tokens[3]);
         uint16_t amount = atoi(tokens[4]);
         uint16_t frequency = atoi(tokens[5]);
-        TimeUnit unit = (TimeUnit)atoi(tokens[6]);
+        uint8_t unit = atoi(tokens[6]);
         uint32_t start = atoi(tokens[7]);
         uint32_t end = atoi(tokens[8]);
 
@@ -738,7 +732,7 @@
         printStepSize();
       }
       else {
-        Serial.println("ERR UNKNOWN_COMMAND");
+        Serial.println(F("ERR UNKNOWN_COMMAND"));
       }
     }
   }
@@ -747,14 +741,14 @@
     static bool z1WasPressed = false;
     if(digitalRead(limitSwitchZ1) == LOW) {
       if(!z1WasPressed) {  
-        Serial.println("LIMIT_PRESSED:AXIS=Z1");
+        Serial.println(F("LIMIT_PRESSED:AXIS=Z1"));
         z1WasPressed = true;
       }
       stepperZ1.setCurrentPosition(stepperZ1.currentPosition());
       stepperZ2.setCurrentPosition(stepperZ2.currentPosition());
     } else {
       if (z1WasPressed) {
-          Serial.println("LIMIT_RELEASED:AXIS=Z1");
+          Serial.println(F("LIMIT_RELEASED:AXIS=Z1"));
           z1WasPressed = false;
       }
     }
@@ -762,14 +756,14 @@
     static bool z2WasPressed = false;
     if(digitalRead(limitSwitchZ2) == LOW) {
       if(!z2WasPressed) {
-        Serial.println("LIMIT_PRESSED:AXIS=Z2");
+        Serial.println(F("LIMIT_PRESSED:AXIS=Z2"));
         z2WasPressed = true;
       }
       stepperZ1.setCurrentPosition(stepperZ1.currentPosition());
       stepperZ2.setCurrentPosition(stepperZ2.currentPosition());
     } else {
       if (z2WasPressed) {
-          Serial.println("LIMIT_RELEASED:AXIS=Z2");
+          Serial.println(F("LIMIT_RELEASED:AXIS=Z2"));
           z2WasPressed = false;
       }
     }
@@ -778,7 +772,7 @@
     static bool lWasPressed = false;
     if(digitalRead(limitSwitchL) == LOW) {
       if (!lWasPressed) {
-        Serial.println("LIMIT_PRESSED:AXIS=L");
+        Serial.println(F("LIMIT_PRESSED:AXIS=L"));
         lWasPressed = true;
       }
       stepperL.stop();
@@ -786,7 +780,7 @@
     }
     else {
       if (lWasPressed) {
-          Serial.println("LIMIT_RELEASED:AXIS=L");
+          Serial.println(F("LIMIT_RELEASED:AXIS=L"));
           lWasPressed = false;
       }
     }
@@ -794,14 +788,14 @@
     static bool rWasPressed = false;
     if(digitalRead(limitSwitchR) == LOW) {
       if(!rWasPressed) {
-        Serial.println("LIMIT_PRESSED:AXIS=R");
+        Serial.println(F("LIMIT_PRESSED:AXIS=R"));
         rWasPressed = true;
       }
       stepperR.stop();
       stepperR.setCurrentPosition(stepperR.currentPosition());
     } else {
       if (rWasPressed) {
-          Serial.println("LIMIT_RELEASED:AXIS=R");
+          Serial.println(F("LIMIT_RELEASED:AXIS=R"));
           rWasPressed = false;
       }
     }
@@ -855,7 +849,7 @@
             break;
 
             default:
-            Serial.println("Invalid column for row A");
+            Serial.println(F("Invalid column for row A"));
             break;
           } 
         break;
@@ -880,7 +874,7 @@
             break;
 
             default:
-            Serial.println("Invalid column for row B");
+            Serial.println(F("Invalid column for row B"));
             break;
           } 
         break;
@@ -905,7 +899,7 @@
             break;
 
             default:
-            Serial.println("Invalid column for row C");
+            Serial.println(F("Invalid column for row C"));
             break;
           } 
         break;
@@ -930,7 +924,7 @@
             break;
 
             default:
-            Serial.println("Invalid column for row D");
+            Serial.println(F("Invalid column for row D"));
             break;
         }
         break;
@@ -955,7 +949,7 @@
             break;
 
             default:
-            Serial.println("Invalid column for row E");
+            Serial.println(F("Invalid column for row E"));
             break;
         }
         break;
@@ -980,7 +974,7 @@
             break;
 
             default:
-            Serial.println("Invalid column for row F");
+            Serial.println(F("Invalid column for row F"));
             break;
         }
         break;
@@ -1005,7 +999,7 @@
             break;
 
             default:
-            Serial.println("Invalid column for row G");
+            Serial.println(F("Invalid column for row G"));
             break;
         }
         break;
@@ -1030,14 +1024,14 @@
             break;
 
             default:
-            Serial.println("Invalid column for row H");
+            Serial.println(F("Invalid column for row H"));
             break;
         }
 
         break;  
 
       default:
-        Serial.println("Invalid row");
+        Serial.println(F("Invalid row"));
       break;
     }
   }
@@ -1263,7 +1257,7 @@
     disableAllMotors();
     lastMotorActivityTime = 0;
     emergencyStopRequested = true;
-    Serial.println("WARNING:EMERGENCY_STOP,Motors disabled by user");
+    Serial.println(F("WARNING:EMERGENCY_STOP,Motors disabled by user"));
   }
 
   void interruptibleDelay(unsigned long ms) {
@@ -1285,7 +1279,7 @@
 
     if (digitalRead(faultR) == LOW || digitalRead(faultL) == LOW) {
       if (!faultLatched) {
-        Serial.println("ERROR:DRIVER_FAULT,Motor driver nFAULT triggered");
+        Serial.println(F("ERROR:DRIVER_FAULT,Motor driver nFAULT triggered"));
         faultLatched = true;
       }
       emergencyStop();
@@ -1324,7 +1318,7 @@
     EEPROM.get(16, ok);
 
     if (ok != 123) {
-      Serial.println("No valid stored positions – doing normal home");
+      Serial.println(F("No valid stored positions – doing normal home"));
       return false;
     }
 
@@ -1339,10 +1333,10 @@
     stepperZ1.setCurrentPosition(Z1);
     stepperZ2.setCurrentPosition(Z2);
 
-    Serial.print("POS:L="); Serial.print(L);
-    Serial.print(",R="); Serial.print(R);
-    Serial.print(",Z1="); Serial.print(Z1);
-    Serial.print(",Z2="); Serial.println(Z2);
+    Serial.print(F("POS:L=")); Serial.print(L);
+    Serial.print(F(",R=")); Serial.print(R);
+    Serial.print(F(",Z1=")); Serial.print(Z1);
+    Serial.print(F(",Z2=")); Serial.println(Z2);
 
     return true;
   }
@@ -1363,8 +1357,8 @@
       EEPROM.put(addr, calR[i]);  addr += sizeof(float);
     }
 
-    Serial.println("Calibration saved to EEPROM");
-    Serial.print("Saved "); Serial.print(calCount); Serial.println(" points");
+    Serial.println(F("Calibration saved to EEPROM"));
+    Serial.print(F("Saved ")); Serial.print(calCount); Serial.println(F(" points"));
   }
 
   void loadCalibration() {
@@ -1372,13 +1366,13 @@
     byte magic;
     EEPROM.get(addr, magic);  addr += sizeof(magic);
     if (magic != MAGIC) {
-      Serial.println("No valid calibration in EEPROM");
+      Serial.println(F("No valid calibration in EEPROM"));
       return;
     }
 
     EEPROM.get(addr, calCount);  addr += sizeof(uint8_t);
     if (calCount < 0 || calCount > MAX_CAL) {
-      Serial.println("Corrupt point count in EEPROM");
+      Serial.println(F("Corrupt point count in EEPROM"));
       calCount = 0;
       return false;
     }
@@ -1398,7 +1392,7 @@
     row = tolower(row);
 
     if (col < 1 || col > 12 || row < 'a' || row > 'h') {
-    Serial.print("ERROR:INVALID_WELL,");
+    Serial.print(F("ERROR:INVALID_WELL,"));
     Serial.print(row); Serial.println(col);
     return;
     }
@@ -1418,7 +1412,7 @@
 
   void xyToAngles(float x, float y, float &Ldeg, float &Rdeg) {
     if (!mapReady) {
-      Serial.println("Angle map not ready!");
+      Serial.println(F("Angle map not ready!"));
       Ldeg = 0; Rdeg = 0;
       return;
     }
@@ -1430,9 +1424,9 @@
 
   void recordCalibrationPoint(char row, uint8_t col) {
     if (calCount >= MAX_CAL) {
-        Serial.print("ERROR:CAL_FULL,Maximum "); 
+        Serial.print(F("ERROR:CAL_FULL,Maximum ")); 
         Serial.print(MAX_CAL); 
-        Serial.println(" calibration points reached");
+        Serial.println(F(" calibration points reached"));
         return;
     }
 
@@ -1446,12 +1440,12 @@
     calL[calCount] = stepsToDegrees(stepperL.currentPosition());
     calR[calCount] = stepsToDegrees(stepperR.currentPosition());
 
-    Serial.print("CAL_REC:");
-    Serial.print("Name="); Serial.print(row); Serial.print(col);
-    Serial.print(",X="); Serial.print(x);
-    Serial.print(",Y="); Serial.print(y);
+    Serial.print(F("CAL_REC:"));
+    Serial.print(F("Name=")); Serial.print(row); Serial.print(col);
+    Serial.print(F(",X=")); Serial.print(x);
+    Serial.print(F(",Y=")); Serial.print(y);
     
-    Serial.print("CAL_COUNT:"); Serial.println(++calCount);
+    Serial.print(F("CAL_COUNT:")); Serial.println(++calCount);
   }
 
 
@@ -1495,9 +1489,9 @@
 
   bool solveMapping() {
     if (calCount < TERMS) {
-      Serial.print("ERROR:SOLVE_INSUFFICIENT,Need at least ");
+      Serial.print(F("ERROR:SOLVE_INSUFFICIENT,Need at least "));
       Serial.print(TERMS);
-      Serial.println(" calibration points");
+      Serial.println(F(" calibration points"));
       return false;
     }
 
@@ -1531,7 +1525,7 @@
     bool okR = solve10(ATA, ATyR, MRtmp);
 
     if (!okL || !okR) {
-      Serial.println("ERROR:SOLVE_SINGULAR,Calibration matrix singular - add more spread-out points");
+      Serial.println(F("ERROR:SOLVE_SINGULAR,Calibration matrix singular - add more spread-out points"));
       mapReady = false;
       return false;
     }
@@ -1541,7 +1535,7 @@
     mapReady = true;
     saveCalibration();
 
-    Serial.println("=== MAPPING SOLVED (quadratic least-squares) ===");
+    Serial.println(F("=== MAPPING SOLVED (quadratic least-squares) ==="));
     printCalibrationPoints();
 
     return true;
@@ -1552,7 +1546,7 @@
   }
 
   void printCalibrationPoints() {
-    Serial.print("CAL_COUNT:"); Serial.println(calCount);
+    Serial.print(F("CAL_COUNT:")); Serial.println(calCount);
     float maxErrL = 0, maxErrR = 0, rmsL = 0, rmsR = 0;
     for (uint8_t i=0; i<calCount; i++) {
       float x = calX[i], y = calY[i];
@@ -1567,10 +1561,10 @@
       rmsL += errL*errL; rmsR += errR*errR;
       if (fabs(errL) > maxErrL) maxErrL = fabs(errL);
       if (fabs(errR) > maxErrR) maxErrR = fabs(errR);
-      Serial.print("CAL_PT:");
-      Serial.print("Name="); Serial.print(row); Serial.print(col);
-      Serial.print(",X="); Serial.print(calX[i], 2);
-      Serial.print(",Y="); Serial.print(calY[i], 2);
+      Serial.print(F("CAL_PT:"));
+      Serial.print(F("Name=")); Serial.print(row); Serial.print(col);
+      Serial.print(F(",X=")); Serial.print(calX[i], 2);
+      Serial.print(F(",Y=")); Serial.print(calY[i], 2);
 
 
       if (!mapReady) {
@@ -1578,18 +1572,18 @@
         continue;
       }
       
-      Serial.print(",ErrorLeft="); Serial.print(clampZero(errL), 3);
-      Serial.print(",ErrorRight="); Serial.println(clampZero(errR), 3);
+      Serial.print(F(",ErrorLeft=")); Serial.print(clampZero(errL), 3);
+      Serial.print(F(",ErrorRight=")); Serial.println(clampZero(errR), 3);
     }
     rmsL = sqrtf(rmsL / calCount);
     rmsR = sqrtf(rmsR / calCount);
 
     if (!mapReady) return;
 
-    Serial.print("RMS:L="); Serial.print(rmsL, 3);
-    Serial.print(",R="); Serial.print(rmsR, 3);
-    Serial.print(",MAX_L="); Serial.print(maxErrL, 3);
-    Serial.print(",MAX_R="); Serial.println(maxErrR, 3);
+    Serial.print(F("RMS:L=")); Serial.print(rmsL, 3);
+    Serial.print(F(",R=")); Serial.print(rmsR, 3);
+    Serial.print(F(",MAX_L=")); Serial.print(maxErrL, 3);
+    Serial.print(F(",MAX_R=")); Serial.println(maxErrR, 3);
   }
 
   long degToSteps(float deg) {
@@ -1613,7 +1607,7 @@
 
   void goToCalculatedWell(char row, uint8_t col) {
     if (!mapReady) {
-      Serial.println("ERROR:MAP_NOT_READY,Run z solve before moving to wells");
+      Serial.println(F("ERROR:MAP_NOT_READY,Run z solve before moving to wells"));
       return;
     }
 
@@ -1678,30 +1672,30 @@
       Rdeg = stepsToDegrees(stepperR.currentPosition());
     }
 
-    Serial.print("WELL:"); 
-    Serial.print("Name="); 
-    if (wellIndex == WELL_HOME) Serial.print("HOME");
+    Serial.print(F("WELL:"));
+    Serial.print(F("Name="));
+    if (wellIndex == WELL_HOME) Serial.print(F("HOME"));
     else { Serial.print(row); Serial.print(col); }
-    Serial.print(",X="); Serial.print(x);
-    Serial.print(",Y="); Serial.print(y);
-    Serial.print(",L="); Serial.print(Ldeg);
-    Serial.print(",R="); Serial.println(Rdeg);
+    Serial.print(F(",X=")); Serial.print(x);
+    Serial.print(F(",Y=")); Serial.print(y);
+    Serial.print(F(",L=")); Serial.print(Ldeg);
+    Serial.print(F(",R=")); Serial.println(Rdeg);
   }
 
   void printStepSize() {
-    Serial.print("STEP_SIZE:");
+    Serial.print(F("STEP_SIZE:"));
     Serial.print(times_x10 / 10);
-    Serial.print(".");
+    Serial.print(F("."));
     Serial.println(times_x10 % 10);
   }
 
   void printMicroSteps() {
-    Serial.print("MICROSTEPS:1/"); Serial.println(currentMicrosteps);
+    Serial.print(F("MICROSTEPS:1/")); Serial.println(currentMicrosteps);
   }
 
-  uint16_t createAction(ActionType type, uint8_t pump, uint16_t amount, uint16_t frequency, TimeUnit unit, uint32_t start, uint32_t end) {
+  uint16_t createAction(uint8_t type, uint8_t pump, uint16_t amount, uint16_t frequency, uint8_t unit, uint32_t start, uint32_t end) {
     if (actionCount >= MAX_ACTIONS_TOTAL) {
-      Serial.println("ERROR:FAILED TO CREATE ACTION");
+      Serial.println(F("ERROR:FAILED TO CREATE ACTION"));
       return 0;
     }
     
@@ -1718,20 +1712,20 @@
     action.unit = unit;
     action.startEpoch = start;
     action.endEpoch = end;
-    action.enabled = true;
+    action.enabled = 1;
 
     saveAction(action, slot);
     actionCount++;
     
     saveActionsState();
 
-    Serial.print("ACTION_CREATED:");
+    Serial.print(F("ACTION_CREATED:"));
     Serial.println(action.id);
 
     return action.id;
   }
 
-  void updateAction(uint16_t id, ActionType type, uint8_t pump, uint16_t amount, uint16_t frequency, TimeUnit unit, uint32_t start, uint32_t end) {
+  void updateAction(uint16_t id, uint8_t type, uint8_t pump, uint16_t amount, uint16_t frequency, uint8_t unit, uint32_t start, uint32_t end) {
     
     Action* action = findActionById(id);
     if (!action) return;
@@ -1748,7 +1742,7 @@
     uint8_t index = action - actions;
     saveAction(*action, index);
 
-    Serial.print("ACTION_UPDATED:");
+    Serial.print(F("ACTION_UPDATED:"));
     Serial.println(action->id);
   }
 
@@ -1756,12 +1750,12 @@
     Action* action = findActionById(id);
     if (!action) return;
 
-    action->enabled = false;
+    action->enabled = 0;
 
     uint8_t index = action - actions;
     saveAction(*action, index);
 
-    Serial.print("ACTION_DELETED:");
+    Serial.print(F("ACTION_DELETED:"));
     Serial.println(action->id);
   }
 
@@ -1801,7 +1795,7 @@
 
   void initializeEmptyActions() {
     for (uint8_t i = 0; i < MAX_ACTIONS_TOTAL; i++) {
-      actions[i].enabled = false;
+      actions[i].enabled = 0;
     }
 
     for (uint8_t w = 0; w < MAX_WELLS; w++) {
@@ -1822,15 +1816,16 @@
   }
 
   void printAction(const Action& action) {
-    Serial.print("ACTION:");
-    Serial.print("Id=");Serial.print(action.id);
-    Serial.print(",ActionType="); Serial.print(action.type);
-    Serial.print(",Pump="); Serial.print(action.pump);
-    Serial.print(",Amount="); Serial.print(action.amount_uL);
-    Serial.print(",Frequency="); Serial.print(action.frequency);
-    Serial.print(",Unit="); Serial.print(action.unit);
-    Serial.print(",Start="); Serial.print(action.startEpoch);
-    Serial.print(",End="); Serial.println(action.endEpoch);
+    Serial.print(F("ACTION:"));
+    Serial.print(F("Id="));Serial.print(action.id);
+    Serial.print(F(",ActionType=")); Serial.print(action.type);
+    Serial.print(F(",Pump=")); Serial.print(action.pump);
+    Serial.print(F(",Amount=")); Serial.print(action.amount_uL);
+    Serial.print(F(",Frequency=")); Serial.print(action.frequency);
+    Serial.print(F(",Unit=")); Serial.print(action.unit);
+    Serial.print(F(",Start=")); Serial.print(action.startEpoch);
+    Serial.print(F(",End=")); Serial.println(action.endEpoch);
+    Serial.print(F(",Enabled=")); Serial.println(action.enabled);
   }
 
   void saveWellActions() {
@@ -1854,14 +1849,14 @@
     char row;
     uint8_t col;
     wellIndexToRowCol(wellIndex, row, col);
-    Serial.print("WELL_ACTION:");
-    Serial.print("Well="); Serial.print(toupper(row)); Serial.print(col);
-    Serial.print(",Actions=[");
+    Serial.print(F("WELL_ACTION:"));
+    Serial.print(F("Well=")); Serial.print(toupper(row)); Serial.print(col);
+    Serial.print(F(",Actions=["));
     for (uint8_t i = 0; i < wellAction.count; i++) {
       if (i > 0) Serial.print(',');
       Serial.print(wellAction.actionIds[i]);
     }
-    Serial.println("]");
+    Serial.println(']');
   }
 
   void saveActionsState() {
