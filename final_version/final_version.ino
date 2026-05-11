@@ -1,4 +1,4 @@
-/* Created by Victoria Shvets
+/* Created by Catalin Chiprian
   Based on Phillip Dettinger work availible on https://github.com/CSDGroup/PHIL.git */
 
   #include <EEPROM.h>
@@ -52,7 +52,7 @@
   const char CLEAR_ACTIONS_CMD[] PROGMEM = "CLEAR_ACTIONS";
 
 
-  constexpr uint8_t MAX_WELLS = 96;
+  constexpr uint8_t MAX_WELLS = 48;
   constexpr uint8_t MAX_ACTIONS_PER_WELL = 16;
   constexpr uint16_t MAX_ACTIONS_TOTAL = 128;
   constexpr uint16_t INVALID = 0xFF;
@@ -81,6 +81,7 @@
     uint8_t unit;
     uint32_t startEpoch;
     uint32_t endEpoch;
+    uint32_t lastRunEpoch;
     uint8_t enabled;
   };
 
@@ -95,6 +96,8 @@
   uint8_t actionCount = 0;
   uint16_t nextActionId = 1;
 
+  static uint32_t lastSchedulerRun = 0;
+
   const uint8_t myMICROS = 1;
   const char Sttngs[][3] = {
     {LOW,  LOW, LOW}, // Full step
@@ -102,7 +105,7 @@
     {LOW, HIGH,  LOW}, // 1/4 step
     {HIGH,  HIGH,  LOW}, // 1/8 step
     {LOW, LOW, HIGH}, // 1/16 step
-    {HIGH,  HIGH,  HIGH}
+    {HIGH,  HIGH,  HIGH} // Full step
   };
 
   const float WELL_DX = 9.0;
@@ -495,7 +498,13 @@
   void loop() {
     checkFaults();
     basic_controls(); 
-    switches(); 
+    switches();
+
+    uint32_t now = rtc.now().unixtime();
+    if (now != lastSchedulerRun) {
+      processActions();
+      lastSchedulerRun = now;
+    }
     autoDisableMotors();
 
     long currentL = stepperL.currentPosition();
@@ -514,7 +523,7 @@
   void basic_controls() {
 
     if (Serial.available() > 0) {
-      char received[128];
+      char received[96];
       char* tokens[7];
       
       size_t len = Serial.readBytesUntil('\n', received, sizeof(received) - 1);
@@ -1716,6 +1725,7 @@
     action.unit = unit;
     action.startEpoch = start;
     action.endEpoch = end;
+    action.lastRunEpoch = 0;
     action.enabled = 1;
 
     saveAction(action, slot);
@@ -1985,4 +1995,78 @@
     saveWellActions();
 
     Serial.println(F("Actions Cleared"));
+  }
+
+  uint32_t unitToSeconds(uint8_t unit) {
+    switch (unit) {
+      case 0: return 3600;        // Hour
+      case 1: return 86400;      // Day
+      default: return 0;
+    }
+  }
+
+  void processActions() {
+    uint32_t now = rtc.now().unixtime();
+
+    for (uint16_t i = 0; i < MAX_ACTIONS_TOTAL; i++) {
+      Action &action = actions[i];
+
+      if (!action.enabled) continue;
+
+      if (now < action.startEpoch) continue;
+      if (action.endEpoch != 0 && now > action.endEpoch) continue;
+
+      uint32_t period = action.frequency * unitToSeconds(action.unit);
+      if (period == 0) continue;
+
+      if (action.lastRunEpoch == 0 ||
+          (now - action.lastRunEpoch) >= period) {
+
+        executeAction(action);
+        action.lastRunEpoch = now;
+
+        saveAction(action, i);
+      }
+    }
+  }
+
+  bool isActionLinkedToWell(const uint16_t &actionId, const uint8_t &wellIndex) {
+    if (wellIndex >= MAX_WELLS) return false;
+
+    const WellAction &wa = wellActions[wellIndex];
+
+    if (wa.count > MAX_ACTIONS_PER_WELL) return false;
+
+    for (uint8_t i = 0; i < wa.count; i++) {
+      if (wa.actionIds[i] == actionId) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  void executeAction(Action &action) {
+    for (uint8_t well = 0; well < MAX_WELLS; well++) {
+      if (!isActionLinkedToWell(action.id, well)) continue;
+
+      Serial.print(F("Executing Action")); Serial.println(action.id);
+
+      char row;
+      uint8_t col;
+      wellIndexToRowCol(well, row, col);
+
+      char wellName[4];
+      wellName[0] = row;
+      itoa(col, &wellName[1], 10);
+
+
+      switch (action.type) {
+        case 0:
+          aspirate(action.pump, action.amount_uL, wellName);
+          break;
+        case 1:
+          dispense(action.pump, action.amount_uL, wellName);
+          break;
+      }
+    }
   }
