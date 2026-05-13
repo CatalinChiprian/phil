@@ -50,11 +50,15 @@
   const char LINK_ACTION_WELL_CMD[] PROGMEM = "LINK_ACTION_WELL";
   const char UNLINK_ACTION_WELL_CMD[] PROGMEM = "UNLINK_ACTION_WELL";
   const char CLEAR_ACTIONS_CMD[] PROGMEM = "CLEAR_ACTIONS";
+  const char PRINT_ACTIONS_CMD[] PROGMEM = "PRINT_ACTIONS";
+  const char PRINT_WELL_ACTIONS_CMD[] PROGMEM = "PRINT_WELL_ACTIONS";
+  const char PRINT_TIME[] PROGMEM = "PRINT_TIME";
+  const char SET_TIME[] PROGMEM = "SET_TIME";
 
 
-  constexpr uint8_t MAX_WELLS = 48;
+  constexpr uint8_t MAX_WELLS = 96;
   constexpr uint8_t MAX_ACTIONS_PER_WELL = 16;
-  constexpr uint16_t MAX_ACTIONS_TOTAL = 128;
+  constexpr uint16_t MAX_ACTIONS_TOTAL = 64;
   constexpr uint16_t INVALID = 0xFF;
 
   enum State : uint8_t {
@@ -191,12 +195,12 @@
     if (rtc.lostPower()) {
       Serial.println(F("RTC lost power, setting time..."));
 
-      rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
+      DateTime compileTime = DateTime(F(__DATE__), F(__TIME__));
+      rtc.adjust(compileTime);
+
     }
 
     Serial.print(F("TIME=")); Serial.println(rtc.now().unixtime());
-
-    enableAllMotors();
 
     pinMode(limitSwitchL, INPUT_PULLUP);
     pinMode(limitSwitchR, INPUT_PULLUP);
@@ -228,6 +232,8 @@
 
     setNormalMovementSpeed();
     setNormalPumpSpeed();
+
+    disableAllMotors();
   
     if (!loadPositions()) {
       calibrate();
@@ -244,6 +250,10 @@
 
     emergencyStopRequested = false;
     currentState = RUNNING;
+
+    // The pipette might jump on start-up, causing a mismatch between software and mechanical position.
+    // On every start-up we must calibrate the home position.
+    //calibrate();
   }
 
   void moveBackward() {
@@ -737,6 +747,10 @@
 
         savePositions();
       }
+      else if (strcmp_P(cmd, SET_TIME) == 0) {
+        uint32_t unixTime = strtoul(tokens[1], nullptr, 10);
+        rtc.adjust(DateTime(unixTime));
+      }
       else if (strcmp_P(cmd, PRINT_WELL_CMD) == 0) {
         printCurrentWell();
       }
@@ -747,8 +761,21 @@
         printMicroSteps();
         printStepSize();
       }
+      else if (strcmp_P(cmd, PRINT_ACTIONS_CMD) == 0) {
+        for (uint8_t i = 0; i < MAX_ACTIONS_TOTAL; i++) {
+          if (actions[i].enabled) printAction(actions[i]);
+        }
+      }
+      else if (strcmp_P(cmd, PRINT_WELL_ACTIONS_CMD) == 0) {
+        for (uint8_t i = 0; i < MAX_WELLS; i++) {
+          if (wellActions[i].count > 0) printWellAction(wellActions[i], i);
+        }
+      }
+      else if (strcmp_P(cmd, PRINT_TIME) == 0) {
+        Serial.print(F("TIME=")); Serial.println(rtc.now().unixtime());
+      }
       else {
-        Serial.println(F("ERR UNKNOWN_COMMAND"));
+        Serial.println(F("ERROR:UNKNOWN_COMMAND"));
       }
     }
   }
@@ -1772,6 +1799,11 @@
     uint8_t index = action - actions;
     saveAction(*action, index);
 
+
+    for (uint8_t w = 0; w < MAX_WELLS; w++) {
+      unlinkActionFromWell(id, w);
+    }
+
     Serial.print(F("ACTION_DELETED:"));
     Serial.println(action->id);
   }
@@ -1842,7 +1874,8 @@
     Serial.print(F(",Frequency=")); Serial.print(action.frequency);
     Serial.print(F(",Unit=")); Serial.print(action.unit);
     Serial.print(F(",Start=")); Serial.print(action.startEpoch);
-    Serial.print(F(",End=")); Serial.println(action.endEpoch);
+    Serial.print(F(",End=")); Serial.print(action.endEpoch);
+    Serial.print(F(",LastRun=")); Serial.print(action.lastRunEpoch);
     Serial.print(F(",Enabled=")); Serial.println(action.enabled);
   }
 
@@ -1956,7 +1989,15 @@
 
     wa.actionIds[wa.count++] = actionId;
 
+    char row;
+    uint8_t col;
+
+    wellIndexToRowCol(wellIndex, row, col);
+
     saveWellAction(wa, wellIndex);
+    Serial.print(F("ACTION_WELL_LINK:"));
+    Serial.print(F("Action:")); Serial.print(actionId);
+    Serial.print(F(",Well:")); Serial.print(row); Serial.println(col);
     return true;
   }
 
@@ -1970,6 +2011,16 @@
         }
         wa.count--;
         saveWellAction(wa, wellIndex);
+
+        char row;
+        uint8_t col;
+
+        wellIndexToRowCol(wellIndex, row, col);
+
+        saveWellAction(wa, wellIndex);
+        Serial.print(F("ACTION_WELL_UNLINK:"));
+        Serial.print(F("Action:")); Serial.print(actionId);
+        Serial.print(F(",Well:")); Serial.print(row); Serial.println(col);
         return true;
       }
     }
@@ -2002,8 +2053,9 @@
 
   uint32_t unitToSeconds(uint8_t unit) {
     switch (unit) {
-      case 0: return 3600;        // Hour
-      case 1: return 86400;      // Day
+      case 0: return 60;           // Test only Minutes
+      case 1: return 3600;        // Hour
+      case 2: return 86400;      // Day
       default: return 0;
     }
   }
@@ -2022,14 +2074,15 @@
       uint32_t period = action.frequency * unitToSeconds(action.unit);
       if (period == 0) continue;
 
-      if (action.lastRunEpoch == 0 ||
-          (now - action.lastRunEpoch) >= period) {
+      uint32_t nextRun = action.lastRunEpoch + period;
 
-        executeAction(action);
-        action.lastRunEpoch = now;
+      if (action.lastRunEpoch == 0) nextRun = action.startEpoch;
 
-        saveAction(action, i);
-      }
+      if (now < nextRun) continue;
+
+      executeAction(action);
+      action.lastRunEpoch = now;
+      saveAction(action, i);
     }
   }
 
