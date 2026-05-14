@@ -39,6 +39,7 @@ namespace PHIL_GUI.ViewModels
         public RobotSettings Settings => RobotProtocolService.RobotState.Settings;
         public Calibration Calibration => RobotProtocolService.RobotState.Calibration;
         public Well CurrentWell => RobotProtocolService.RobotState.CurrentWell;
+        public AppKeyBindings AppKeyBindings => AppSettingsService.AppSettings.AppKeyBindings;
 
         private CalibrationPoint? selectedCalibrationPoint;
         public CalibrationPoint? SelectedCalibrationPoint

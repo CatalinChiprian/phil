@@ -1,28 +1,26 @@
-﻿using PHIL_GUI.Models;
-using PHIL_GUI.ViewModels.Base;
+﻿using Avalonia.Data.Converters;
+using System;
+using System.Globalization;
+using System.Linq;
 
-namespace PHIL_GUI.ViewModels
+namespace PHIL_GUI.Converters
 {
-    public class ControlsViewModel : ViewModelBase, ISettingsPage
+    public class KeyDisplayConverter : IValueConverter
     {
-        private AppKeyBindings appKeyBindings;
-        public AppKeyBindings AppKeyBindings
+        public static readonly KeyDisplayConverter Instance = new();
+
+        public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
         {
-            get => appKeyBindings;
-            set => SetProperty(ref appKeyBindings, value);
+            if (value is not string key) return value!;
+
+            var parts = key.Split('+');
+            return string.Join("+", parts.Select(FormatPart));
         }
 
-        public ControlsViewModel()
-        {
-            AppKeyBindings = new AppKeyBindings(AppSettingsService.AppSettings.AppKeyBindings);
-        }
+        public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
+            => value!;
 
-        public void ApplyChanges()
-        {
-            AppSettingsService.AppSettings.AppKeyBindings = AppKeyBindings;
-        }
-
-        public string FormatKeyDisplay(string key) => key switch
+        private static string FormatPart(string part) => part switch
         {
             "Up" => "↑",
             "Down" => "↓",
@@ -51,7 +49,7 @@ namespace PHIL_GUI.ViewModels
             "NumPad8" => "Num8",
             "NumPad9" => "Num9",
 
-            _ => key
+            _ => part
         };
     }
 }

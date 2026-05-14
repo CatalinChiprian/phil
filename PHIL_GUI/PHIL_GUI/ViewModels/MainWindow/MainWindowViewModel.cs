@@ -50,6 +50,7 @@ namespace PHIL_GUI.ViewModels
         public Well CurrentWell => RobotProtocolService.RobotState.CurrentWell;
         public LimitSwitches Limit => RobotProtocolService.RobotState.Limit;
         public RobotSettings Settings => RobotProtocolService.RobotState.Settings;
+        public AppKeyBindings AppKeyBindings => AppSettingsService.AppSettings.AppKeyBindings;
 
         public MainWindowViewModel()
         {

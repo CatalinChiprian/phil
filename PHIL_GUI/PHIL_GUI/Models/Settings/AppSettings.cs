@@ -1,4 +1,5 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using Avalonia.Input;
+using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace PHIL_GUI.Models
 {
@@ -16,5 +17,18 @@ namespace PHIL_GUI.Models
         }
 
         public bool Is96Well => SelectedPlateType == PlateType.Well96;
+
+        private AppKeyBindings appKeyBindings;
+        public AppKeyBindings AppKeyBindings
+        {
+            get => appKeyBindings;
+            set => SetProperty(ref appKeyBindings, value);
+        }
+
+        public AppSettings()
+        {
+            SelectedPlateType = PlateType.OrganOnChip;
+            AppKeyBindings = new AppKeyBindings();
+        }
     }
 }

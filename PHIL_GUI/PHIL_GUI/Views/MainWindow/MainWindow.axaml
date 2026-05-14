@@ -14,10 +14,10 @@
         Focusable="True">
 
     <Window.KeyBindings>
-		<KeyBinding Gesture="H" Command="{Binding GoHomeCommand}"/>
-        <KeyBinding Gesture="C" Command="{Binding CalibrateHomeCommand}"/>
-        <KeyBinding Gesture="Up" Command="{Binding MoveUpCommand}"/>
-        <KeyBinding Gesture="Down" Command="{Binding MoveDownCommand}"/>
+		<KeyBinding Gesture="{Binding AppKeyBindings.GoHomeKey}" Command="{Binding GoHomeCommand}"/>
+        <KeyBinding Gesture="{Binding AppKeyBindings.CalibrateHomeKey}" Command="{Binding CalibrateHomeCommand}"/>
+        <KeyBinding Gesture="{Binding AppKeyBindings.MoveUpKey}" Command="{Binding MoveUpCommand}"/>
+        <KeyBinding Gesture="{Binding AppKeyBindings.MoveDownKey}" Command="{Binding MoveDownCommand}"/>
     </Window.KeyBindings>
     
     <!-- Main content area that switches between pages -->

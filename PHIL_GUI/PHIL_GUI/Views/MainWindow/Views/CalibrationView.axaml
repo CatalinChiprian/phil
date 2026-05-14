@@ -9,20 +9,24 @@
              Focusable="True">
 
     <UserControl.KeyBindings>
-        <KeyBinding Gesture="W" Command="{Binding MoveForwardCommand}"/>
-        <KeyBinding Gesture="A" Command="{Binding MoveLeftCommand}"/>
-        <KeyBinding Gesture="S" Command="{Binding MoveBackwardCommand}"/>
-        <KeyBinding Gesture="D" Command="{Binding MoveRightCommand}"/>
+        <KeyBinding Gesture="{Binding AppKeyBindings.MoveForwardKey}" Command="{Binding MoveForwardCommand}"/>
+        <KeyBinding Gesture="{Binding AppKeyBindings.MoveLeftKey}" Command="{Binding MoveLeftCommand}"/>
+        <KeyBinding Gesture="{Binding AppKeyBindings.MoveBackwardKey}" Command="{Binding MoveBackwardCommand}"/>
+        <KeyBinding Gesture="{Binding AppKeyBindings.MoveRightKey}" Command="{Binding MoveRightCommand}"/>
 
-        <KeyBinding Gesture="+" Command="{Binding IncreaseStepSize}"/>
-        <KeyBinding Gesture="-" Command="{Binding DecreaseStepSize}"/>
+        <KeyBinding Gesture="{Binding AppKeyBindings.IncreaseStepKey}" Command="{Binding IncreaseStepSize}"/>
+        <KeyBinding Gesture="{Binding AppKeyBindings.DecreaseStepKey}" Command="{Binding DecreaseStepSize}"/>
 
-        <KeyBinding Gesture="Z" Command="{Binding RecordPositionCommand}"/>
-        <KeyBinding Gesture="M" Command="{Binding SolveMappingCommand}"/>
-        <KeyBinding Gesture="D1" Command="{Binding PumpAspirate}" CommandParameter="1"/>
-        <KeyBinding Gesture="D2" Command="{Binding PumpDispense}" CommandParameter="1"/>
-        <KeyBinding Gesture="D3" Command="{Binding PumpAspirate}" CommandParameter="2"/>
-        <KeyBinding Gesture="D4" Command="{Binding PumpDispense}" CommandParameter="2"/>
+        <KeyBinding Gesture="{Binding AppKeyBindings.RecordPositionKey}" Command="{Binding RecordPositionCommand}"/>
+        <KeyBinding Gesture="{Binding AppKeyBindings.SolveMapKey}" Command="{Binding SolveMappingCommand}"/>
+        <KeyBinding Gesture="{Binding AppKeyBindings.Pump1InKey}" Command="{Binding PumpAspirate}" CommandParameter="1"/>
+        <KeyBinding Gesture="{Binding AppKeyBindings.Pump1OutKey}" Command="{Binding PumpDispense}" CommandParameter="1"/>
+        <KeyBinding Gesture="{Binding AppKeyBindings.Pump2InKey}" Command="{Binding PumpAspirate}" CommandParameter="2"/>
+        <KeyBinding Gesture="{Binding AppKeyBindings.Pump2OutKey}" Command="{Binding PumpDispense}" CommandParameter="2"/>
+        <KeyBinding Gesture="{Binding AppKeyBindings.Pump3InKey}" Command="{Binding PumpAspirate}" CommandParameter="3"/>
+        <KeyBinding Gesture="{Binding AppKeyBindings.Pump3OutKey}" Command="{Binding PumpDispense}" CommandParameter="3"/>
+        <KeyBinding Gesture="{Binding AppKeyBindings.Pump4InKey}" Command="{Binding PumpAspirate}" CommandParameter="4"/>
+        <KeyBinding Gesture="{Binding AppKeyBindings.Pump4OutKey}" Command="{Binding PumpDispense}" CommandParameter="4"/>
     </UserControl.KeyBindings>
 
     <DockPanel>
