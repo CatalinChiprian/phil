@@ -11,22 +11,33 @@
 
 
     <Application.Resources>
-        <SolidColorBrush x:Key="Wall">#AA000000</SolidColorBrush>
-        <SolidColorBrush x:Key="Bg">#f4f6f4</SolidColorBrush>
-        <SolidColorBrush x:Key="Surface">#ffffff</SolidColorBrush>
-        <SolidColorBrush x:Key="Surface2">#eef1ee</SolidColorBrush>
-	    <SolidColorBrush x:Key="BorderColor">#dde3dd</SolidColorBrush>
-        <SolidColorBrush x:Key="Text">#1a1f1a</SolidColorBrush>
-        <SolidColorBrush x:Key="Accent">#00a854</SolidColorBrush>
-        <SolidColorBrush x:Key="Accent-Dim">#2000a854</SolidColorBrush>
-        <SolidColorBrush x:Key="Accent-Mid">#20a85430</SolidColorBrush>
-        <SolidColorBrush x:Key="Muted">#7a8f7a</SolidColorBrush>
-        <SolidColorBrush x:Key="Warn">#d93025</SolidColorBrush>
-        <SolidColorBrush x:Key="Warn-Dim">#0Cd93025</SolidColorBrush>
-        <SolidColorBrush x:Key="Caution">#cc7700</SolidColorBrush>
-        <SolidColorBrush x:Key="Caution-Dim">#0Ccc7700</SolidColorBrush>
-        <SolidColorBrush x:Key="Well-Idle">#e8ede8</SolidColorBrush>
-        <SolidColorBrush x:Key="Well-Border">#cdd6cd</SolidColorBrush>
+        <ResourceDictionary>
+            <SolidColorBrush x:Key="Wall">#AA000000</SolidColorBrush>
+            <SolidColorBrush x:Key="Bg">#f4f6f4</SolidColorBrush>
+            <SolidColorBrush x:Key="Surface">#ffffff</SolidColorBrush>
+            <SolidColorBrush x:Key="Surface2">#eef1ee</SolidColorBrush>
+	        <SolidColorBrush x:Key="BorderColor">#dde3dd</SolidColorBrush>
+            <SolidColorBrush x:Key="Text">#1a1f1a</SolidColorBrush>
+            <SolidColorBrush x:Key="Accent">#00a854</SolidColorBrush>
+            <SolidColorBrush x:Key="Accent-Dim">#2000a854</SolidColorBrush>
+            <SolidColorBrush x:Key="Accent-Mid">#20a85430</SolidColorBrush>
+            <SolidColorBrush x:Key="Info">#2563eb</SolidColorBrush>
+            <SolidColorBrush x:Key="Info-Dim">#202563eb</SolidColorBrush>
+            <SolidColorBrush x:Key="Muted">#7a8f7a</SolidColorBrush>
+            <SolidColorBrush x:Key="Warn">#d93025</SolidColorBrush>
+            <SolidColorBrush x:Key="Warn-Dim">#0Cd93025</SolidColorBrush>
+            <SolidColorBrush x:Key="Caution">#cc7700</SolidColorBrush>
+            <SolidColorBrush x:Key="Caution-Dim">#0Ccc7700</SolidColorBrush>
+            <SolidColorBrush x:Key="Well-Idle">#e8ede8</SolidColorBrush>
+            <SolidColorBrush x:Key="Well-Border">#cdd6cd</SolidColorBrush>
+
+
+            <Color x:Key="SystemAccentColor">#00a854</Color>
+            <Color x:Key="SystemAccentColorLight1">#33c27a</Color>
+            <Color x:Key="SystemAccentColorLight2">#66d99c</Color>
+            <Color x:Key="SystemAccentColorDark1">#008a45</Color>
+            <Color x:Key="SystemAccentColorDark2">#006a34</Color>
+        </ResourceDictionary>
     </Application.Resources>
   
     <Application.Styles>
@@ -198,6 +209,17 @@
 
         <Style Selector="Button.btn-primary:pointerover /template/ ContentPresenter">
             <Setter Property="Background" Value="{StaticResource Accent}"/>
+            <Setter Property="Foreground" Value="{StaticResource Surface}"/>
+        </Style>
+
+        <Style Selector="Button.btn-info">
+		    <Setter Property="BorderBrush" Value="{StaticResource Info}"/>
+            <Setter Property="Foreground" Value="{StaticResource Info}"/>
+            <Setter Property="Background" Value="{StaticResource Info-Dim}"/>
+        </Style>
+
+        <Style Selector="Button.btn-info:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="{StaticResource Info}"/>
             <Setter Property="Foreground" Value="{StaticResource Surface}"/>
         </Style>
 
@@ -619,9 +641,29 @@
             <Setter Property="Focusable" Value="False"/>
         </Style>
 
-        <Style Selector="TextBox.terminal:pointerover /template/ Border#PART_BorderElement">
-            <Setter Property="Background" Value="{StaticResource Surface2}"/>
-            <Setter Property="BorderBrush" Value="{StaticResource BorderColor}"/>
+        <Style Selector="ComboBox:pointerover /template/ Border#Background">
+			<Setter Property="BorderBrush" Value="{StaticResource Accent}"/>
         </Style>
+
+        <Style Selector="ComboBox:dropdownopen /template/ Border#Background">
+			<Setter Property="BorderBrush" Value="{StaticResource Accent}"/>
+        </Style>
+
+        <Style Selector="ComboBox TextBlock">
+			<Setter Property="Foreground" Value="{StaticResource Text}"/>
+        </Style>
+
+        <Style Selector="ComboBoxItem > TextBlock">
+            <Setter Property="Foreground" Value="{StaticResource Muted}"/>
+        </Style>
+
+        <Style Selector="ComboBoxItem:pointerover > TextBlock">
+            <Setter Property="Foreground" Value="{StaticResource Text}"/>
+        </Style>
+
+        <Style Selector="NumericUpDown /template/ ButtonSpinner:pointerover /template/ Border">
+            <Setter Property="BorderBrush" Value="{StaticResource Accent}"/>
+        </Style>
+
     </Application.Styles>
 </Application>

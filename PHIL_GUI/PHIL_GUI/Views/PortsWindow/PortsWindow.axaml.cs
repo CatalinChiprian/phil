@@ -1,4 +1,6 @@
+using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using Microsoft.Extensions.DependencyInjection;
 using PHIL_GUI.ViewModels;
@@ -22,6 +24,16 @@ public partial class PortsWindow : Window
     private void OnConnected()
     {
         MainWindow mainWindow = new MainWindow();
+
+#if DEBUG
+        mainWindow.AttachDevTools();
+#endif
+
+        if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+        {
+            desktop.MainWindow = mainWindow;
+        }
+
         mainWindow.Show();
 
         Close();

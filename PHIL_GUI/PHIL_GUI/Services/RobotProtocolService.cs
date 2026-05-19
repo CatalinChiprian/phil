@@ -96,7 +96,7 @@ namespace PHIL_GUI.Services
             serial.GetStartUpMessage += GetSetupInformation;
         }
 
-        public void Send(string command)
+        private void Send(string command)
         {
             serialPort.SendMessage(command);
         }
@@ -104,6 +104,11 @@ namespace PHIL_GUI.Services
         public void ClearReceivedData()
         {
             ReceivedData = "";
+        }
+
+        public void Stop()
+        {
+            Send("s");
         }
 
         public void MoveUp()
@@ -161,14 +166,19 @@ namespace PHIL_GUI.Services
             Send($"{DELETE_POINT_CMD} {wellName}");
         }
 
-        public void Aspirate(string pumpNumber, int volume)
+        public void Aspirate(int pumpNumber, int volume)
         {
             Send($"{ASPIRATE_CMD} {pumpNumber} {volume}");
         }
 
-        public void Dispense(string pumpNumber, int volume)
+        public void Dispense(int pumpNumber, int volume)
         {
             Send($"{DISPENSE_CMD} {pumpNumber} {volume}");
+        }
+
+        public void Prime(int pumpNumber)
+        {
+            Send($"{ASPIRATE_CMD} {pumpNumber} {int.MaxValue}");
         }
 
         public void MoveToHardcodedWell(string wellName)

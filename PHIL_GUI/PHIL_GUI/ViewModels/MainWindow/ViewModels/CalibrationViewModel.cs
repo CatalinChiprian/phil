@@ -15,16 +15,14 @@ namespace PHIL_GUI.ViewModels
         public ICommand MoveBackwardCommand { get; }
         public ICommand MoveLeftCommand { get; }
         public ICommand MoveRightCommand { get; }
-        public ICommand DecreaseStepSize { get; }
-        public ICommand IncreaseStepSize { get; }
+        public ICommand DecreaseStepSizeCommand { get; }
+        public ICommand IncreaseStepSizeCommand { get; }
         public ICommand WellsPositionCommand { get; }
         public ICommand RecordPositionCommand { get; }
         public ICommand SolveMappingCommand { get; }
         public ICommand GoToSelectedWellCommand { get; }
         public ICommand DeleteRecordPositionCommand { get; }
         public ICommand CancelCommand { get; }
-        public ICommand PumpAspirate { get; }
-        public ICommand PumpDispense { get; }
         public bool IsDecreaseStepSizeEnabled => RobotProtocolService.RobotState.Settings.StepSize > 0.1;
         public bool RecordEnabled
         {
@@ -67,16 +65,14 @@ namespace PHIL_GUI.ViewModels
             MoveBackwardCommand = new RelayCommand(RobotProtocolService.MoveBackward);
             MoveLeftCommand = new RelayCommand(RobotProtocolService.MoveLeft);
             MoveRightCommand = new RelayCommand(RobotProtocolService.MoveRight);
-            DecreaseStepSize = new RelayCommand(RobotProtocolService.DecreaseStepSize);
-            IncreaseStepSize = new RelayCommand(RobotProtocolService.IncreaseStepSize);
+            DecreaseStepSizeCommand = new RelayCommand(RobotProtocolService.IncreaseStepSize);
+            IncreaseStepSizeCommand = new RelayCommand(RobotProtocolService.DecreaseStepSize);
             WellsPositionCommand = new RelayCommand<string>(SelectWell);
             RecordPositionCommand = new RelayCommand(RecordPosition);
             SolveMappingCommand = new RelayCommand(SolveMapping);
             GoToSelectedWellCommand = new RelayCommand(GoToSelectedWell);
             DeleteRecordPositionCommand = new RelayCommand(DeleteRecordPosition);
             CancelCommand = new RelayCommand(Cancel);
-            PumpAspirate = new RelayCommand<string>(Aspirate);
-            PumpDispense = new RelayCommand<string>(Dispense);
 
             Calibration.Points.CollectionChanged += Points_CollectionChanged;
             Settings.PropertyChanged += Settings_PropertyChanged;
@@ -121,7 +117,7 @@ namespace PHIL_GUI.ViewModels
             }
         }
 
-        void SelectWell(string well)
+        private void SelectWell(string well)
         {
             WellItem selectedWell = WellPlate.SelectWell(well);
             SelectedCalibrationPoint = selectedWell.Calibration;
@@ -130,7 +126,7 @@ namespace PHIL_GUI.ViewModels
             OnPropertyChanged(nameof(RecordEnabled));
         }
 
-        void GoToSelectedWell()
+        private void GoToSelectedWell()
         {
             bool isSolved = WellPlate.SelectedWellItem.Calibration?.IsSolved ?? false;
             string wellName = WellPlate.SelectedWellName;
@@ -148,7 +144,7 @@ namespace PHIL_GUI.ViewModels
             CurrentWell.Name = wellName;
         }
 
-        void RecordPosition()
+        private void RecordPosition()
         {
             if (!RecordEnabled) return;
 
@@ -161,14 +157,14 @@ namespace PHIL_GUI.ViewModels
             OnPropertyChanged(nameof(RecordEnabled));
         }
 
-        void SolveMapping()
+        private void SolveMapping()
         {
             if (Calibration.Points.Count < Calibration.MIN_COUNT) return;
 
             RobotProtocolService.SolveMap();
         }
 
-        void DeleteRecordPosition()
+        private void DeleteRecordPosition()
         {
             if (SelectedCalibrationPoint == null) return;
 
@@ -180,7 +176,7 @@ namespace PHIL_GUI.ViewModels
             RobotProtocolService.RecordCalibrationPoint(WellPlate.SelectedWellName);
         }
 
-        void Cancel()
+        private void Cancel()
         {
             SelectedCalibrationPoint = null;
 
@@ -190,17 +186,7 @@ namespace PHIL_GUI.ViewModels
             OnPropertyChanged(nameof(RecordEnabled));
         }
 
-        void Aspirate(string pumpNumber)
-        {
-            RobotProtocolService.Aspirate(pumpNumber, 50);
-        }
-
-        void Dispense(string pumpNumber)
-        {
-            RobotProtocolService.Dispense(pumpNumber, 50);
-        }
-
-        void UpdateWellClass(CalibrationPoint point)
+        private void UpdateWellClass(CalibrationPoint point)
         {
             WellItem wellItem = WellPlate.GetWell(point.Name);
 

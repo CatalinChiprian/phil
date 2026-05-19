@@ -1,19 +1,16 @@
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
-using Microsoft.Extensions.DependencyInjection;
 using PHIL_GUI.ViewModels;
 
 namespace PHIL_GUI.Views;
 
-public partial class SettingsWindow : Window
+public partial class PumpsWindow : Window
 {
-    public SettingsWindow()
+    public PumpsWindow()
     {
         InitializeComponent();
-
-        SettingsWindowViewModel settingsViewModel = App.Services.GetRequiredService<SettingsWindowViewModel>();
-
-        DataContext = settingsViewModel;
+        DataContext = new PumpsWindowViewModel();
     }
 
     private void BottomBarButton_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)

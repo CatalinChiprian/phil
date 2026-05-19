@@ -14,19 +14,11 @@
         <KeyBinding Gesture="{Binding AppKeyBindings.MoveBackwardKey}" Command="{Binding MoveBackwardCommand}"/>
         <KeyBinding Gesture="{Binding AppKeyBindings.MoveRightKey}" Command="{Binding MoveRightCommand}"/>
 
-        <KeyBinding Gesture="{Binding AppKeyBindings.IncreaseStepKey}" Command="{Binding IncreaseStepSize}"/>
-        <KeyBinding Gesture="{Binding AppKeyBindings.DecreaseStepKey}" Command="{Binding DecreaseStepSize}"/>
+        <KeyBinding Gesture="{Binding AppKeyBindings.IncreaseStepKey}" Command="{Binding IncreaseStepSizeCommand}"/>
+        <KeyBinding Gesture="{Binding AppKeyBindings.DecreaseStepKey}" Command="{Binding DecreaseStepSizeCommand}"/>
 
         <KeyBinding Gesture="{Binding AppKeyBindings.RecordPositionKey}" Command="{Binding RecordPositionCommand}"/>
         <KeyBinding Gesture="{Binding AppKeyBindings.SolveMapKey}" Command="{Binding SolveMappingCommand}"/>
-        <KeyBinding Gesture="{Binding AppKeyBindings.Pump1InKey}" Command="{Binding PumpAspirate}" CommandParameter="1"/>
-        <KeyBinding Gesture="{Binding AppKeyBindings.Pump1OutKey}" Command="{Binding PumpDispense}" CommandParameter="1"/>
-        <KeyBinding Gesture="{Binding AppKeyBindings.Pump2InKey}" Command="{Binding PumpAspirate}" CommandParameter="2"/>
-        <KeyBinding Gesture="{Binding AppKeyBindings.Pump2OutKey}" Command="{Binding PumpDispense}" CommandParameter="2"/>
-        <KeyBinding Gesture="{Binding AppKeyBindings.Pump3InKey}" Command="{Binding PumpAspirate}" CommandParameter="3"/>
-        <KeyBinding Gesture="{Binding AppKeyBindings.Pump3OutKey}" Command="{Binding PumpDispense}" CommandParameter="3"/>
-        <KeyBinding Gesture="{Binding AppKeyBindings.Pump4InKey}" Command="{Binding PumpAspirate}" CommandParameter="4"/>
-        <KeyBinding Gesture="{Binding AppKeyBindings.Pump4OutKey}" Command="{Binding PumpDispense}" CommandParameter="4"/>
     </UserControl.KeyBindings>
 
     <DockPanel>
@@ -106,7 +98,7 @@
                     <StackPanel Orientation="Horizontal" Spacing="5">
 						<Button Classes="btn btn-svg" Content="-"
                                 IsEnabled="{Binding IsDecreaseStepSizeEnabled}"
-                                Command="{Binding DecreaseStepSize}"
+                                Command="{Binding DecreaseStepSizeCommand}"
                                 FontSize="15"
                                 Padding="0"/>
                         <Border Classes="step-value" CornerRadius="4">
@@ -116,11 +108,18 @@
                                        FontSize="12"/>
                         </Border>
 						<Button Classes="btn btn-svg" Content="+"
-                                Command="{Binding IncreaseStepSize}"
+                                Command="{Binding IncreaseStepSizeCommand}"
                                 FontSize="15"
                                 Padding="0"/>
                     </StackPanel>
 
+                    <Border Width="1" Height="40" Background="{StaticResource BorderColor}"/>
+
+                    <TextBlock Classes="subtitle" LetterSpacing="2" Text="PUMPS" VerticalAlignment="Center"/>
+
+                    <Button Classes="btn btn-secondary" Content="Manual Control"
+                            Click="PumpsButton_Click"/>
+                    
 
                     <Border Width="1" Height="40" Background="{StaticResource BorderColor}"/>
 

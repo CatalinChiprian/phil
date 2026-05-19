@@ -17,16 +17,16 @@ public partial class MainWindow : Window
         DataContext = mainVm;
     }
 
-    private void OnDisconnected()
+    private async void OnDisconnected()
     {
         PortsWindow portsWindow = new PortsWindow();
-        portsWindow.Show();
+        await portsWindow.ShowDialog(this);
 
         Close();
     }
 
-    private void SettingsButton_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    private async void SettingsButton_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
-        new SettingsWindow().ShowDialog(this);
+        await new SettingsWindow().ShowDialog(this);
     }
 }

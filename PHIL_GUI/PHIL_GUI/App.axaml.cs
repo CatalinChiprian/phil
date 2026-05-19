@@ -39,6 +39,11 @@ public partial class App : Application
 
             desktop.MainWindow = portsWindow;
             portsWindow.Show();
+
+
+#if DEBUG
+            this.AttachDevTools();
+#endif
         }
 
         base.OnFrameworkInitializationCompleted();

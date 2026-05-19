@@ -1,0 +1,75 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:PHIL_GUI.ViewModels"
+        xmlns:views="using:PHIL_GUI.Views"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="300" d:DesignHeight="300"
+        x:Class="PHIL_GUI.Views.PumpsWindow"
+        x:DataType="vm:PumpsWindowViewModel"
+        Icon="/Assets/applied-nanotechnology.ico"
+        WindowStartupLocation="CenterScreen"
+        Width="300"
+        Height="300"
+        CanResize="False"
+        Topmost="True"
+        Title="Pumps Control - PHIL">
+
+    <Window.KeyBindings>
+        <KeyBinding Gesture="{Binding AppKeyBindings.Pump1InKey}" Command="{Binding AspirateCommand}" CommandParameter="1"/>
+        <KeyBinding Gesture="{Binding AppKeyBindings.Pump1OutKey}" Command="{Binding DispenseCommand}" CommandParameter="1"/>
+        <KeyBinding Gesture="{Binding AppKeyBindings.Pump2InKey}" Command="{Binding AspirateCommand}" CommandParameter="2"/>
+        <KeyBinding Gesture="{Binding AppKeyBindings.Pump2OutKey}" Command="{Binding DispenseCommand}" CommandParameter="2"/>
+        <KeyBinding Gesture="{Binding AppKeyBindings.Pump3InKey}" Command="{Binding AspirateCommand}" CommandParameter="3"/>
+        <KeyBinding Gesture="{Binding AppKeyBindings.Pump3OutKey}" Command="{Binding DispenseCommand}" CommandParameter="3"/>
+        <KeyBinding Gesture="{Binding AppKeyBindings.Pump4InKey}" Command="{Binding AspirateCommand}" CommandParameter="4"/>
+        <KeyBinding Gesture="{Binding AppKeyBindings.Pump4OutKey}" Command="{Binding DispenseCommand}" CommandParameter="4"/>
+    </Window.KeyBindings>
+
+    <DockPanel>
+        <Border DockPanel.Dock="Bottom"
+                Classes="toolbar"
+                BorderThickness="0,1,0,0">
+
+        <Button HorizontalAlignment="Right" 
+                Classes="btn btn-secondary"
+                Content="Close"
+                Click="BottomBarButton_Click"/>
+        </Border>
+
+        <Grid DockPanel.Dock="Top" Margin="20" ColumnDefinitions="Auto,*">
+            <Border Grid.Column="0" Width="2" Background="{StaticResource Accent}" Margin="0,0,15,0"/>
+            <TextBlock Grid.Column="1"
+                       Text="Use this to prime tubes or test pump output."
+                       Foreground="{StaticResource Muted}"
+                       TextWrapping="Wrap"
+                       VerticalAlignment="Center"/>
+        </Grid>
+
+        <StackPanel Orientation="Vertical" Spacing="8" Margin="20, 0">
+    
+            <StackPanel Orientation="Horizontal" Spacing="8">
+                <TextBlock Text="Pump" Foreground="{StaticResource Muted}" VerticalAlignment="Center" Width="50"/>
+                <ComboBox ItemsSource="{Binding PumpOptions}" SelectedItem="{Binding SelectedPump}"/>
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal" Spacing="8">
+                <TextBlock Text="Volume" Foreground="{StaticResource Muted}" VerticalAlignment="Center" Width="50"/>
+                <NumericUpDown Value="{Binding Volume}" FormatString="0" Minimum="1" Maximum="999" Width="110"/>
+                <TextBlock Text="µL" Foreground="{StaticResource Muted}" VerticalAlignment="Center"/>
+            </StackPanel>
+
+            <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto">
+                <Button Grid.Row="0" Grid.Column="0" Content="↑ Aspirate" Classes="btn btn-primary"
+                        Margin="0,0,0,6" Width="110" Command="{Binding AspirateCommand}"/>
+                <Button Grid.Row="0" Grid.Column="1" Content="↓ Dispense" Classes="btn btn-info"
+                        Margin="0,0,0,6" Width="110" Command="{Binding DispenseCommand}"/>
+                <Button Grid.Row="1" Grid.Column="0" Content="Prime" Classes="btn btn-secondary"
+                        Margin="0,0,0,0" Width="110" Command="{Binding PrimeCommand}"/>
+                <Button Grid.Row="1" Grid.Column="1" Content="Stop" Classes="btn btn-emergency"
+                        Margin="0,0,0,0" Width="110" Command="{Binding StopCommand}"/>
+            </Grid>
+
+        </StackPanel>
+    </DockPanel>
+</Window>

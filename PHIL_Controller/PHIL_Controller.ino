@@ -67,8 +67,9 @@
   } currentState;
 
   // enum ActionType : uint8_t {
-  //   ASPIRATE,
-  //   DISPENSE
+  //   ASPIRATE, // 96-well: IN. OoC: IN
+  //   DISPENSE, // 96-well: OUT. OoC: OUT
+  //   EXCHANGE // 96-well: N/A. OoC: OUT,IN,OUT,IN
   // };
 
   // enum TimeUnit : uint8_t {
@@ -79,7 +80,8 @@
   struct Action {
     uint16_t id;
     uint8_t type;
-    uint8_t pump;
+    uint8_t pump1; // 96-well: the pump. OoC: dispense/IN pump
+    uint8_t pump2; // 96-well: unused. OoC: aspirate/OUT pump
     uint16_t amount_uL;
     uint16_t frequency;
     uint8_t unit;
@@ -510,7 +512,7 @@
 
   void loop() {
     checkFaults();
-    basic_controls(); 
+    parse_commands(); 
     switches();
 
     uint32_t now = rtc.now().unixtime();
@@ -533,11 +535,11 @@
 }
   }
 
-  void basic_controls() {
+  void parse_commands() {
 
     if (Serial.available() > 0) {
       char received[96];
-      char* tokens[8];
+      char* tokens[9];
       
       size_t len = Serial.readBytesUntil('\n', received, sizeof(received) - 1);
       if (len == 0) return;
@@ -665,39 +667,41 @@
         calCount = 0;
         Serial.println(F("Calibration cleared"));
       }
-      // CREATE_ACTION <actionId>* <actionType>* <amount>* <frequency>* <frequencyUnit>* <start> <end>
+      // CREATE_ACTION <actionType>* <pump1>* <pump2>* <amount>* <frequency>* <frequencyUnit>* <start> <end>
       else if (strcmp_P(cmd, CREATE_ACTION_CMD) == 0) {
         if (count < 5) return;
 
         uint8_t type = atoi(tokens[1]);
-        uint8_t pump = atoi(tokens[2]);
-        uint16_t amount = atoi(tokens[3]);
-        uint16_t frequency = atoi(tokens[4]);
-        uint8_t unit = atoi(tokens[5]);
+        uint8_t pump1 = atoi(tokens[2]);
+        uint8_t pump2 = atoi(tokens[3]);
+        uint16_t amount = atoi(tokens[4]);
+        uint16_t frequency = atoi(tokens[5]);
+        uint8_t unit = atoi(tokens[6]);
         uint32_t start = 0;
         uint32_t end = 0;
 
-        if (count >= 8) {
-          start = strtoul(tokens[6], nullptr, 10);
-          end = strtoul(tokens[7], nullptr, 10);
+        if (count >= 9) {
+          start = strtoul(tokens[7], nullptr, 10);
+          end = strtoul(tokens[8], nullptr, 10);
         }
 
-        createAction(type, pump, amount, frequency, unit, start, end);
+        createAction(type, pump1, pump2, amount, frequency, unit, start, end);
       }
-      // UPDATE_ACTION <actionId>* <actionType>* <amount>* <frequency>* <frequencyUnit>* <start>* <end>*
+      // UPDATE_ACTION <actionId>* <actionType>* <pump1>* <pump2>* <amount>* <frequency>* <frequencyUnit>* <start>* <end>*
       else if (strcmp_P(cmd, UPDATE_ACTION_CMD) == 0) {
         if (count < 8) return;
 
         uint16_t id = atoi(tokens[1]);
         uint8_t type = atoi(tokens[2]);
-        uint8_t pump = atoi(tokens[3]);
-        uint16_t amount = atoi(tokens[4]);
-        uint16_t frequency = atoi(tokens[5]);
-        uint8_t unit = atoi(tokens[6]);
-        uint32_t start = atoi(tokens[7]);
-        uint32_t end = atoi(tokens[8]);
+        uint8_t pump1 = atoi(tokens[3]);
+        uint8_t pump2 = atoi(tokens[4]);
+        uint16_t amount = atoi(tokens[5]);
+        uint16_t frequency = atoi(tokens[6]);
+        uint8_t unit = atoi(tokens[7]);
+        uint32_t start = atoi(tokens[8]);
+        uint32_t end = atoi(tokens[9]);
 
-        updateAction(id, type, pump, amount, frequency, unit, start, end);
+        updateAction(id, type, pump1, pump2, amount, frequency, unit, start, end);
       }
       // DEL_ACTION ID
       else if (strcmp_P(cmd, DEL_ACTION_CMD) == 0) {
@@ -1431,10 +1435,14 @@
     return;
   }
 
+  bool isInvalidWell(char row, uint8_t col) {
+    return (col < 1 || col > 12 || row < 'a' || row > 'h');
+  }
+
   void wellToXY(char row, uint8_t col, float &x, float &y) {
     row = tolower(row);
 
-    if (col < 1 || col > 12 || row < 'a' || row > 'h') {
+    if (isInvalidWell(row, col)) {
     Serial.print(F("ERROR:INVALID_WELL,"));
     Serial.print(row); Serial.println(col);
     return;
@@ -1736,7 +1744,7 @@
     Serial.print(F("MICROSTEPS:1/")); Serial.println(currentMicrosteps);
   }
 
-  uint16_t createAction(uint8_t type, uint8_t pump, uint16_t amount, uint16_t frequency, uint8_t unit, uint32_t start, uint32_t end) {
+  uint16_t createAction(uint8_t type, uint8_t pump1, uint8_t pump2, uint16_t amount, uint16_t frequency, uint8_t unit, uint32_t start, uint32_t end) {
     if (actionCount >= MAX_ACTIONS_TOTAL) {
       Serial.println(F("ERROR:FAILED TO CREATE ACTION"));
       return 0;
@@ -1749,7 +1757,8 @@
 
     action.id = nextActionId++;
     action.type = type;
-    action.pump = pump;
+    action.pump1 = pump1;
+    action.pump2 = pump2;
     action.amount_uL = amount;
     action.frequency = frequency;
     action.unit = unit;
@@ -1769,14 +1778,15 @@
     return action.id;
   }
 
-  void updateAction(uint16_t id, uint8_t type, uint8_t pump, uint16_t amount, uint16_t frequency, uint8_t unit, uint32_t start, uint32_t end) {
+  void updateAction(uint16_t id, uint8_t type, uint8_t pump1, uint8_t pump2, uint16_t amount, uint16_t frequency, uint8_t unit, uint32_t start, uint32_t end) {
     
     Action* action = findActionById(id);
     if (!action) return;
 
 
     action->type = type;
-    action->pump = pump;
+    action->pump1 = pump1;
+    action->pump2 = pump2;
     action->amount_uL = amount;
     action->frequency = frequency;
     action->unit = unit;
@@ -1869,7 +1879,8 @@
     Serial.print(F("ACTION:"));
     Serial.print(F("Id="));Serial.print(action.id);
     Serial.print(F(",ActionType=")); Serial.print(action.type);
-    Serial.print(F(",Pump=")); Serial.print(action.pump);
+    Serial.print(F(",Pump1=")); Serial.print(action.pump1);
+    Serial.print(F(",Pump2=")); Serial.print(action.pump2);
     Serial.print(F(",Amount=")); Serial.print(action.amount_uL);
     Serial.print(F(",Frequency=")); Serial.print(action.frequency);
     Serial.print(F(",Unit=")); Serial.print(action.unit);
@@ -2118,11 +2129,27 @@
 
       switch (action.type) {
         case 0:
-          aspirate(action.pump, action.amount_uL, wellName);
+          aspirate(action.pump1, action.amount_uL, wellName);
           break;
         case 1:
-          dispense(action.pump, action.amount_uL, wellName);
+          dispense(action.pump1, action.amount_uL, wellName);
           break;
+        case 2:
+        {
+          char nxtRow = row + 1;
+          uint8_t nxtCol = col + 1;
+          char outWellName[4];
+          outWellName[0] = nxtRow;
+          itoa(nxtCol, &outWellName[1], 10);
+
+          if (isInvalidWell(nxtRow, nxtCol)) return;
+
+          aspirate(action.pump2, action.amount_uL, outWellName);
+          dispense(action.pump1, action.amount_uL, wellName);
+          aspirate(action.pump2, action.amount_uL, outWellName);
+          dispense(action.pump1, action.amount_uL, wellName);
+          break;
+        }
       }
     }
   }

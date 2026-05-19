@@ -1,5 +1,5 @@
 ﻿
-/* Created by Victoria Shvets
+/* Created by Catalin Chiprian
 Based on Phillip Dettinger work availible on https://github.com/CSDGroup/PHIL.git */
 
 using PHIL_GUI.Commands;
