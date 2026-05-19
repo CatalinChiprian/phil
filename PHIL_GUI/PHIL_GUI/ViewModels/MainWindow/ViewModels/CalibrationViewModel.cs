@@ -17,7 +17,7 @@ namespace PHIL_GUI.ViewModels
         public ICommand MoveRightCommand { get; }
         public ICommand DecreaseStepSizeCommand { get; }
         public ICommand IncreaseStepSizeCommand { get; }
-        public ICommand WellsPositionCommand { get; }
+        public ICommand SelectWellCommand { get; }
         public ICommand RecordPositionCommand { get; }
         public ICommand SolveMappingCommand { get; }
         public ICommand GoToSelectedWellCommand { get; }
@@ -57,7 +57,7 @@ namespace PHIL_GUI.ViewModels
 
         public bool IsWellMenuVisibile => WellPlate.SelectedWellName != null;
         public IWellPlateItem WellPlate { get; } = new WellPlateItemOoC(true);
-        public WellPlateItemOoC? WellPlateOoC => WellPlate as WellPlateItemOoC;
+        public WellPlateItemOoC? WellPlateItemOoC => WellPlate as WellPlateItemOoC;
 
         public CalibrationViewModel()
         {
@@ -67,7 +67,7 @@ namespace PHIL_GUI.ViewModels
             MoveRightCommand = new RelayCommand(RobotProtocolService.MoveRight);
             DecreaseStepSizeCommand = new RelayCommand(RobotProtocolService.IncreaseStepSize);
             IncreaseStepSizeCommand = new RelayCommand(RobotProtocolService.DecreaseStepSize);
-            WellsPositionCommand = new RelayCommand<string>(SelectWell);
+            SelectWellCommand = new RelayCommand<string>(SelectWell);
             RecordPositionCommand = new RelayCommand(RecordPosition);
             SolveMappingCommand = new RelayCommand(SolveMapping);
             GoToSelectedWellCommand = new RelayCommand(GoToSelectedWell);

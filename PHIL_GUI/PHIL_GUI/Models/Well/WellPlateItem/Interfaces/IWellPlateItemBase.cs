@@ -7,6 +7,7 @@ namespace PHIL_GUI.Models
         List<string> ColHeaders { get; }
         List<char> RowHeaders { get; }
         PlateType PlateType { get; set; }
+        bool AllowMultipleSelection { get; set; }
         WellItem SelectedWellItem { get; }
         string SelectedWellName { get; }
 

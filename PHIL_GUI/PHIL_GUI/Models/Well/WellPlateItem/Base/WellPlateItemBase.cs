@@ -11,6 +11,7 @@ namespace PHIL_GUI.Models
         public List<char> RowHeaders { get; } = new() { 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H' };
         public PlateType PlateType { get; set; }
         public bool IsCalibrationPage { get; }
+        public bool AllowMultipleSelection { get; set; }
 
         protected List<WellItem> visibleWells;
 

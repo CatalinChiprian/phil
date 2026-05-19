@@ -60,7 +60,7 @@ namespace PHIL_GUI.ViewModels
             {
                 new PageItem("Wells", new WellsViewModel(), WellsIconData),
                 new PageItem("Calibration", new CalibrationViewModel(), CalibrationIconData),
-                new PageItem("Medium Exchange", null, MediumExchangeIconData) // Change VM
+                new PageItem("Medium Exchange", new MediumExchangeViewModel(), MediumExchangeIconData)
             };
 
             SelectedPage = Pages[0];

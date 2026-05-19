@@ -42,6 +42,8 @@ namespace PHIL_GUI.Models
                 }
                 else
                 {
+                    if (AllowMultipleSelection) continue;
+                    
                     well.IsSelected = false;
                 }
             }

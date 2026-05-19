@@ -16,7 +16,7 @@ namespace PHIL_GUI.ViewModels
         public Calibration Calibration => RobotProtocolService.RobotState.Calibration;
 
         public IWellPlateItem WellPlate { get; private set; }
-        public WellPlateItemOoC? WellPlateOoC => WellPlate as WellPlateItemOoC;
+        public WellPlateItemOoC? WellPlateItemOoC => WellPlate as WellPlateItemOoC;
         public WellPlateItem96? WellPlateItem96 => WellPlate as WellPlateItem96;
 
         public string TopNotificationText
@@ -44,7 +44,7 @@ namespace PHIL_GUI.ViewModels
             WellPlate = AppSettings.Is96Well ? new WellPlateItem96() : new WellPlateItemOoC();
 
             WellsPositionCommand = new RelayCommand<string>(w => GoToWell(w));
-            AppSettings.PropertyChanged += AppSettings_PropertyChanged; ;
+            AppSettings.PropertyChanged += AppSettings_PropertyChanged;
             RobotSettings.PropertyChanged += RobotSettings_PropertyChanged;
             CurrentWell.PropertyChanged += CurrentWell_PropertyChanged;
         }
@@ -97,7 +97,7 @@ namespace PHIL_GUI.ViewModels
             {
                 WellPlate = new WellPlateItemOoC();
 
-                OnPropertyChanged(nameof(WellPlateOoC));
+                OnPropertyChanged(nameof(WellPlateItemOoC));
             }
 
             WellPlate.SelectWell(selectedWellName);

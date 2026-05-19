@@ -216,7 +216,7 @@
 
                             <Border Grid.Row="2" Grid.Column="1" ClipToBounds="False">
                                 <Panel>
-                                    <ItemsControl ItemsSource="{Binding WellPlateOoC.Wells}" ClipToBounds="False">
+                                    <ItemsControl ItemsSource="{Binding WellPlateItemOoC.Wells}" ClipToBounds="False">
                                         <ItemsControl.ItemsPanel>
                                             <ItemsPanelTemplate>
                                                 <UniformGrid Rows="4" Columns="6"/>
@@ -234,7 +234,7 @@
                                                                 Classes.warn="{Binding In.Calibration?.IsWarn}"
                                                                 Classes.no-record="{Binding In.IsCalibrated, Converter={x:Static BoolConverters.Not}}"
                                                                 Classes.active="{Binding In.IsSelected}"
-                                                                Command="{Binding $parent[ItemsControl].((vm:CalibrationViewModel)DataContext).WellsPositionCommand}"
+                                                                Command="{Binding $parent[ItemsControl].((vm:CalibrationViewModel)DataContext).SelectWellCommand}"
                                                                 CommandParameter="{Binding In.Name}"/>
 
                                                         <TextBlock Grid.Row="0" Grid.Column="0"
@@ -253,7 +253,7 @@
                                                                 Classes.warn="{Binding Out.Calibration?.IsWarn}"
                                                                 Classes.no-record="{Binding Out.IsCalibrated, Converter={x:Static BoolConverters.Not}}"
                                                                 Classes.active="{Binding Out.IsSelected}"
-                                                                Command="{Binding $parent[ItemsControl].((vm:CalibrationViewModel)DataContext).WellsPositionCommand}"
+                                                                Command="{Binding $parent[ItemsControl].((vm:CalibrationViewModel)DataContext).SelectWellCommand}"
                                                                 CommandParameter="{Binding Out.Name}"/>
                                                     </Grid>
                                                 </Border>

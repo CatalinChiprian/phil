@@ -14,6 +14,14 @@ namespace PHIL_GUI.Models
             get => isVisible;
             set => SetProperty(ref isVisible, value);
         }
+
+        private bool isSelected;
+        public bool IsSelected
+        {
+            get => isSelected;
+            set => SetProperty(ref isSelected, value);
+        }
+
         public WellPairItem(int pairIndex, WellItem pair1, WellItem pair2, bool isVisible = true)
         {
             In = pair1;
