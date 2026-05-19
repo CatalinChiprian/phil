@@ -2,6 +2,6 @@
 {
     public interface IWellPlateItem : IWellPlateItemBase
     {
-        WellItem SelectWell(string name);
+
     }
 }

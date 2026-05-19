@@ -29,31 +29,5 @@ namespace PHIL_GUI.Models
 
             visibleWells = Wells.Where(w => w.IsVisible).ToList();
         }
-
-        public WellItem SelectWell(string name)
-        {
-            WellItem selectedWell = null;
-            foreach (WellItem well in Wells)
-            {
-                if (well.Name == name)
-                {
-                    if (AllowMultipleSelection && well.IsSelected)
-                    {
-                        well.IsSelected = false;
-                        return null;
-                    }
-                    else well.IsSelected = true;
-
-                    selectedWell = well;
-                }
-                else
-                {
-                    if (AllowMultipleSelection) continue;
-                    
-                    well.IsSelected = false;
-                }
-            }
-            return selectedWell;
-        }
     }
 }

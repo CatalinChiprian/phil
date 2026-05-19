@@ -74,7 +74,7 @@ namespace PHIL_GUI.ViewModels
             }
         }
 
-        void GoToWell(string well)
+        private void GoToWell(string well)
         {
             CurrentWell.Type = WellType.Standard;
             CurrentWell.Name = well;
@@ -83,7 +83,7 @@ namespace PHIL_GUI.ViewModels
             RobotProtocolService.MoveToCalculatedWell(well);
         }
 
-        void OverrideWellPlate()
+        private void OverrideWellPlate()
         {
             string selectedWellName = CurrentWell.Name;
 

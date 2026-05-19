@@ -11,5 +11,8 @@ namespace PHIL_GUI.Models
         List<WellItem> SelectedWellItems { get; }
 
         WellItem GetWell(string name);
+        WellItem SelectWell(string name);
+        void SelectAllWells();
+        void ClearSelection();
     }
 }

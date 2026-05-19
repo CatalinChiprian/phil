@@ -10,6 +10,7 @@ namespace PHIL_GUI.Models
     public class ActionScheduler
     {
         public ObservableCollection<ScheduledAction> Actions { get; } = new ObservableCollection<ScheduledAction>();
+        public Dictionary<ScheduledAction, Well> WellActions { get; } = new Dictionary<ScheduledAction, Well>();
         public ActionScheduler() { }
     }
 }

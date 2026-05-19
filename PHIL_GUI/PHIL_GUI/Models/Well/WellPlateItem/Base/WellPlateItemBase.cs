@@ -31,5 +31,46 @@ namespace PHIL_GUI.Models
         {
             return visibleWells.FirstOrDefault(w => w.Name == name);
         }
+        public WellItem SelectWell(string name)
+        {
+            WellItem selectedWell = null;
+            foreach (WellItem well in visibleWells)
+            {
+                if (well.Name == name)
+                {
+                    if (AllowMultipleSelection && well.IsSelected)
+                    {
+                        well.IsSelected = false;
+                        return null;
+                    }
+                    else well.IsSelected = true;
+
+                    selectedWell = well;
+                }
+                else
+                {
+                    if (AllowMultipleSelection) continue;
+
+                    well.IsSelected = false;
+                }
+            }
+            return selectedWell;
+        }
+
+        public void SelectAllWells()
+        {
+            foreach (var well in visibleWells)
+            {
+                well.IsSelected = true;
+            }
+        }
+
+        public void ClearSelection()
+        {
+            foreach (var well in visibleWells)
+            {
+                well.IsSelected = false;
+            }
+        }
     }
 }

@@ -6,7 +6,7 @@ namespace PHIL_GUI.Models
 {
     public class WellPlateItemOoC : WellPlateItemBase, IWellPlateItem
     {
-        const int PAIRS_PER_QUADRANT = 3;
+        const int PAIRS_PER_QUADRANT_ROW = 3;
         const int PAIR_COUNT = 2;
         public ObservableCollection<WellPairItem> Wells { get; } = new();
         public List<WellItem> VisibleWells
@@ -40,7 +40,7 @@ namespace PHIL_GUI.Models
                 {
                     colIndex = 1;
                     rowIndex += PAIR_COUNT;
-                    if ((rowIndex / PAIR_COUNT) % PAIR_COUNT != 0) pairIndex -= PAIR_COUNT * PAIRS_PER_QUADRANT;
+                    if ((rowIndex / PAIR_COUNT) % PAIR_COUNT != 0) pairIndex -= PAIR_COUNT * PAIRS_PER_QUADRANT_ROW;
                 }
 
                 if (rowIndex >= RowHeaders.Count) break;
@@ -65,7 +65,7 @@ namespace PHIL_GUI.Models
 
                 colIndex += PAIR_COUNT;
 
-                if ((pairIndex % PAIRS_PER_QUADRANT == 0) && (colIndex < ColHeaders.Count)) pairIndex += PAIRS_PER_QUADRANT;
+                if ((pairIndex % PAIRS_PER_QUADRANT_ROW == 0) && (colIndex < ColHeaders.Count)) pairIndex += PAIRS_PER_QUADRANT_ROW;
 
                 pairIndex++;
             }
@@ -74,34 +74,6 @@ namespace PHIL_GUI.Models
                 .Where(p => p.IsVisible)
                 .SelectMany(p => new[] { p.In, p.Out })
                 .ToList();
-        }
-
-        public WellItem SelectWell(string name)
-        {
-            WellItem selectedWell = null;
-
-            foreach (WellPairItem pair in Wells)
-            {
-                List<WellItem> pairWells = new List<WellItem> { pair.In, pair.Out };
-
-                foreach (WellItem well in pairWells)
-                {
-                    if (well.Name == name)
-                    {
-                        well.IsSelected = true;
-
-                        selectedWell = well;
-                    }
-                    else
-                    {
-                        if (AllowMultipleSelection) continue;
-
-                        well.IsSelected = false;
-                    }
-                }
-            }
-
-            return selectedWell;
         }
 
         public void SelectWellPair(int pairIndex)
@@ -119,6 +91,64 @@ namespace PHIL_GUI.Models
 
                     pair.IsSelected = false;
                 }
+            }
+        }
+
+        public void SelectAllPairs()
+        {
+            foreach (WellPairItem pair in Wells)
+            {
+                pair.IsSelected = true;
+            }
+        }
+
+        public void SelectQuadrantPairs(int quadrantIndex)
+        {
+            int startPairIndex = (quadrantIndex - 1) * PAIRS_PER_QUADRANT_ROW * PAIR_COUNT + 1;
+            int endPairIndex = startPairIndex + PAIRS_PER_QUADRANT_ROW * PAIR_COUNT - 1;
+
+            bool allQuadPairsSelected = true;
+            foreach (WellPairItem pair in Wells)
+            {
+                if (pair.PairIndex >= startPairIndex && pair.PairIndex <= endPairIndex)
+                {
+                    if (!pair.IsSelected) allQuadPairsSelected = false;
+
+                    pair.IsSelected = true;
+                }
+                else
+                {
+                    if (AllowMultipleSelection) continue;
+
+                    pair.IsSelected = false;
+                }
+            }
+
+            if (allQuadPairsSelected)
+            {
+                DeselectQuadrantPairs(quadrantIndex);
+                return;
+            }
+        }
+
+        public void DeselectQuadrantPairs(int quadrantIndex)
+        {
+            int startPairIndex = (quadrantIndex - 1) * PAIRS_PER_QUADRANT_ROW * PAIR_COUNT + 1;
+            int endPairIndex = startPairIndex + PAIRS_PER_QUADRANT_ROW * PAIR_COUNT - 1;
+            foreach (WellPairItem pair in Wells)
+            {
+                if (pair.PairIndex >= startPairIndex && pair.PairIndex <= endPairIndex)
+                {
+                    pair.IsSelected = false;
+                }
+            }
+        }
+
+        public void ClearPairSelection()
+        {
+            foreach (WellPairItem pair in Wells)
+            {
+                pair.IsSelected = false;
             }
         }
     }
