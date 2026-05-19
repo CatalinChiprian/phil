@@ -178,7 +178,7 @@ namespace PHIL_GUI.Services
 
         public void Prime(int pumpNumber)
         {
-            Send($"{ASPIRATE_CMD} {pumpNumber} {int.MaxValue}");
+            Send($"{DISPENSE_CMD} {pumpNumber} {int.MaxValue}");
         }
 
         public void MoveToHardcodedWell(string wellName)

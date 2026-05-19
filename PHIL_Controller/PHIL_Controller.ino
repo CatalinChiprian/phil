@@ -181,7 +181,7 @@
   bool P1MotorCurrentlyEnabled = false;
   bool P2MotorCurrentlyEnabled = false;
   const uint16_t MOTOR_TIMEOUT = 5000;
-  bool emergencyStopRequested = false;
+  bool eStopRequested = false;
 
   void setup() {
     Serial.begin(9600);
@@ -250,7 +250,7 @@
     loadActionsSafe();
     loadWellActions();
 
-    emergencyStopRequested = false;
+    eStopRequested = false;
     currentState = RUNNING;
 
     // The pipette might jump on start-up, causing a mismatch between software and mechanical position.
@@ -453,7 +453,11 @@
 
     if (stepsNeeded > 0) {
         pumpStepper.moveTo(pumpStepper.currentPosition() - stepsNeeded);
-        while(pumpStepper.distanceToGo() != 0) pumpStepper.run();
+        while(pumpStepper.distanceToGo() != 0) {
+          if (isEmergencyStopRequest()) emergencyStop();
+          
+          pumpStepper.run();
+        }
     }
 
     moveZMotors(ZMotorNormalPosition);
@@ -499,6 +503,8 @@
     pumpStepper.moveTo(pumpStepper.currentPosition() + stepsNeeded);
 
     while(pumpStepper.distanceToGo() != 0) {
+      if (isEmergencyStopRequest()) emergencyStop();
+      
       pumpStepper.run();
     }
 
@@ -868,8 +874,8 @@
 
   void goToHardcodedWells(char row, uint8_t column) {  
 
-    if(emergencyStopRequested) {
-      emergencyStopRequested = false;  
+    if(eStopRequested) {
+      eStopRequested = false;  
       return;
     }
 
@@ -1088,8 +1094,8 @@
 
     disableAllMotors();
 
-    if(emergencyStopRequested) {
-      emergencyStopRequested = false;  
+    if(eStopRequested) {
+      eStopRequested = false;  
       return -1;
     }
 
@@ -1294,6 +1300,14 @@
            P1MotorCurrentlyEnabled || P2MotorCurrentlyEnabled;
   }
 
+  bool isEmergencyStopRequest() {
+    if (Serial.available() < 0) return false;
+    char c = Serial.read();
+    if(c != 's') return false;
+
+    return true;
+  }
+
   void emergencyStop() {
     stepperL.stop();
     stepperR.stop();
@@ -1303,7 +1317,7 @@
     stepperP2.stop();
     disableAllMotors();
     lastMotorActivityTime = 0;
-    emergencyStopRequested = true;
+    eStopRequested = true;
     Serial.println(F("WARNING:EMERGENCY_STOP,Motors disabled by user"));
   }
 
