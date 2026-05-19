@@ -223,6 +223,34 @@
             <Setter Property="Foreground" Value="{StaticResource Surface}"/>
         </Style>
 
+        <Style Selector="Button.btn-secondary-info">
+		    <Setter Property="BorderBrush" Value="{StaticResource Info-Dim}"/>
+            <Setter Property="Foreground" Value="{StaticResource Info}"/>
+            <Setter Property="Background" Value="Transparent"/>
+        </Style>
+
+        <Style Selector="Button.btn-secondary-info:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderBrush" Value="{StaticResource Info}"/>
+            <Setter Property="Foreground" Value="{StaticResource Surface}"/>
+        </Style>
+
+        <Style Selector="Button.btn-secondary-info TextBlock">
+            <Setter Property="Foreground" Value="{StaticResource Muted}"/>
+        </Style>
+
+        <Style Selector="Button.btn-secondary-info:pointerover TextBlock">
+            <Setter Property="Foreground" Value="{StaticResource Text}"/>
+        </Style>
+
+        <Style Selector="Button.btn-secondary-info Path">
+            <Setter Property="Fill" Value="{StaticResource Info-Dim}"/>
+        </Style>
+
+        <Style Selector="Button.btn-secondary-info:pointerover Path">
+            <Setter Property="Fill" Value="{StaticResource Info}"/>
+        </Style>
+
         <Style Selector="Button.btn-emergency">
             <Setter Property="Background" Value="{StaticResource Warn-Dim}"/>
             <Setter Property="BorderBrush" Value="{StaticResource Warn}"/>
