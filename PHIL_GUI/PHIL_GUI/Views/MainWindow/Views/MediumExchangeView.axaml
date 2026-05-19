@@ -8,6 +8,25 @@
              x:DataType="vm:MediumExchangeViewModel">
     <Grid ColumnDefinitions="300, *, 300">
         <Border Grid.Column="0" Classes="sidebar" BorderThickness="0,0,1,0">
+            <Grid RowDefinitions="Auto, *">
+
+                <Border Grid.Row="0" BorderThickness="0,0,0,1">
+				    <DockPanel DockPanel.Dock="Top" Margin="15">
+						<Button DockPanel.Dock="Right" 
+                                Classes="btn btn-add"
+                                Content="+"
+                                Click="CreateActionButton_Click"
+                                FontSize="15"
+                                Padding="13,0"
+                                ToolTip.Tip="Create Action"/>
+
+					    <TextBlock DockPanel.Dock="Left" Classes="subtitle" FontSize="10" LetterSpacing="1.5" Text="ACTIONS"/>
+                    </DockPanel>
+                </Border>
+
+                
+
+            </Grid>
         </Border>
 
         <DockPanel Grid.Column="1">
