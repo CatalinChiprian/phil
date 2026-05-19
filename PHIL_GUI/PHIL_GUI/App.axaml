@@ -575,6 +575,11 @@
             <Setter Property="Background" Value="{StaticResource Surface}"/>
         </Style>
 
+        <Style Selector="Border.well-pair.active">
+			<Setter Property="BorderBrush" Value="{StaticResource Accent}"/>
+            <Setter Property="Background" Value="{StaticResource Accent-Dim}"/>
+        </Style>
+
         <Style Selector="Border.quadrant">
 			<Setter Property="BorderThickness" Value="1.5"/>
             <Setter Property="CornerRadius" Value="8"/>

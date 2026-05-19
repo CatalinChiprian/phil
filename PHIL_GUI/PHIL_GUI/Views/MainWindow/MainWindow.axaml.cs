@@ -1,4 +1,6 @@
+using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.ApplicationLifetimes;
 using Microsoft.Extensions.DependencyInjection;
 using PHIL_GUI.ViewModels;
 
@@ -17,11 +19,20 @@ public partial class MainWindow : Window
         DataContext = mainVm;
     }
 
-    private async void OnDisconnected()
-    {
-        PortsWindow portsWindow = new PortsWindow();
-        await portsWindow.ShowDialog(this);
 
+    private void OnDisconnected()
+    {
+        if (Application.Current?.ApplicationLifetime is not IClassicDesktopStyleApplicationLifetime desktop) return;
+
+        var portsWindow = new PortsWindow();
+
+#if DEBUG
+        portsWindow.AttachDevTools();
+#endif
+
+        desktop.MainWindow = portsWindow;
+
+        portsWindow.Show();
         Close();
     }
 

@@ -12,6 +12,9 @@ namespace PHIL_GUI.ViewModels
         public IWellPlateItem WellPlate { get; private set; }
         public WellPlateItemOoC? WellPlateItemOoC => WellPlate as WellPlateItemOoC;
         public WellPlateItem96? WellPlateItem96 => WellPlate as WellPlateItem96;
+        public bool IsDetailPageVisible => AppSettings.Is96Well ? 
+            WellPlateItem96.SelectedWellItems.Count > 0 : 
+            WellPlateItemOoC.SelectedWellPairs.Count > 0;
 
         public Well CurrentWell => RobotProtocolService.RobotState.CurrentWell;
         public AppSettings AppSettings => AppSettingsService.AppSettings;
@@ -31,12 +34,14 @@ namespace PHIL_GUI.ViewModels
         {
             if (AppSettings.Is96Well)
             {
-
+                WellPlate.SelectWell(target);
             }
             else
             {
-
+                WellPlateItemOoC.SelectWellPair(int.Parse(target));
             }
+
+            OnPropertyChanged(nameof(IsDetailPageVisible));
         }
 
         private void AppSettings_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)

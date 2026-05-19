@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace PHIL_GUI.Models
 {
-    public class WellPlateItemOoC : WellPlateItemBase , IWellPlateItem
+    public class WellPlateItemOoC : WellPlateItemBase, IWellPlateItem
     {
         const int PAIRS_PER_QUADRANT = 3;
         const int PAIR_COUNT = 2;
@@ -13,6 +13,14 @@ namespace PHIL_GUI.Models
         {
             get => visibleWells;
             set => visibleWells = value;
+        }
+
+        public List<WellPairItem> SelectedWellPairs
+        {
+            get
+            {
+                return Wells.Where(p => p.IsVisible && p.IsSelected).ToList();
+            }
         }
 
         public WellPlateItemOoC(bool isCalibrationPage = false)
@@ -94,6 +102,24 @@ namespace PHIL_GUI.Models
             }
 
             return selectedWell;
+        }
+
+        public void SelectWellPair(int pairIndex)
+        {
+            foreach (WellPairItem pair in Wells)
+            {
+                if (pair.PairIndex == pairIndex)
+                {
+                    if (AllowMultipleSelection && pair.IsSelected) pair.IsSelected = false;
+                    else pair.IsSelected = true;
+                }
+                else
+                {
+                    if (AllowMultipleSelection) continue;
+
+                    pair.IsSelected = false;
+                }
+            }
         }
     }
 }

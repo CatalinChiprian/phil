@@ -6,8 +6,8 @@
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="PHIL_GUI.Views.MediumExchangeView"
              x:DataType="vm:MediumExchangeViewModel">
-    <Grid ColumnDefinitions="Auto, *, Auto">
-        <Border Grid.Column="0" Classes="sidebar" BorderThickness="0,0,1,0" Width="150">
+    <Grid ColumnDefinitions="300, *, 300">
+        <Border Grid.Column="0" Classes="sidebar" BorderThickness="0,0,1,0">
         </Border>
 
 		<Border Grid.Column="1" Background="{StaticResource Bg}" Padding="30,20">
@@ -181,7 +181,7 @@
                     </Panel>
                 </Viewbox>
 
-                <Border Background="{StaticResource Wall}"
+<!--                <Border Background="{StaticResource Wall}"
                         IsVisible="{Binding Calibration.IsCalibrated, Converter={x:Static BoolConverters.Not}}"
                         ZIndex="10">
                     <Border Background="{StaticResource Surface2}"
@@ -203,11 +203,11 @@
                                         TextAlignment="Center"/>
                         </StackPanel>
                     </Border>
-                </Border>
+                </Border>-->
             </Grid>
         </Border>
 
-        <Border Grid.Column="2" Classes="sidebar" BorderThickness="1,0,0,0" Width="150">
+        <Border Grid.Column="2" Classes="sidebar" IsVisible="{Binding IsDetailPageVisible}" BorderThickness="1,0,0,0">
         </Border>
     </Grid>
 </UserControl>

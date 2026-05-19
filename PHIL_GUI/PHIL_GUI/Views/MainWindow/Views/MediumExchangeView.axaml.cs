@@ -18,8 +18,8 @@ public partial class MediumExchangeView : UserControl
 
         if (sender is not Border border) return;
 
-        if (border.Tag is not string target) return;
+        if (border.Tag is not int target) return;
 
-        vm.SelectTargetCommand.Execute(target);
+        vm.SelectTargetCommand.Execute(target.ToString());
     }
 }

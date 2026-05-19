@@ -15,15 +15,13 @@ namespace PHIL_GUI.Models
 
         protected List<WellItem> visibleWells;
 
-        public WellItem SelectedWellItem
+        public List<WellItem> SelectedWellItems
         {
             get
             {
-                return visibleWells.FirstOrDefault(w => w.IsSelected);
+                return visibleWells.Where(w => w.IsSelected).ToList();
             }
         }
-
-        public string SelectedWellName => SelectedWellItem?.Name;
         public WellPlateItemBase(bool isCalibrationPage = false)
         {
             IsCalibrationPage = isCalibrationPage;

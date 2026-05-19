@@ -2,6 +2,7 @@
 using PHIL_GUI.Models;
 using PHIL_GUI.ViewModels.Base;
 using System;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
@@ -17,7 +18,7 @@ namespace PHIL_GUI.ViewModels
         public ICommand MoveRightCommand { get; }
         public ICommand DecreaseStepSizeCommand { get; }
         public ICommand IncreaseStepSizeCommand { get; }
-        public ICommand SelectWellCommand { get; }
+        public ICommand WellsPositionCommand { get; }
         public ICommand RecordPositionCommand { get; }
         public ICommand SolveMappingCommand { get; }
         public ICommand GoToSelectedWellCommand { get; }
@@ -28,9 +29,13 @@ namespace PHIL_GUI.ViewModels
         {
             get
             {
-                if (WellPlate.SelectedWellName == null) return false;
+                List<WellItem> selectedwellItems = WellPlate.SelectedWellItems;
 
-                return !Calibration.Points.Select(p => p.Name).Contains(WellPlate.SelectedWellName);
+                if (selectedwellItems == null || selectedwellItems.Count == 0) return false;
+
+                string wellName = selectedwellItems.First().Name;
+
+                return !Calibration.Points.Select(p => p.Name).Contains(wellName);
             }
         }
         public bool SolveEnabled => Calibration.Points.Count >= Calibration.MIN_COUNT;
@@ -55,7 +60,7 @@ namespace PHIL_GUI.ViewModels
             }
         }
 
-        public bool IsWellMenuVisibile => WellPlate.SelectedWellName != null;
+        public bool IsWellMenuVisibile => WellPlate.SelectedWellItems.Count > 0;
         public IWellPlateItem WellPlate { get; } = new WellPlateItemOoC(true);
         public WellPlateItemOoC? WellPlateItemOoC => WellPlate as WellPlateItemOoC;
 
@@ -67,7 +72,7 @@ namespace PHIL_GUI.ViewModels
             MoveRightCommand = new RelayCommand(RobotProtocolService.MoveRight);
             DecreaseStepSizeCommand = new RelayCommand(RobotProtocolService.IncreaseStepSize);
             IncreaseStepSizeCommand = new RelayCommand(RobotProtocolService.DecreaseStepSize);
-            SelectWellCommand = new RelayCommand<string>(SelectWell);
+            WellsPositionCommand = new RelayCommand<string>(SelectWell);
             RecordPositionCommand = new RelayCommand(RecordPosition);
             SolveMappingCommand = new RelayCommand(SolveMapping);
             GoToSelectedWellCommand = new RelayCommand(GoToSelectedWell);
@@ -128,8 +133,9 @@ namespace PHIL_GUI.ViewModels
 
         private void GoToSelectedWell()
         {
-            bool isSolved = WellPlate.SelectedWellItem.Calibration?.IsSolved ?? false;
-            string wellName = WellPlate.SelectedWellName;
+            WellItem selectedWellItem = WellPlate.SelectedWellItems.First();
+            bool isSolved = selectedWellItem.Calibration?.IsSolved ?? false;
+            string wellName = selectedWellItem.Name;
 
             if (isSolved)
             {
@@ -148,11 +154,13 @@ namespace PHIL_GUI.ViewModels
         {
             if (!RecordEnabled) return;
 
-            CalibrationPoint point = new CalibrationPoint(WellPlate.SelectedWellName, (int)CurrentWell.X, (int)CurrentWell.Y);
+            string wellName = WellPlate.SelectedWellItems.First().Name;
+
+            CalibrationPoint point = new CalibrationPoint(wellName, (int)CurrentWell.X, (int)CurrentWell.Y);
             Calibration.Points.Add(point);
             SelectedCalibrationPoint = point;
 
-            RobotProtocolService.RecordCalibrationPoint(WellPlate.SelectedWellName);
+            RobotProtocolService.RecordCalibrationPoint(wellName);
 
             OnPropertyChanged(nameof(RecordEnabled));
         }
@@ -171,9 +179,11 @@ namespace PHIL_GUI.ViewModels
             SelectedCalibrationPoint.ErrorLeft = null;
             SelectedCalibrationPoint.ErrorRight = null;
 
+            string wellName = WellPlate.SelectedWellItems.First().Name;
+
             RobotProtocolService.DeleteCalibrationPoint(SelectedCalibrationPoint.Name);
 
-            RobotProtocolService.RecordCalibrationPoint(WellPlate.SelectedWellName);
+            RobotProtocolService.RecordCalibrationPoint(wellName);
         }
 
         private void Cancel()

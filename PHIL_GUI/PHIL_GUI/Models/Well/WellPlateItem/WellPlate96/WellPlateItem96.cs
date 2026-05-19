@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Data;
 using System.Linq;
 
 namespace PHIL_GUI.Models
@@ -36,7 +37,12 @@ namespace PHIL_GUI.Models
             {
                 if (well.Name == name)
                 {
-                    well.IsSelected = true;
+                    if (AllowMultipleSelection && well.IsSelected)
+                    {
+                        well.IsSelected = false;
+                        return null;
+                    }
+                    else well.IsSelected = true;
 
                     selectedWell = well;
                 }
