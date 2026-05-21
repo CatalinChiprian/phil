@@ -59,6 +59,7 @@ namespace PHIL_GUI.ViewModels
 
             AppSettings.PropertyChanged += AppSettings_PropertyChanged;
             ActionScheduler.Actions.CollectionChanged += Actions_CollectionChanged;
+
         }
 
         private void Actions_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
@@ -67,7 +68,10 @@ namespace PHIL_GUI.ViewModels
             {
                 foreach (ScheduledAction newAction in e.NewItems)
                 {
-                    Items.Add(new ActionItem(newAction));
+                    ActionItem item = new ActionItem(newAction);
+                    SetItemVisibility(item);
+                    Items.Add(item);
+                    
                 }
             }
 
@@ -88,6 +92,7 @@ namespace PHIL_GUI.ViewModels
                 foreach (ScheduledAction newAction in e.NewItems)
                 {
                     ActionItem item = Items.FirstOrDefault(a => a.Id == newAction.Id);
+                    item.IsVisible = item.Type != ActionType.Exchange && AppSettings.Is96Well;
 
                     if (item == null) continue;
 
@@ -163,7 +168,10 @@ namespace PHIL_GUI.ViewModels
         private void AppSettings_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
             if (e.PropertyName == nameof(AppSettings.SelectedPlateType))
+            {
                 OverrideWellPlate();
+                OverrideItemsVisibility();
+            }
         }
 
         private void OverrideWellPlate()
@@ -185,6 +193,17 @@ namespace PHIL_GUI.ViewModels
 
             WellPlate.AllowMultipleSelection = true;
             WellPlate.SelectWell(selectedWellName);
+        }
+        private void OverrideItemsVisibility()
+        {
+            foreach (ActionItem item in Items)
+            {
+                SetItemVisibility(item);
+            }
+        }
+        private void SetItemVisibility(ActionItem item)
+        {
+            item.IsVisible = (item.Type == ActionType.Exchange) != AppSettings.Is96Well;
         }
     }
 }

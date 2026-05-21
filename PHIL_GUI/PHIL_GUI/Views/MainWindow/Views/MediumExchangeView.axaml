@@ -29,7 +29,7 @@
 					<ItemsControl ItemsSource="{Binding Items}" Margin="10">
 						<ItemsControl.ItemTemplate>
 							<DataTemplate>
-								<Border Classes="action-card">
+								<Border Classes="action-card" IsVisible="{Binding IsVisible}">
 									<StackPanel Spacing="4" Margin="10" VerticalAlignment="Center">
                                         <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="6">
 											<Border Grid.Column="0" Classes="action-badge" BorderBrush="{Binding ActionTypeBorderColor}" Background="{Binding ActionTypeBackgroundColor}">

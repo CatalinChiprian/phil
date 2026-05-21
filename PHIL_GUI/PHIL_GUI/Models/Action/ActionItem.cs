@@ -267,6 +267,18 @@ namespace PHIL_GUI.Models
 
         public DateTime Today => DateTime.Now.ToLocalTime();
 
+        private bool isVisible = true;
+        public bool IsVisible
+        {
+            get => isVisible;
+            set
+            {
+                if (isVisible == value) return;
+
+                SetProperty(ref isVisible, value);
+            }
+        }
+
         public string ScheduleLabel => $"{GetStartLabel()} {GetEndLabel()}";
         private string GetStartLabel()
         {
@@ -376,6 +388,7 @@ namespace PHIL_GUI.Models
             StartTime = other.StartTime;
             EndDate = other.EndDate;
             EndTime = other.EndTime;
+            IsVisible = other.IsVisible;
         }
 
         public void ConvertToEpoch()
