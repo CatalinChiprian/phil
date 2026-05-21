@@ -107,6 +107,11 @@
             <Setter Property="Foreground" Value="{StaticResource Muted}"/>
         </Style>
 
+        <Style Selector="TextBlock.subtitle-secondary">
+            <Setter Property="FontSize" Value="9"/>
+            <Setter Property="Foreground" Value="#9aa89a"/>
+        </Style>
+
         <Style Selector="ListBox ListBoxItem /template/ ContentPresenter">
             <Setter Property="Background" Value="Transparent"/>
             <Setter Property="CornerRadius" Value="6"/>
@@ -600,7 +605,7 @@
 			<Setter Property="Width" Value="32"/>
             <Setter Property="Height" Value="32"/>
             <Setter Property="BorderBrush" Value="{StaticResource BorderColor}"/>
-            <Setter Property="Background" Value="{StaticResource Surface2}"/>
+            <Setter Property="Background" Value="#e9ede9"/>
             <Setter Property="Foreground" Value="{StaticResource Muted}"/>
             <Setter Property="VerticalContentAlignment" Value="Center"/>
             <Setter Property="HorizontalContentAlignment" Value="Center"/>
@@ -744,11 +749,13 @@
 
         <Style Selector="Border.action-card:pointerover">
 		    <Setter Property="BorderBrush" Value="{StaticResource Accent}"/>
+            <Setter Property="Background" Value="{StaticResource Bg}"/>
         </Style>
 
         <Style Selector="Border.action-badge">
 			<Setter Property="BorderThickness" Value="1"/>
             <Setter Property="Padding" Value="5,0"/>
+            <Setter Property="Margin" Value="0"/>
             <Setter Property="CornerRadius" Value="6"/>
         </Style>
 

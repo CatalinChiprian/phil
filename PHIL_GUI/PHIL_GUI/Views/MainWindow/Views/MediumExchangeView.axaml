@@ -30,7 +30,7 @@
 						<ItemsControl.ItemTemplate>
 							<DataTemplate>
 								<Border Classes="action-card">
-									<StackPanel Spacing="4" Margin="10">
+									<StackPanel Spacing="4" Margin="10" VerticalAlignment="Center">
                                         <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="6">
 											<Border Grid.Column="0" Classes="action-badge" BorderBrush="{Binding ActionTypeBorderColor}" Background="{Binding ActionTypeBackgroundColor}">
                                                 <TextBlock Text="{Binding ActionTypeLabel}" Foreground="{Binding ActionTypeTextColor}"/>
@@ -40,7 +40,7 @@
                                                        FontSize="12"
                                                        FontWeight="Medium"
                                                        VerticalAlignment="Center"/>
-                                            <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="4">
+                                            <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="6" VerticalAlignment="Top">
 												<Button Classes="btn btn-svg" Width="22" Height="22" ToolTip.Tip="Edit Action" Click="EditActionButton_Click" Tag="{Binding}">
                                                     <Path Classes="svg"
                                                           Width="12"
@@ -51,13 +51,13 @@
 													<Path Classes="svg"
                                                           Width="12"
                                                           Height="12"
-                                                          Data="M6 7H12H18V18C18 19.6569 16.6569 21 15 21H9C7.34315 21 6 19.6569 6 18V7Z"/>
+                                                          Data="M19.207 6.207a1 1 0 0 0-1.414-1.414L12 10.586 6.207 4.793a1 1 0 0 0-1.414 1.414L10.586 12l-5.793 5.793a1 1 0 1 0 1.414 1.414L12 13.414l5.793 5.793a1 1 0 0 0 1.414-1.414L13.414 12l5.793-5.793z"/>
                                                 </Button>
                                             </StackPanel>
                                         </Grid>
 
-                                        <TextBlock Classes="subtitle" Text="{Binding FrequencyLabel}" FontSize="10"/>
-                                        <TextBlock Classes="subtitle" Text="{Binding ScheduleLabel}" FontSize="10"/>
+                                        <TextBlock Classes="subtitle-secondary" Text="{Binding FrequencyLabel}" FontSize="10"/>
+                                        <TextBlock Classes="subtitle-secondary" Text="{Binding ScheduleLabel}" FontSize="10"/>
 										
                                     </StackPanel>
                                 </Border>

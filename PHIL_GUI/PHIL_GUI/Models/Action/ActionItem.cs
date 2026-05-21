@@ -298,7 +298,7 @@ namespace PHIL_GUI.Models
 
             return "Until " + string.Join (" ", parts);
         }
-        public string Summary => $"{GetPumpSummary()} · {Amount}µL";
+        public string Summary => $"{GetPumpSummary()} {Amount}µL";
         private string GetPumpSummary() => Type switch
         {
             ActionType.Aspirate => $"{Pump1Label}",
