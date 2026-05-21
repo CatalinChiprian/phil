@@ -106,7 +106,6 @@ namespace PHIL_GUI.Models
             get => startDate;
             set
             {
-                if (value == null) return;
                 if (value == startDate) return;
 
                 if (value < Today.Date) value = Today.Date;
@@ -127,7 +126,6 @@ namespace PHIL_GUI.Models
             get => startTime;
             set
             {
-                if (value == null) return;
                 if (value == startTime) return;
 
                 if (StartDate?.Date == Today.Date && value < Today.TimeOfDay) value = Today.TimeOfDay;
@@ -147,7 +145,6 @@ namespace PHIL_GUI.Models
             get => endDate;
             set
             {
-                if (value == null) return;
                 if (value == endDate) return;
 
                 if (value < StartDate?.Date || value < Today.Date) value = StartDate?.Date ?? Today.Date;
@@ -166,7 +163,6 @@ namespace PHIL_GUI.Models
             get => endTime;
             set
             {
-                if (value == null) return;
                 if (value == endTime) return;
 
                 if (StartDate.HasValue && EndDate?.Date >= StartDate?.Date && value < StartTime) value = StartTime;

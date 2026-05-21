@@ -71,18 +71,32 @@
         <StackPanel Spacing="4">
             <TextBlock Classes="subtitle" Text="START DATE &amp; TIME (EMPTY = IMMEDIATELY)" LetterSpacing="1.2"/>
 
-            <Grid ColumnDefinitions="Auto,Auto" ColumnSpacing="8">
-                <DatePicker Grid.Column="0" MinWidth="150" SelectedDate="{Binding ActionItem.StartDate}" YearVisible="False"/>
+            <Grid ColumnDefinitions="Auto,Auto,Auto" ColumnSpacing="8">
+                <DatePicker Grid.Column="0" MinWidth="110" SelectedDate="{Binding ActionItem.StartDate}" YearVisible="False" MonthFormat="MMM"/>
                 <TimePicker Grid.Column="1" MinWidth="110" SelectedTime="{Binding ActionItem.StartTime}"/>
+                
+                <Button Grid.Column="2" Classes="btn btn-svg btn-svg-clear" Command="{Binding ClearStartCommand}">
+                    <Path Classes="svg"
+                          Width="9"
+                          Height="9"
+                          Data="M19.207 6.207a1 1 0 0 0-1.414-1.414L12 10.586 6.207 4.793a1 1 0 0 0-1.414 1.414L10.586 12l-5.793 5.793a1 1 0 1 0 1.414 1.414L12 13.414l5.793 5.793a1 1 0 0 0 1.414-1.414L13.414 12l5.793-5.793z"/>
+                </Button>
+
             </Grid>
         </StackPanel>
 
         <StackPanel Spacing="4">
             <TextBlock Classes="subtitle" Text="END DATE &amp; TIME (EMPTY = NEVER)" LetterSpacing="1.2"/>
 
-            <Grid ColumnDefinitions="Auto,Auto" ColumnSpacing="8">
-                <DatePicker Grid.Column="0" MinWidth="150" SelectedDate="{Binding ActionItem.EndDate}" YearVisible="False"/>
+            <Grid ColumnDefinitions="Auto,Auto,Auto" ColumnSpacing="8">
+                <DatePicker Grid.Column="0" MinWidth="110" SelectedDate="{Binding ActionItem.EndDate}" YearVisible="False" MonthFormat="MMM"/>
                 <TimePicker Grid.Column="1" MinWidth="110" SelectedTime="{Binding ActionItem.EndTime}"/>
+                <Button Grid.Column="2" Classes="btn btn-svg btn-svg-clear" Command="{Binding ClearEndCommand}">
+                    <Path Classes="svg"
+                          Width="9"
+                          Height="9"
+                          Data="M19.207 6.207a1 1 0 0 0-1.414-1.414L12 10.586 6.207 4.793a1 1 0 0 0-1.414 1.414L10.586 12l-5.793 5.793a1 1 0 1 0 1.414 1.414L12 13.414l5.793 5.793a1 1 0 0 0 1.414-1.414L13.414 12l5.793-5.793z"/>
+                </Button>
             </Grid>
         </StackPanel>
 

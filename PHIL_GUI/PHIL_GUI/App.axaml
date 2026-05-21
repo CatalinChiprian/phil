@@ -671,6 +671,16 @@
             <Setter Property="Fill" Value="{DynamicResource Accent}" />
         </Style>
 
+        <Style Selector="Button.btn-svg-clear:pointerover /template/ ContentPresenter">
+			<Setter Property="BorderBrush" Value="{StaticResource Warn}"/>
+            <Setter Property="Foreground" Value="{StaticResource Warn}"/>
+            <Setter Property="Background" Value="{StaticResource Warn-Dim}"/>
+        </Style>
+
+        <Style Selector="Button.btn-svg-clear:pointerover Path">
+            <Setter Property="Fill" Value="{DynamicResource Warn}" />
+        </Style>
+
         <Style Selector="Border.step-value">
             <Setter Property="BorderThickness" Value="1"/>
             <Setter Property="Background" Value="{StaticResource Surface2}"/>

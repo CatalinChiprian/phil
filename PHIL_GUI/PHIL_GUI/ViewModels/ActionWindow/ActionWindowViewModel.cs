@@ -20,6 +20,8 @@ namespace PHIL_GUI.ViewModels
         private const int WINDOW_HEIGHT_ERROR = 440;
 
         public ICommand SaveCommand { get; }
+        public ICommand ClearStartCommand { get; }
+        public ICommand ClearEndCommand { get; }
 
         public ActionItem ActionItem { get; }
         public ActionWindowMode Mode { get; }
@@ -66,6 +68,8 @@ namespace PHIL_GUI.ViewModels
             Mode = mode;
 
             SaveCommand = new RelayCommand(Save);
+            ClearStartCommand = new RelayCommand(ClearStart);
+            ClearEndCommand = new RelayCommand(ClearEnd);
 
             if (mode == ActionWindowMode.Create)
             {
@@ -104,6 +108,16 @@ namespace PHIL_GUI.ViewModels
             ActionItem = new ActionItem(-1, selectedActionType, selectedPump1, selectedPump2, amount, frequency, selectedTimeUnit);
         }
 
+        public void ClearStart()
+        {
+            ActionItem.StartTime = null;
+            ActionItem.StartDate = null;
+        }
+        public void ClearEnd()
+        {
+            ActionItem.EndTime = null;
+            ActionItem.EndDate = null;
+        }
         public void Save()
         {
             if (!IsFormValid()) return;
