@@ -12,6 +12,13 @@ namespace PHIL_GUI.Models
         Hour,
         Day
     }
+    public enum Pump
+    {
+        P1 = 1,
+        P2 = 2,
+        P3 = 3,
+        P4 = 4
+    }
     public class ScheduledAction : ObservableObject
     {
         public int Id { get; set; }
@@ -27,14 +34,25 @@ namespace PHIL_GUI.Models
             }
         }
 
-        private int pump;
-        public int Pump
+        private Pump pump1;
+        public Pump Pump1
         {
-            get => pump;
+            get => pump1;
             set
             {
-                if (value == pump) return;
-                SetProperty(ref pump, value);
+                if (value == pump1) return;
+                SetProperty(ref pump1, value);
+            }
+        }
+
+        private Pump pump2;
+        public Pump Pump2
+        {
+            get => pump2;
+            set
+            {
+                if (value == pump2) return;
+                SetProperty(ref pump2, value);
             }
         }
 
@@ -60,49 +78,68 @@ namespace PHIL_GUI.Models
             }
         }
 
-        private TimeUnit unit;
-        public TimeUnit Unit
+        private TimeUnit timeUnit;
+        public TimeUnit TimeUnit
         {
-            get => unit;
+            get => timeUnit;
             set
             {
-                if (value == unit) return;
-                SetProperty(ref unit, value);
+                if (value == timeUnit) return;
+                SetProperty(ref timeUnit, value);
             }
         }
 
-        private long startTime;
-        public long StartTime
+        private long startEpoch;
+        public long StartEpoch
         {
-            get => startTime;
+            get => startEpoch;
             set
             {
-                if (value == startTime) return;
-                SetProperty(ref startTime, value);
+                if (value == startEpoch) return;
+                SetProperty(ref startEpoch, value);
             }
         }
 
-        private long endTime;
-        public long EndTime
+        private long endEpoch;
+        public long EndEpoch
         {
-            get => endTime;
+            get => endEpoch;
             set
             {
-                if (value == endTime) return;
-                SetProperty(ref endTime, value);
+                if (value == endEpoch) return;
+                SetProperty(ref endEpoch, value);
             }
         }
 
-        public ScheduledAction(int id, ActionType type, int pump, int amount, int frequency, TimeUnit unit, long startTime, long endTime)
+        public ScheduledAction(int id, ActionType type, Pump pump1, Pump pump2, int amount, int frequency, TimeUnit unit, long startTime, long endTime)
         {
             Id = id;
             Type = type;
-            Pump = pump;
+            Pump1 = pump1;
+            Pump2 = pump2;
             Amount = amount;
             Frequency = frequency;
-            Unit = unit;
-            StartTime = startTime;
-            EndTime = endTime;
+            TimeUnit = unit;
+            StartEpoch = startTime;
+            EndEpoch = endTime;
+        }
+
+        public ScheduledAction(ActionItem actionItem)
+        {
+            Id = actionItem.TempId;
+            UpdateFromActionItem(actionItem);
+        }
+
+        public void UpdateFromActionItem(ActionItem actionItem)
+        {
+            Type = actionItem.Type;
+            Pump1 = actionItem.Pump1;
+            Pump2 = actionItem.Pump2;
+            Amount = actionItem.Amount;
+            Frequency = actionItem.Frequency;
+            TimeUnit = actionItem.TimeUnit;
+            StartEpoch = actionItem.StartEpoch;
+            EndEpoch = actionItem.EndEpoch;
         }
     }
 }

@@ -3,15 +3,89 @@
         xmlns:vm="using:PHIL_GUI.ViewModels"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="300" d:DesignHeight="500"
+        mc:Ignorable="d" d:DesignWidth="300" d:DesignHeight="400"
         x:Class="PHIL_GUI.Views.ActionWindow"
         x:DataType="vm:ActionWindowViewModel"
         Icon="/Assets/applied-nanotechnology.ico"
         WindowStartupLocation="CenterScreen"
         Width="300"
-        Height="500"
+        Height="{Binding WindowHeight}"
         CanResize="False"
-        Topmost="True"
-        Title="Create Action - PHIL">
+        Topmost="True">
+    <DockPanel>
+        <Border DockPanel.Dock="Bottom"
+                Classes="toolbar"
+                Padding="16,10"
+                BorderThickness="0,1,0,0">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8">
+				<Button Classes="btn btn-secondary" Content="Cancel"
+                        Click="BottomBarButton_Click"/>
+				<Button Classes="btn btn-primary" Content="{Binding SaveButtonText}"
+                        Tag="Save"
+                        Click="BottomBarButton_Click"/>
+            </StackPanel>
+        </Border>
 
+        <Grid DockPanel.Dock="Top" Margin="16,16,16,0" ColumnDefinitions="Auto,*" IsVisible="{Binding DisplayError}">
+            <Border Grid.Column="0" Width="2" Background="{StaticResource Warn}" Margin="0,0,15,0"/>
+            <TextBlock Grid.Column="1"
+                       Text="{Binding ErrorMessage}"
+                       Foreground="{StaticResource Muted}"
+                       TextWrapping="Wrap"
+                       VerticalAlignment="Center"/>
+        </Grid>
+
+        <StackPanel Spacing="12" Margin="16">
+
+            <Grid ColumnDefinitions="*,*" HorizontalAlignment="Stretch">
+                <StackPanel Grid.Column="0" Spacing="4" Margin="0,0,6,0" IsVisible="{Binding AppSettings.Is96Well}">
+                    <TextBlock Classes="subtitle" Text="TYPE" LetterSpacing="1.2"/>
+                    <ComboBox ItemsSource="{Binding ActionTypes}" SelectedItem="{Binding ActionItem.Type}" HorizontalAlignment="Stretch"/>
+                </StackPanel>
+                <StackPanel Grid.Column="{Binding Pump1Column}" Spacing="4" Margin="{Binding Pump1Margin}">
+                    <TextBlock Classes="subtitle" Text="{Binding Pump1Text}" LetterSpacing="1.2"/>
+                    <ComboBox ItemsSource="{Binding Pumps}" SelectedItem="{Binding ActionItem.Pump1}" HorizontalAlignment="Stretch"/>
+                </StackPanel>
+                <StackPanel Grid.Column="1" Spacing="4" Margin="6,0,0,0" IsVisible="{Binding AppSettings.Is96Well, Converter={x:Static BoolConverters.Not}}">
+                    <TextBlock Classes="subtitle" Text="{Binding Pump2Text}" LetterSpacing="1.2"/>
+                    <ComboBox ItemsSource="{Binding Pumps}" SelectedItem="{Binding ActionItem.Pump2}" HorizontalAlignment="Stretch"/>
+                </StackPanel>
+            </Grid>
+
+            <StackPanel Spacing="4">
+                <TextBlock Classes="subtitle" Text="AMOUNT (µL)" LetterSpacing="1.2"/>
+                <NumericUpDown Value="{Binding ActionItem.Amount}" Minimum="1" FormatString="0"/>
+            </StackPanel>
+
+        <Grid ColumnDefinitions="*,*" HorizontalAlignment="Stretch">
+            <StackPanel Grid.Column="0" Spacing="4" Margin="0,0,6,0">
+                <TextBlock Classes="subtitle" Text="EVERY" LetterSpacing="1.2"/>
+                <NumericUpDown Value="{Binding ActionItem.Frequency}" Minimum="1" FormatString="0"/>
+            </StackPanel>
+            <StackPanel Grid.Column="1" Spacing="4" Margin="6,0,0,0">
+                <TextBlock Classes="subtitle" Text="UNIT" LetterSpacing="1.2"/>
+                <ComboBox ItemsSource="{Binding TimeUnits}" SelectedItem="{Binding ActionItem.TimeUnit}" HorizontalAlignment="Stretch"/>
+            </StackPanel>
+        </Grid>
+
+        <StackPanel Spacing="4">
+            <TextBlock Classes="subtitle" Text="START DATE &amp; TIME (EMPTY = IMMEDIATELY)" LetterSpacing="1.2"/>
+
+            <Grid ColumnDefinitions="Auto,Auto" ColumnSpacing="8">
+                <DatePicker Grid.Column="0" MinWidth="150" SelectedDate="{Binding ActionItem.StartDate}" YearVisible="False"/>
+                <TimePicker Grid.Column="1" MinWidth="110" SelectedTime="{Binding ActionItem.StartTime}"/>
+            </Grid>
+        </StackPanel>
+
+        <StackPanel Spacing="4">
+            <TextBlock Classes="subtitle" Text="END DATE &amp; TIME (EMPTY = NEVER)" LetterSpacing="1.2"/>
+
+            <Grid ColumnDefinitions="Auto,Auto" ColumnSpacing="8">
+                <DatePicker Grid.Column="0" MinWidth="150" SelectedDate="{Binding ActionItem.EndDate}" YearVisible="False"/>
+                <TimePicker Grid.Column="1" MinWidth="110" SelectedTime="{Binding ActionItem.EndTime}"/>
+            </Grid>
+        </StackPanel>
+
+        </StackPanel>
+    </DockPanel>
 </Window>

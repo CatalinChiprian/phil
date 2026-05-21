@@ -29,6 +29,7 @@
     <DockPanel>
         <Border DockPanel.Dock="Bottom"
                 Classes="toolbar"
+                Padding="26,10"
                 BorderThickness="0,1,0,0">
 
         <Button HorizontalAlignment="Right" 

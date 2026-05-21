@@ -183,6 +183,8 @@
   const uint16_t MOTOR_TIMEOUT = 5000;
   bool eStopRequested = false;
 
+  const uint8_t COMMAND_STRING_SZ = 11;
+
   void setup() {
     Serial.begin(9600);
     Wire.begin();
@@ -545,7 +547,7 @@
 
     if (Serial.available() > 0) {
       char received[96];
-      char* tokens[9];
+      char* tokens[COMMAND_STRING_SZ];
       
       size_t len = Serial.readBytesUntil('\n', received, sizeof(received) - 1);
       if (len == 0) return;
@@ -555,7 +557,7 @@
       uint8_t count = 0;
       char* tok = strtok(received, " ");
 
-      while (tok && count < 8) {
+      while (tok && count < COMMAND_STRING_SZ) {
         tokens[count++] = tok;
         tok = strtok(nullptr, " ");
       }
@@ -673,25 +675,27 @@
         calCount = 0;
         Serial.println(F("Calibration cleared"));
       }
-      // CREATE_ACTION <actionType>* <pump1>* <pump2>* <amount>* <frequency>* <frequencyUnit>* <start> <end>
+      // CREATE_ACTION <tempId>* <actionType>* <pump1>* <pump2>* <amount>* <frequency>* <frequencyUnit>* <start> <end>
       else if (strcmp_P(cmd, CREATE_ACTION_CMD) == 0) {
         if (count < 5) return;
-
-        uint8_t type = atoi(tokens[1]);
-        uint8_t pump1 = atoi(tokens[2]);
-        uint8_t pump2 = atoi(tokens[3]);
-        uint16_t amount = atoi(tokens[4]);
-        uint16_t frequency = atoi(tokens[5]);
-        uint8_t unit = atoi(tokens[6]);
+        
+        // TempId must be signed integer to in order to avoid id tempid-id collisions, rest can be unsigned.
+        int16_t tempId = atoi(tokens[1]);
+        uint8_t type = atoi(tokens[2]);
+        uint8_t pump1 = atoi(tokens[3]);
+        uint8_t pump2 = atoi(tokens[4]);
+        uint16_t amount = atoi(tokens[5]);
+        uint16_t frequency = atoi(tokens[6]);
+        uint8_t unit = atoi(tokens[7]);
         uint32_t start = 0;
         uint32_t end = 0;
 
-        if (count >= 9) {
-          start = strtoul(tokens[7], nullptr, 10);
-          end = strtoul(tokens[8], nullptr, 10);
+        if (count >= 10) {
+          start = strtoul(tokens[8], nullptr, 10);
+          end = strtoul(tokens[9], nullptr, 10);
         }
 
-        createAction(type, pump1, pump2, amount, frequency, unit, start, end);
+        createAction(tempId, type, pump1, pump2, amount, frequency, unit, start, end);
       }
       // UPDATE_ACTION <actionId>* <actionType>* <pump1>* <pump2>* <amount>* <frequency>* <frequencyUnit>* <start>* <end>*
       else if (strcmp_P(cmd, UPDATE_ACTION_CMD) == 0) {
@@ -1758,7 +1762,7 @@
     Serial.print(F("MICROSTEPS:1/")); Serial.println(currentMicrosteps);
   }
 
-  uint16_t createAction(uint8_t type, uint8_t pump1, uint8_t pump2, uint16_t amount, uint16_t frequency, uint8_t unit, uint32_t start, uint32_t end) {
+  uint16_t createAction(uint16_t tempId, uint8_t type, uint8_t pump1, uint8_t pump2, uint16_t amount, uint16_t frequency, uint8_t unit, uint32_t start, uint32_t end) {
     if (actionCount >= MAX_ACTIONS_TOTAL) {
       Serial.println(F("ERROR:FAILED TO CREATE ACTION"));
       return 0;
@@ -1787,7 +1791,8 @@
     saveActionsState();
 
     Serial.print(F("ACTION_CREATED:"));
-    Serial.println(action.id);
+    Serial.print(F("TempId=")); Serial.print(tempId);
+    Serial.print(F(",Id=")); Serial.println(action.id);
 
     return action.id;
   }

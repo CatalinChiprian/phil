@@ -1,7 +1,11 @@
 ﻿using PHIL_GUI.Commands;
 using PHIL_GUI.Models;
 using PHIL_GUI.ViewModels.Base;
+using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Windows.Input;
 
 namespace PHIL_GUI.ViewModels
@@ -12,8 +16,9 @@ namespace PHIL_GUI.ViewModels
         public ICommand DispenseCommand { get; }
         public ICommand PrimeCommand { get; }
         public ICommand StopCommand { get; }
-        public ObservableCollection<string> PumpOptions { get; set; }
-        public string SelectedPump { get; set; }
+
+        public IEnumerable<Pump> PumpOptions { get; }
+        public Pump SelectedPump { get; set; }
 
         private int volume;
         public int Volume
@@ -27,8 +32,8 @@ namespace PHIL_GUI.ViewModels
         public PumpsWindowViewModel()
         {
             Volume = 20;
-            PumpOptions = new ObservableCollection<string> { "P1", "P2", "P3", "P4" };
-            SelectedPump = PumpOptions[0];
+            PumpOptions = Enum.GetValues<Pump>().Cast<Pump>();
+            SelectedPump = PumpOptions.First();
 
             AspirateCommand = new RelayCommand(Aspirate);
             DispenseCommand = new RelayCommand(Dispense);
@@ -38,20 +43,19 @@ namespace PHIL_GUI.ViewModels
 
         private void Aspirate()
         {
-            int pump = int.Parse(SelectedPump.Substring(1));
-            
+            int pump = (int)SelectedPump;
             RobotProtocolService.Aspirate(pump, Volume);
         }
 
         private void Dispense()
         {
-            int pump = int.Parse(SelectedPump.Substring(1));
+            int pump = (int)SelectedPump;
             RobotProtocolService.Dispense(pump, Volume);
         }
 
         private void Prime()
         {
-            int pump = int.Parse(SelectedPump.Substring(1));
+            int pump = (int)SelectedPump;
             RobotProtocolService.Prime(pump);
         }
 

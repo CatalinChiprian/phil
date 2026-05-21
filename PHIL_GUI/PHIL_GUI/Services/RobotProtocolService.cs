@@ -50,6 +50,7 @@ namespace PHIL_GUI.Services
         const string CAL_REC_PREFIX = "CAL_REC:";
         const string ACTION_PREFIX = "ACTION:";
         const string WELL_ACTION_PREFIX = "WELL_ACTION:";
+        const string ACTION_CREATED_PREFIX = "ACTION_CREATED:";
         const string RMS_PREFIX = "RMS:";
         const string LIMIT_PRESSED_PREFIX = "LIMIT_PRESSED:";
         const string LIMIT_RELEASED_PREFIX = "LIMIT_RELEASED:";
@@ -101,11 +102,29 @@ namespace PHIL_GUI.Services
             serialPort.SendMessage(command);
         }
 
+        public void CreateAction(ActionItem action)
+        {
+            Send($"{CREATE_ACTION_CMD} {(int)action.TempId} {(int)action.Type} {(int)action.Pump1} {(int)action.Pump2} {action.Amount} {action.Frequency} {(int)action.TimeUnit} {action.StartEpoch} {action.EndEpoch}");
+            RobotState.ActionScheduler.CreateAction(action);
+        }
+
+        public void UpdateAction(ActionItem action)
+        {
+            Send($"{UPDATE_ACTION_CMD} {action.Id} {(int)action.Type} {(int)action.Pump1} {(int)action.Pump2} {action.Amount} {action.Frequency} {(int)action.TimeUnit} {action.StartEpoch} {action.EndEpoch}");
+            RobotState.ActionScheduler.UpdateAction(action);
+        }
+
+        public void DeleteAction(int actionId)
+        {
+            Send($"{DEL_ACTION_CMD} {actionId}");
+            RobotState.ActionScheduler.DeleteAction(actionId);
+        }
+
         public void ClearReceivedData()
         {
             ReceivedData = "";
         }
-
+        
         public void Stop()
         {
             Send("s");
@@ -241,6 +260,8 @@ namespace PHIL_GUI.Services
             else if (message.StartsWith(POS_PREFIX)) ParsePosition(message);
             else if (message.StartsWith(RMS_PREFIX)) ParseRms(message);
             else if (message.StartsWith(ACTION_PREFIX)) ParseAction(message);
+            else if (message.StartsWith(WELL_ACTION_PREFIX)) { /* TODO: Parse well-action links */ }
+            else if (message.StartsWith(ACTION_CREATED_PREFIX)) ParseActionCreated(message);
             else if (message.StartsWith(LIMIT_PRESSED_PREFIX)) ParseLimit(message, LimitType.Pressed);
             else if (message.StartsWith(LIMIT_RELEASED_PREFIX)) ParseLimit(message, LimitType.Released);
             else if (message.StartsWith(STEP_SIZE_PREFIX)) ParseStepSize(message);
@@ -354,16 +375,25 @@ namespace PHIL_GUI.Services
             var kv = ParseKV(msg, ACTION_PREFIX);
             int id = int.Parse(kv["Id"], CultureInfo.InvariantCulture);
             ActionType type = (ActionType)int.Parse(kv["Type"], CultureInfo.InvariantCulture);
-            int pump = int.Parse(kv["Pump"], CultureInfo.InvariantCulture);
+            Pump pump1 = (Pump)int.Parse(kv["Pump1"], CultureInfo.InvariantCulture);
+            Pump pump2 = (Pump)int.Parse(kv["Pump2"], CultureInfo.InvariantCulture);
             int amount = int.Parse(kv["Amount"], CultureInfo.InvariantCulture);
             int frequency = int.Parse(kv["Frequency"], CultureInfo.InvariantCulture);
             TimeUnit unit = (TimeUnit)int.Parse(kv["Unit"], CultureInfo.InvariantCulture);
             long startTime = long.Parse(kv["StartTime"], CultureInfo.InvariantCulture);
             long endTime = long.Parse(kv["EndTime"], CultureInfo.InvariantCulture);
 
-            ScheduledAction action = new ScheduledAction(id, type, pump, amount, frequency, unit, startTime, endTime);
+            ScheduledAction action = new ScheduledAction(id, type, pump1, pump2, amount, frequency, unit, startTime, endTime);
 
             RobotState.ActionScheduler.Actions.Add(action);
+        }
+
+        private void ParseActionCreated(string msg)
+        {
+            var kv = ParseKV(msg, ACTION_CREATED_PREFIX);
+            int tempId = int.Parse(kv["TempId"], CultureInfo.InvariantCulture);
+            int id = int.Parse(kv["Id"], CultureInfo.InvariantCulture);
+            RobotState.ActionScheduler.UpdateActionId(tempId, id);
         }
 
         private void ParseLimit(string msg, LimitType type)

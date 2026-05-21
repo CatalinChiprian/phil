@@ -18,6 +18,7 @@
 
         <Border DockPanel.Dock="Bottom"
                 Classes="toolbar"
+                Padding="16,10"
                 BorderThickness="0,1,0,0">
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8">
 				<Button Classes="btn btn-secondary" Content="Cancel"
