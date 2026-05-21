@@ -5,7 +5,8 @@ namespace PHIL_GUI.Models
     public enum ActionType
     {
         Aspirate,
-        Dispense
+        Dispense,
+        Exchange
     }
     public enum TimeUnit
     {
@@ -19,8 +20,10 @@ namespace PHIL_GUI.Models
         P3 = 3,
         P4 = 4
     }
-    public class ScheduledAction : ObservableObject
+    public class ScheduledAction : ObservableObject, IAction
     {
+        private const int INVALID_ID = 0;
+
         public int Id { get; set; }
 
         private ActionType type;
@@ -126,12 +129,12 @@ namespace PHIL_GUI.Models
 
         public ScheduledAction(ActionItem actionItem)
         {
-            Id = actionItem.TempId;
             UpdateFromActionItem(actionItem);
         }
 
         public void UpdateFromActionItem(ActionItem actionItem)
         {
+            Id = actionItem.Id == INVALID_ID ? actionItem.TempId : actionItem.Id;
             Type = actionItem.Type;
             Pump1 = actionItem.Pump1;
             Pump2 = actionItem.Pump2;

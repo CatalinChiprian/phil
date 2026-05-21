@@ -23,10 +23,13 @@ namespace PHIL_GUI.Models
         public void UpdateAction(ActionItem action)
         {
             if (action == null) return;
+
             ScheduledAction existingAction = Actions.FirstOrDefault(a => a.Id == action.Id);
             if (existingAction == null) return;
+            int index = Actions.IndexOf(existingAction);
 
-            existingAction.UpdateFromActionItem(action);
+            ScheduledAction updatedAction = new ScheduledAction(action);
+            Actions[index] = updatedAction;
         }
         public void UpdateActionId(int tempId, int id)
         {

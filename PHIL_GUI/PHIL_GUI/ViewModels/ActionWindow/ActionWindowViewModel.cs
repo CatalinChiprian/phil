@@ -45,6 +45,8 @@ namespace PHIL_GUI.ViewModels
                 if (value == displayError) return;
 
                 SetProperty(ref displayError, value);
+
+                OnPropertyChanged(nameof(WindowHeight));
             }
         }
 
@@ -63,7 +65,7 @@ namespace PHIL_GUI.ViewModels
 
         public AppSettings AppSettings => AppSettingsService.AppSettings;
 
-        public ActionWindowViewModel(ActionWindowMode mode, ScheduledAction action)
+        public ActionWindowViewModel(ActionWindowMode mode, ActionItem action)
         {
             Mode = mode;
 
@@ -71,12 +73,13 @@ namespace PHIL_GUI.ViewModels
             ClearStartCommand = new RelayCommand(ClearStart);
             ClearEndCommand = new RelayCommand(ClearEnd);
 
+            ActionTypes = Enum.GetValues<ActionType>().Cast<ActionType>();
+            if (AppSettings.Is96Well) ActionTypes.SkipLast(1);
+            Pumps = Enum.GetValues<Pump>().Cast<Pump>();
+            TimeUnits = Enum.GetValues<TimeUnit>().Cast<TimeUnit>();
+
             if (mode == ActionWindowMode.Create)
             {
-                ActionTypes = Enum.GetValues<ActionType>().Cast<ActionType>();
-                Pumps = Enum.GetValues<Pump>().Cast<Pump>();
-                TimeUnits = Enum.GetValues<TimeUnit>().Cast<TimeUnit>();
-
                 int tempId = RobotProtocolService.RobotState.ActionScheduler.GetNextTempId();
                 ActionType selectedActionType = ActionTypes.First();
                 Pump selectedPump1 = Pumps.First();
@@ -84,6 +87,8 @@ namespace PHIL_GUI.ViewModels
                 int amount = 50;
                 TimeUnit selectedTimeUnit = TimeUnits.First();
                 int frequency = 1;
+
+                if (!AppSettings.Is96Well) selectedActionType = ActionType.Exchange;
 
                 ActionItem = new ActionItem(tempId, selectedActionType, selectedPump1, selectedPump2, amount, frequency, selectedTimeUnit);
             }
@@ -110,11 +115,13 @@ namespace PHIL_GUI.ViewModels
 
         public void ClearStart()
         {
+            ActionItem.StartEpoch = 0;
             ActionItem.StartTime = null;
             ActionItem.StartDate = null;
         }
         public void ClearEnd()
         {
+            ActionItem.EndEpoch = 0;
             ActionItem.EndTime = null;
             ActionItem.EndDate = null;
         }

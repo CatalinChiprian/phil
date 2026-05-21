@@ -1,6 +1,10 @@
-﻿using CommunityToolkit.Mvvm.Input;
+﻿using Avalonia.Controls;
+using CommunityToolkit.Mvvm.Input;
 using PHIL_GUI.Models;
 using PHIL_GUI.ViewModels.Base;
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
+using System.Linq;
 using System.Windows.Input;
 
 namespace PHIL_GUI.ViewModels
@@ -15,6 +19,7 @@ namespace PHIL_GUI.ViewModels
         public ICommand SelectQ3Command { get; }
         public ICommand SelectQ4Command { get; }
 
+        public ObservableCollection<ActionItem> Items { get; } = new ObservableCollection<ActionItem>();
         public IWellPlateItem WellPlate { get; private set; }
         public WellPlateItemOoC? WellPlateItemOoC => WellPlate as WellPlateItemOoC;
         public WellPlateItem96? WellPlateItem96 => WellPlate as WellPlateItem96;
@@ -51,7 +56,44 @@ namespace PHIL_GUI.ViewModels
             SelectQ2Command = new RelayCommand(() => SelectQuad(2));
             SelectQ3Command = new RelayCommand(() => SelectQuad(3));
             SelectQ4Command = new RelayCommand(() => SelectQuad(4));
+
             AppSettings.PropertyChanged += AppSettings_PropertyChanged;
+            ActionScheduler.Actions.CollectionChanged += Actions_CollectionChanged;
+        }
+
+        private void Actions_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+        {
+            if (e.Action == NotifyCollectionChangedAction.Add)
+            {
+                foreach (ScheduledAction newAction in e.NewItems)
+                {
+                    Items.Add(new ActionItem(newAction));
+                }
+            }
+
+            if (e.Action == NotifyCollectionChangedAction.Remove)
+            {
+                foreach (ScheduledAction delAction in e.OldItems)
+                {
+                    ActionItem item = Items.FirstOrDefault(a => a.Id == delAction.Id);
+
+                    if (item == null) continue;
+
+                    Items.Remove(item);
+                }
+            }
+
+            if (e.Action == NotifyCollectionChangedAction.Replace)
+            {
+                foreach (ScheduledAction newAction in e.NewItems)
+                {
+                    ActionItem item = Items.FirstOrDefault(a => a.Id == newAction.Id);
+
+                    if (item == null) continue;
+
+                    item.Override(newAction);
+                }
+            }
         }
 
         private void SelectTarget(string target)
@@ -111,6 +153,11 @@ namespace PHIL_GUI.ViewModels
 
             OnPropertyChanged(nameof(IsDetailPageVisible));
             OnPropertyChanged(nameof(SelectedWellsCount));
+        }
+        public void DeleteAction(int actionId)
+        {
+            ActionScheduler.DeleteAction(actionId);
+            OnPropertyChanged(nameof(ActionCount));
         }
 
         private void AppSettings_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)

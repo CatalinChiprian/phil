@@ -1,5 +1,6 @@
 using Avalonia.Controls;
 using Avalonia.VisualTree;
+using PHIL_GUI.Models;
 using PHIL_GUI.ViewModels;
 
 namespace PHIL_GUI.Views;
@@ -28,5 +29,27 @@ public partial class MediumExchangeView : UserControl
         if (parent == null) return;
 
         await new ActionWindow(ActionWindowMode.Create, null).ShowDialog(parent);
+    }
+
+    private async void EditActionButton_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        var parent = this.GetVisualRoot() as Window;
+        if (parent == null) return;
+
+        if (DataContext is not MediumExchangeViewModel vm) return;
+
+        if (sender is not Button button) return;
+        if (button.Tag is not ActionItem actionItem) return;
+
+        await new ActionWindow(ActionWindowMode.Update, actionItem).ShowDialog(parent);
+    }
+    private void DeleteActionButton_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        if (DataContext is not MediumExchangeViewModel vm) return;
+
+        if (sender is not Button button) return;
+        if (button.Tag is not int actionId) return;
+
+        vm.DeleteAction(actionId);
     }
 }

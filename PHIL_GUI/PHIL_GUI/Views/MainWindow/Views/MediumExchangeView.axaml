@@ -6,7 +6,7 @@
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="PHIL_GUI.Views.MediumExchangeView"
              x:DataType="vm:MediumExchangeViewModel">
-    <Grid ColumnDefinitions="300, *, 300">
+    <Grid ColumnDefinitions="350, *, 300">
         <Border Grid.Column="0" Classes="sidebar" BorderThickness="0,0,1,0">
             <Grid RowDefinitions="Auto, *">
 
@@ -25,6 +25,46 @@
                 </Border>
 
                 <!--Actions List-->
+                <ScrollViewer Grid.Row="1">
+					<ItemsControl ItemsSource="{Binding Items}" Margin="10">
+						<ItemsControl.ItemTemplate>
+							<DataTemplate>
+								<Border Classes="action-card">
+									<StackPanel Spacing="4" Margin="10">
+                                        <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="6">
+											<Border Grid.Column="0" Classes="action-badge" BorderBrush="{Binding ActionTypeBorderColor}" Background="{Binding ActionTypeBackgroundColor}">
+                                                <TextBlock Text="{Binding ActionTypeLabel}" Foreground="{Binding ActionTypeTextColor}"/>
+                                            </Border>
+                                            <TextBlock Grid.Column="1"
+                                                       Text="{Binding Summary}"
+                                                       FontSize="12"
+                                                       FontWeight="Medium"
+                                                       VerticalAlignment="Center"/>
+                                            <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="4">
+												<Button Classes="btn btn-svg" Width="22" Height="22" ToolTip.Tip="Edit Action" Click="EditActionButton_Click" Tag="{Binding}">
+                                                    <Path Classes="svg"
+                                                          Width="12"
+                                                          Height="12"
+                                                          Data="M20.1498 7.93997L8.27978 19.81C7.21978 20.88 4.04977 21.3699 3.32977 20.6599C2.60977 19.9499 3.11978 16.78 4.17978 15.71L16.0498 3.84C16.5979 3.31801 17.3283 3.03097 18.0851 3.04019C18.842 3.04942 19.5652 3.35418 20.1004 3.88938C20.6356 4.42457 20.9403 5.14781 20.9496 5.90463C20.9588 6.66146 20.6718 7.39189 20.1498 7.93997V7.93997Z"/>
+                                                </Button>   
+                                                <Button Classes="btn btn-svg btn-svg-clear" Width="22" Height="22" ToolTip.Tip="Delete Action" Click="DeleteActionButton_Click" Tag="{Binding Id}">
+													<Path Classes="svg"
+                                                          Width="12"
+                                                          Height="12"
+                                                          Data="M6 7H12H18V18C18 19.6569 16.6569 21 15 21H9C7.34315 21 6 19.6569 6 18V7Z"/>
+                                                </Button>
+                                            </StackPanel>
+                                        </Grid>
+
+                                        <TextBlock Classes="subtitle" Text="{Binding FrequencyLabel}" FontSize="10"/>
+                                        <TextBlock Classes="subtitle" Text="{Binding ScheduleLabel}" FontSize="10"/>
+										
+                                    </StackPanel>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
 
             </Grid>
         </Border>

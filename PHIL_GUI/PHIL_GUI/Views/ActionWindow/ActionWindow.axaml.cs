@@ -8,7 +8,7 @@ namespace PHIL_GUI.Views;
 
 public partial class ActionWindow : Window
 {
-    public ActionWindow(ActionWindowMode mode, ScheduledAction action)
+    public ActionWindow(ActionWindowMode mode, ActionItem action)
     {
         InitializeComponent();
         DataContext = new ActionWindowViewModel(mode, action);

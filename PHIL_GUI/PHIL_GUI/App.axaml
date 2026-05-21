@@ -22,7 +22,11 @@
             <SolidColorBrush x:Key="Accent-Dim">#2000a854</SolidColorBrush>
             <SolidColorBrush x:Key="Accent-Mid">#20a85430</SolidColorBrush>
             <SolidColorBrush x:Key="Info">#2563eb</SolidColorBrush>
-            <SolidColorBrush x:Key="Info-Dim">#202563eb</SolidColorBrush>
+            <SolidColorBrush x:Key="Info-Dim">#0C2563eb</SolidColorBrush>
+            <SolidColorBrush x:Key="Info-Mid">#202563eb</SolidColorBrush>
+            <SolidColorBrush x:Key="Exchange">#7c3aed</SolidColorBrush>
+            <SolidColorBrush x:Key="Exchange-Dim">#0C7c3aed</SolidColorBrush>
+            <SolidColorBrush x:Key="Exchange-Mid">#207c3aed</SolidColorBrush>
             <SolidColorBrush x:Key="Muted">#7a8f7a</SolidColorBrush>
             <SolidColorBrush x:Key="Warn">#d93025</SolidColorBrush>
             <SolidColorBrush x:Key="Warn-Dim">#0Cd93025</SolidColorBrush>
@@ -215,7 +219,7 @@
         <Style Selector="Button.btn-info">
 		    <Setter Property="BorderBrush" Value="{StaticResource Info}"/>
             <Setter Property="Foreground" Value="{StaticResource Info}"/>
-            <Setter Property="Background" Value="{StaticResource Info-Dim}"/>
+            <Setter Property="Background" Value="{StaticResource Info-Mid}"/>
         </Style>
 
         <Style Selector="Button.btn-info:pointerover /template/ ContentPresenter">
@@ -224,7 +228,7 @@
         </Style>
 
         <Style Selector="Button.btn-secondary-info">
-		    <Setter Property="BorderBrush" Value="{StaticResource Info-Dim}"/>
+		    <Setter Property="BorderBrush" Value="{StaticResource Info-Mid}"/>
             <Setter Property="Foreground" Value="{StaticResource Info}"/>
             <Setter Property="Background" Value="Transparent"/>
         </Style>
@@ -244,7 +248,7 @@
         </Style>
 
         <Style Selector="Button.btn-secondary-info Path">
-            <Setter Property="Fill" Value="{StaticResource Info-Dim}"/>
+            <Setter Property="Fill" Value="{StaticResource Info-Mid}"/>
         </Style>
 
         <Style Selector="Button.btn-secondary-info:pointerover Path">
@@ -722,6 +726,30 @@
 
         <Style Selector="NumericUpDown /template/ ButtonSpinner:pointerover /template/ Border">
             <Setter Property="BorderBrush" Value="{StaticResource Accent}"/>
+        </Style>
+
+        <Style Selector="Border.action-card">
+			<Setter Property="Margin" Value="0,0,0,6"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="6"/>
+            <Setter Property="Padding" Value="6"/>
+            <Setter Property="Background" Value="{StaticResource Surface}"/>
+            <Setter Property="Transitions">
+                <Transitions>
+                    <BrushTransition  Property="Background" Duration="0:0:0.15"/>
+                    <BrushTransition  Property="BorderBrush" Duration="0:0:0.15"/>
+                </Transitions>
+            </Setter>
+        </Style>
+
+        <Style Selector="Border.action-card:pointerover">
+		    <Setter Property="BorderBrush" Value="{StaticResource Accent}"/>
+        </Style>
+
+        <Style Selector="Border.action-badge">
+			<Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="5,0"/>
+            <Setter Property="CornerRadius" Value="6"/>
         </Style>
 
     </Application.Styles>
