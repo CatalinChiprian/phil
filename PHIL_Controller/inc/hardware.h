@@ -13,8 +13,6 @@ extern AccelStepper stepperZ2;
 extern AccelStepper stepperP1;
 extern AccelStepper stepperP2;
 
-extern RTC_DS3231 rtc;
-
 extern const uint8_t currentMicrosteps;
 
 extern const uint8_t limitSwitchL;
@@ -51,3 +49,7 @@ bool isEmergencyStopRequest();
 void emergencyStop();
 void checkFaults();
 void checkSwitches();
+void adjustTime(uint32_t unixTime);
+uint32_t getTime();
+
+void printTime();

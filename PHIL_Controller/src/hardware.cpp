@@ -343,3 +343,15 @@ void checkSwitches() {
         }
     }
 }
+
+void adjustTime(uint32_t unixTime) {
+    rtc.adjust(DateTime(unixTime));
+}
+
+uint32_t getTime() {
+    return rtc.now().unixtime();
+}
+
+void printTime() {
+    Serial.print(F("TIME=")); Serial.println(rtc.now().unixtime());
+}

@@ -20,6 +20,9 @@ void moveZMotors(int16_t position);
 void goToHardcodedWells(char row, uint8_t column);
 void goToCalculatedWell(char row, uint8_t col);
 void updatePositionState();
+void goToWasteContainer();
+void increaseStepSize();
+void decreaseStepSize();
 
 void printCurrentWell();
 void printPosition(int16_t L, int16_t R, int16_t Z1, int16_t Z2);

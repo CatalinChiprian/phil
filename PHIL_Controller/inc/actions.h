@@ -45,16 +45,16 @@ extern WellAction wellActions[MAX_WELLS];
 extern uint8_t actionCount;
 extern uint16_t nextActionId;
 
-bool parseWellBitmask(const char* hex, uint8_t mask[12]);
-Action* findActionById(uint16_t id);
 uint16_t createAction(uint16_t tempId, uint8_t type, uint8_t pump1, uint8_t pump2, uint16_t amount, uint16_t frequency, uint8_t unit, uint32_t start, uint32_t end);
 void updateAction(uint16_t id, uint8_t type, uint8_t pump1, uint8_t pump2, uint16_t amount, uint16_t frequency, uint8_t unit, uint32_t start, uint32_t end);
 void deleteAction(uint16_t id);
-void linkActionByMask(uint16_t actionId, const uint8_t mask[12]);
-void unlinkActionByMask(uint16_t actionId, const uint8_t mask[12]);
+void linkAction(uint16_t id, char* hex);
+void unlinkAction(uint16_t id, char* hex);
 void clearAllActions();
 void processActions();
 
 
 void printAction(const Action& action);
+void printActions();
 void printWellAction(const WellAction& wellAction, uint8_t wellIndex);
+void printWellActions();

@@ -185,6 +185,47 @@ bool solveMapping() {
     return true;
 }
 
+void clearCalibration() {
+	EEPROM.put(EEPROM_CAL_BASE, 0x00);
+	mapReady = false;
+
+	for (uint8_t i = 0; i < TERMS; i++)
+    {
+        ML[i] = 0;
+        MR[i] = 0;
+    }
+
+	calCount = 0;
+	Serial.println(F("Calibration cleared"));
+}
+
+void deleteCalibrationPoint(char row, uint8_t col) {
+	float x = 0;
+	float y = 0;
+	wellToXY(row, col, x, y);
+	
+	int8_t foundIdx = -1;
+	for (uint8_t i = 0; i < calCount; i++) {
+		if (fabs(calX[i] - x) < 0.1f && fabs(calY[i] - y) < 0.1f) {
+			foundIdx = i;
+			break;
+		}
+	}
+	
+	if (foundIdx == -1) return;
+
+	for (int8_t i = foundIdx; i < calCount - 1; i++) {
+		calX[i] = calX[i+1];
+		calY[i] = calY[i+1];
+		calL[i] = calL[i+1];
+		calR[i] = calR[i+1];
+	}
+	calCount--;
+
+	Serial.print(F("CAL_DELETED:")); Serial.print(row); Serial.print(col);
+	Serial.print(F(",remaining=")); Serial.println(calCount);
+}
+
 float clampZero(float v, float eps = 5e-4f) {
     return fabs(v) < eps ? 0.0f : v;
 }

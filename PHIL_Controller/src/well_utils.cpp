@@ -52,3 +52,8 @@ void xyToAngles(float x, float y, float &Ldeg, float &Rdeg) {
     Ldeg = dot10(ML, b);
     Rdeg = dot10(MR, b);
 }
+
+void wellStrToRowCol(char* wellStr, char& row, uint8_t& col) {
+	row = tolower(wellStr[0]);
+	col = atoi(wellStr + 1);
+}

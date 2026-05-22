@@ -9,3 +9,4 @@ long degToSteps(float deg);
 float stepsToDegrees(long steps);
 void wellToXY(char row, uint8_t col, float &x, float &y);
 void xyToAngles(float x, float y, float &Ldeg, float &Rdeg);
+void wellStrToRowCol(char* wellStr, char& row, uint8_t& col);

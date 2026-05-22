@@ -109,6 +109,15 @@ void linkActionByMask(uint16_t actionId, const uint8_t mask[12]) {
     }
 }
 
+void linkAction(uint16_t id, char* hex) {
+	if (!findActionById(id)) return;
+
+	uint8_t mask[12];
+	if (!parseWellBitmask(hex, mask)) return;
+
+	linkActionByMask(id, mask);
+}
+
 void unlinkActionByMask(uint16_t actionId, const uint8_t mask[12]) {
     for (uint8_t well = 0; well < MAX_WELLS; well++) {
         uint8_t byteIdx = well / 8;
@@ -118,6 +127,15 @@ void unlinkActionByMask(uint16_t actionId, const uint8_t mask[12]) {
             unlinkActionFromWell(actionId, well);
         }
     }
+}
+
+void unlinkAction(uint16_t id, char* hex) {
+    if (!findActionById(id)) return;
+
+	uint8_t mask[12];
+	if (!parseWellBitmask(hex, mask)) return;
+
+	unlinkActionByMask(id, mask);
 }
 
 uint16_t createAction(uint16_t tempId, uint8_t type, uint8_t pump1, uint8_t pump2, uint16_t amount, uint16_t frequency, uint8_t unit, uint32_t start, uint32_t end) {
@@ -286,7 +304,7 @@ void executeAction(Action &action) {
 }
 
 void processActions() {
-    uint32_t now = rtc.now().unixtime();
+    uint32_t now = getTime();
 
     for (uint16_t i = 0; i < MAX_ACTIONS_TOTAL; i++) {
         Action &action = actions[i];
@@ -326,6 +344,12 @@ void printAction(const Action& action) {
     Serial.print(F(",Enabled=")); Serial.println(action.enabled);
 }
 
+void printActions() {
+	for (uint8_t i = 0; i < MAX_ACTIONS_TOTAL; i++) {
+	  if (actions[i].enabled) printAction(actions[i]);
+	}
+}
+
 void printWellAction(const WellAction& wellAction, uint8_t wellIndex) {
     char row;
     uint8_t col;
@@ -338,4 +362,10 @@ void printWellAction(const WellAction& wellAction, uint8_t wellIndex) {
         Serial.print(wellAction.actionIds[i]);
     }
     Serial.println(']');
+}
+
+void printWellActions() {
+	for (uint8_t i = 0; i < MAX_WELLS; i++) {
+	  if (wellActions[i].count > 0) printWellAction(wellActions[i], i);
+	}
 }

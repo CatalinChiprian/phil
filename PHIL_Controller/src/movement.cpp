@@ -471,6 +471,29 @@ void updatePositionState() {
   }
 }
 
+void goToWasteContainer() {
+	enableLMotor();
+	enableRMotor();
+
+	stepperL.moveTo(55 * currentMicrosteps); 
+	stepperR.moveTo(-5.5 * currentMicrosteps); 
+	
+	while(stepperR.distanceToGo() != 0 || stepperL.distanceToGo() != 0) {
+	  stepperR.run();
+	  stepperL.run();
+	}
+
+	savePositions();
+}
+
+void increaseStepSize() {
+  times_x10 += 1;
+}
+
+void decreaseStepSize() {
+  times_x10 -= 1;
+}
+
 void printCurrentWell() {
   char row;
   uint8_t col;
