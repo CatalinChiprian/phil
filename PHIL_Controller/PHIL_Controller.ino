@@ -23,7 +23,7 @@ void loop() {
 
   parseCommands(); 
 
-  switches();
+  checkSwitches();
 
   processActions();
 

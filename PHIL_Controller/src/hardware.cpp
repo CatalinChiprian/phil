@@ -280,7 +280,7 @@ void checkFaults() {
     }
 }
 
-void switches() {
+void checkSwitches() {
     static bool z1WasPressed = false;
     if(digitalRead(limitSwitchZ1) == LOW) {
         if(!z1WasPressed) {  

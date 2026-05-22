@@ -50,4 +50,4 @@ void autoDisableMotors();
 bool isEmergencyStopRequest();
 void emergencyStop();
 void checkFaults();
-void switches();
+void checkSwitches();

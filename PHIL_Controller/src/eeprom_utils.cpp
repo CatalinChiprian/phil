@@ -41,8 +41,6 @@ bool loadPositions() {
     stepperZ1.setCurrentPosition(Z1);
     stepperZ2.setCurrentPosition(Z2);
 
-    printPosition(L, R, Z1, Z2);
-
     return true;
 }
 
