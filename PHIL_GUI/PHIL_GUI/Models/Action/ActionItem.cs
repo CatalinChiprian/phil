@@ -185,7 +185,7 @@ namespace PHIL_GUI.Models
             {
                 if (value == startDate) return;
 
-                if (value < Today.Date) value = Today.Date;
+                if (!suppressValidation && value < Today.Date) value = Today.Date;
                 if (startDate == null && startTime == null) SetProperty(ref startTime, Today.TimeOfDay, nameof(StartTime));
 
                 // Since DatetimePicker has LocalValue priority the UI might still receive the incorrect value, so we need to reset it to null first to ensure the correct value is displayed
@@ -207,7 +207,7 @@ namespace PHIL_GUI.Models
             {
                 if (value == startTime) return;
 
-                if (StartDate?.Date == Today.Date && value < Today.TimeOfDay) value = Today.TimeOfDay;
+                if (!suppressValidation && (StartDate?.Date == Today.Date && value < Today.TimeOfDay)) value = Today.TimeOfDay;
 
                 // Since DatetimePicker has LocalValue priority the UI might still receive the incorrect value, so we need to reset it to null first to ensure the correct value is displayed
                 if (Equals(startTime, value)) SetProperty(ref startTime, null);
@@ -230,7 +230,7 @@ namespace PHIL_GUI.Models
             {
                 if (value == endDate) return;
 
-                if (value < StartDate?.Date || value < Today.Date) value = StartDate?.Date ?? Today.Date;
+                if (!suppressValidation && (value < StartDate?.Date || value < Today.Date)) value = StartDate?.Date ?? Today.Date;
                 if (endDate == null && endTime == null) SetProperty(ref endTime, Today.TimeOfDay, nameof(EndTime));
 
                 // Since DatetimePicker has LocalValue priority the UI might still receive the incorrect value, so we need to reset it to null first to ensure the correct value is displayed
@@ -250,7 +250,7 @@ namespace PHIL_GUI.Models
                 if (value == endTime) return;
 
                 if (StartDate.HasValue && EndDate?.Date >= StartDate?.Date && value < StartTime) value = StartTime;
-                if (value < Today.TimeOfDay) value = Today.TimeOfDay;
+                if (!suppressValidation && value < Today.TimeOfDay) value = Today.TimeOfDay;
 
                 // Since DatetimePicker has LocalValue priority the UI might still receive the incorrect value, so we need to reset it to null first to ensure the correct value is displayed
                 if (Equals(endTime, value)) SetProperty(ref endTime, null);
@@ -317,6 +317,8 @@ namespace PHIL_GUI.Models
             _ => ""
         };
 
+        private bool suppressValidation;
+
         public ActionItem(int tempId, ActionType type, Pump pump1, Pump pump2, int amount, int frequency, TimeUnit unit)
         {
             TempId = tempId;
@@ -340,7 +342,10 @@ namespace PHIL_GUI.Models
             Override(Model);
         }
 
-        public void Override(ScheduledAction model) {
+        public void Override(ScheduledAction model)
+        {
+            suppressValidation = true;
+
             Id = model.Id;
             Type = model.Type;
             Pump1 = model.Pump1;
@@ -371,6 +376,8 @@ namespace PHIL_GUI.Models
                 EndDate = new DateTimeOffset(end.Date);
                 EndTime = end.TimeOfDay;
             }
+
+            suppressValidation = false;
         }
 
         public ActionItem(ActionItem other)
@@ -380,6 +387,8 @@ namespace PHIL_GUI.Models
 
         public void Override(ActionItem other)
         {
+            suppressValidation = true;
+
             Model = other.Model;
             Id = other.Id;
             Type = other.Type;
@@ -395,6 +404,8 @@ namespace PHIL_GUI.Models
             EndDate = other.EndDate;
             EndTime = other.EndTime;
             IsVisible = other.IsVisible;
+
+            suppressValidation = false;
         }
 
         public void ConvertToEpoch()
