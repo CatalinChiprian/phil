@@ -403,7 +403,7 @@ namespace PHIL_GUI.Services
             long startTime = long.Parse(kv["Start"], CultureInfo.InvariantCulture);
             long endTime = long.Parse(kv["End"], CultureInfo.InvariantCulture);
 
-            ScheduledAction action = new ScheduledAction(id, type, pump1, pump2, amount, frequency, unit, startTime, endTime);
+            ScheduleAction action = new ScheduleAction(id, type, pump1, pump2, amount, frequency, unit, startTime, endTime);
 
             RobotState.ActionScheduler.Actions.Add(action);
         }

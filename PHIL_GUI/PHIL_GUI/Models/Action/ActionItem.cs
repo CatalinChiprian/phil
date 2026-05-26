@@ -8,7 +8,7 @@ namespace PHIL_GUI.Models
 {
     public class ActionItem : ObservableObject, IAction
     {
-        public ScheduledAction Model { get; set; }
+        public ScheduleAction Model { get; set; }
         public int Id { get; set; }
         public int TempId { get; set; }
 
@@ -330,7 +330,7 @@ namespace PHIL_GUI.Models
             TimeUnit = unit;
         }
 
-        public ActionItem(ScheduledAction model)
+        public ActionItem(ScheduleAction model)
         {
             Model = model;
             Model.PropertyChanged += ActionModel_PropertyChanged;
@@ -342,7 +342,7 @@ namespace PHIL_GUI.Models
             Override(Model);
         }
 
-        public void Override(ScheduledAction model)
+        public void Override(ScheduleAction model)
         {
             suppressValidation = true;
 

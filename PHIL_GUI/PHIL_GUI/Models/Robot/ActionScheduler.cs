@@ -8,24 +8,24 @@ namespace PHIL_GUI.Models
     public class ActionScheduler
     {
         private int nextTempId = -1;
-        public ObservableCollection<ScheduledAction> Actions { get; } = new ObservableCollection<ScheduledAction>();
-        public Dictionary<ScheduledAction, Well> WellActions { get; } = new Dictionary<ScheduledAction, Well>();
+        public ObservableCollection<ScheduleAction> Actions { get; } = new ObservableCollection<ScheduleAction>();
+        public Dictionary<int, List<ScheduleAction>> WellActions { get; } = new Dictionary<int, List<ScheduleAction>>();
         public ActionScheduler() { }
 
         public void CreateAction(ActionItem action)
         {
             if (action == null) return;
-            ScheduledAction scheduledAction = new ScheduledAction(action);
-            if (Actions.Contains(scheduledAction)) return;
+            ScheduleAction scheduleAction = new ScheduleAction(action);
+            if (Actions.Contains(scheduleAction)) return;
             if (Actions.Any(a => a.Id == action.Id)) return;
 
-            action.Model = scheduledAction;
-            Actions.Add(scheduledAction);
+            action.Model = scheduleAction;
+            Actions.Add(scheduleAction);
         }
         public void UpdateAction(ActionItem action)
         {
             if (action == null) return;
-            ScheduledAction model = action.Model;
+            ScheduleAction model = action.Model;
             if (model == null) return;
 
             model.UpdateFromActionItem(action);
@@ -33,17 +33,26 @@ namespace PHIL_GUI.Models
         }
         public void UpdateAction(int tempId, int id)
         {
-            ScheduledAction action = Actions.FirstOrDefault(a => a.Id == tempId);
+            ScheduleAction action = Actions.FirstOrDefault(a => a.Id == tempId);
             if (action == null) return;
             int index = Actions.IndexOf(action);
             action.Id = id;
         }
         public void DeleteAction(int actionId)
         { 
-            ScheduledAction action = Actions.FirstOrDefault(a => a.Id == actionId);
+            ScheduleAction action = Actions.FirstOrDefault(a => a.Id == actionId);
             if (action == null) return;
 
             Actions.Remove(action);
+        }
+        
+        public void LinkActionToWell(ActionItem action,  WellItem well)
+        {
+
+        }
+        public void UnlinkActionToWell(ActionItem action,  WellItem well)
+        {
+
         }
 
         public int GetNextTempId()

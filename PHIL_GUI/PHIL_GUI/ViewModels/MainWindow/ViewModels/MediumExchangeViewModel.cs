@@ -1,7 +1,10 @@
 ﻿using Avalonia.Controls;
 using CommunityToolkit.Mvvm.Input;
+using PHIL_GUI.Helpers;
 using PHIL_GUI.Models;
 using PHIL_GUI.ViewModels.Base;
+using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Linq;
@@ -19,7 +22,10 @@ namespace PHIL_GUI.ViewModels
         public ICommand SelectQ3Command { get; }
         public ICommand SelectQ4Command { get; }
 
-        public ObservableCollection<ActionItem> Items { get; } = new ObservableCollection<ActionItem>();
+        public ObservableCollection<ActionItem> ActionItems { get; } = new ObservableCollection<ActionItem>();
+        public ObservableCollection<ActionItem> CurrentWellActions { get; } = new ObservableCollection<ActionItem>();
+        public ObservableCollection<ActionItem> AvailableWellActions { get; } = new ObservableCollection<ActionItem>();
+
         public IWellPlateItem WellPlate { get; private set; }
         public WellPlateItemOoC? WellPlateItemOoC => WellPlate as WellPlateItemOoC;
         public WellPlateItem96? WellPlateItem96 => WellPlate as WellPlateItem96;
@@ -28,16 +34,28 @@ namespace PHIL_GUI.ViewModels
             WellPlateItemOoC.SelectedWellPairs.Count > 0;
 
         public string SelectedWellsCount => AppSettings.Is96Well
-            ? GetWellText(WellPlateItem96.SelectedWellItems.Count)
-            : GetPairText(WellPlateItemOoC.SelectedWellPairs.Count);
+            ? GetWellCountText(WellPlateItem96.SelectedWellItems.Count)
+            : GetChannelCountText(WellPlateItemOoC.SelectedWellPairs.Count);
 
-        private string GetWellText(int count) => $"Selected {count} well{(count == 1 ? "" : "s")}";
+        private string GetWellCountText(int count) => $"Selected {count} well{(count == 1 ? "" : "s")}";
 
-        private string GetPairText(int count) => $"Selected {count} pair{(count == 1 ? "" : "s")}";
+        private string GetChannelCountText(int count) => $"Selected {count} channels{(count == 1 ? "" : "s")}";
 
         public string ActionCount => GetActionText(ActionScheduler.WellActions.Count);
 
         private string GetActionText(int count) => $"Scheduled {count} action{(count == 1 ? "" : "s")}";
+        public string SelectedWellText => AppSettings.Is96Well
+            ? GetWellText(WellPlateItem96.SelectedWellItems)
+            : GetChannelText(WellPlateItemOoC.SelectedWellPairs);
+
+        private string GetWellText(List<WellItem> wellItems) =>
+            wellItems.Count == 1
+                ? wellItems[0].Name
+                : $"{wellItems.Count} wells";
+        private string GetChannelText(List<WellPairItem> wellPairs) =>
+            wellPairs.Count == 1
+                ? wellPairs[0].PairIndex.ToString()
+                : $"{wellPairs.Count} channels";
 
         public Well CurrentWell => RobotProtocolService.RobotState.CurrentWell;
         public AppSettings AppSettings => AppSettingsService.AppSettings;
@@ -66,39 +84,26 @@ namespace PHIL_GUI.ViewModels
         {
             if (e.Action == NotifyCollectionChangedAction.Add)
             {
-                foreach (ScheduledAction newAction in e.NewItems)
+                foreach (ScheduleAction newAction in e.NewItems)
                 {
                     ActionItem item = new ActionItem(newAction);
                     SetItemVisibility(item);
-                    Items.Add(item);
+                    ActionItems.Add(item);
                     
                 }
             }
 
             if (e.Action == NotifyCollectionChangedAction.Remove)
             {
-                foreach (ScheduledAction delAction in e.OldItems)
+                foreach (ScheduleAction delAction in e.OldItems)
                 {
-                    ActionItem item = Items.FirstOrDefault(a => a.Id == delAction.Id);
+                    ActionItem item = ActionItems.FirstOrDefault(a => a.Id == delAction.Id);
 
                     if (item == null) continue;
 
-                    Items.Remove(item);
+                    ActionItems.Remove(item);
                 }
             }
-
-            //if (e.Action == NotifyCollectionChangedAction.Replace)
-            //{
-            //    foreach (ScheduledAction newAction in e.NewItems)
-            //    {
-            //        ActionItem item = Items.FirstOrDefault(a => a.Id == newAction.Id);
-            //        item.IsVisible = item.Type != ActionType.Exchange && AppSettings.Is96Well;
-
-            //        if (item == null) continue;
-
-            //        item.Override(newAction);
-            //    }
-            //}
         }
 
         private void SelectTarget(string target)
@@ -110,10 +115,59 @@ namespace PHIL_GUI.ViewModels
             else
             {
                 WellPlateItemOoC.SelectWellPair(int.Parse(target));
+
             }
 
+            LoadCurrentWellActions(target);
+            LoadAvailableActions();
+
+            OnPropertyChanged(nameof(SelectedWellText));
             OnPropertyChanged(nameof(IsDetailPageVisible));
             OnPropertyChanged(nameof(SelectedWellsCount));
+        }
+
+        private void LoadCurrentWellActions(string target)
+        {
+            int wellIndex = target.ToIndex();
+
+            if (!ActionScheduler.WellActions.TryGetValue(wellIndex, out List<ScheduleAction> actions) || actions.Count == 0)
+            {
+                CurrentWellActions.Clear();
+                return;
+            }
+
+            // FIRST selection
+            if (CurrentWellActions.Count == 0)
+            {
+                foreach (ScheduleAction action in actions)
+                    CurrentWellActions.Add(new ActionItem(action));
+
+                return;
+            }
+
+            // INTERSECTION
+            HashSet<int> matchingIds = actions.Select(a => a.Id).ToHashSet();
+            List<ActionItem> filteredActions = CurrentWellActions.Where(cw => matchingIds.Contains(cw.Id)).ToList();
+
+            CurrentWellActions.Clear();
+
+            foreach (ActionItem action in filteredActions)
+                CurrentWellActions.Add(action);
+        }
+
+        private void LoadAvailableActions()
+        {
+            AvailableWellActions.Clear();
+
+            HashSet<int> existingIds = CurrentWellActions.Select(cw => cw.Id).ToHashSet();
+
+
+            foreach (ActionItem action in ActionItems)
+            {
+                if (existingIds.Contains(action.Id)) continue;
+
+                AvailableWellActions.Add(action);
+            }
         }
 
         private void SelectAllTargets()
@@ -196,7 +250,7 @@ namespace PHIL_GUI.ViewModels
         }
         private void OverrideItemsVisibility()
         {
-            foreach (ActionItem item in Items)
+            foreach (ActionItem item in ActionItems)
             {
                 SetItemVisibility(item);
             }

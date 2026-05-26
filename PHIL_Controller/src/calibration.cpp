@@ -117,34 +117,34 @@ void recordCalibrationPoint(char row, uint8_t col) {
 
 bool solve10(float A[TERMS][TERMS], float b[TERMS], float x[TERMS]) {
     float M[TERMS][TERMS+1];
-    for (uint8_t i=0;i<TERMS;i++){
-        for (uint8_t j=0;j<TERMS;j++) M[i][j] = A[i][j];
+    for (uint8_t i = 0; i < TERMS; i++){
+        for (uint8_t j = 0; j < TERMS; j++) M[i][j] = A[i][j];
         M[i][TERMS] = b[i];
     }
-    for (uint8_t col=0; col<TERMS; col++) {
+    for (uint8_t col = 0; col < TERMS; col++) {
         uint8_t piv = col;
         float best = fabs(M[piv][col]);
-        for (uint8_t r=col+1; r<TERMS; r++) {
+        for (uint8_t r = col + 1; r < TERMS; r++) {
         float v = fabs(M[r][col]);
         if (v > best) { best = v; piv = r; }
         }
         if (best < 1e-9) return false;
         if (piv != col) {
-        for (uint8_t c=col; c<=TERMS; c++) {
+        for (uint8_t c = col; c <= TERMS; c++) {
             float tmp = M[col][c];
             M[col][c] = M[piv][c];
             M[piv][c] = tmp;
         }
         }
         float div = M[col][col];
-        for (uint8_t c=col; c<=TERMS; c++) M[col][c] /= div;
-        for (uint8_t r=0; r<TERMS; r++) {
+        for (uint8_t c = col; c <= TERMS; c++) M[col][c] /= div;
+        for (uint8_t r = 0; r < TERMS; r++) {
         if (r == col) continue;
         float f = M[r][col];
-        for (uint8_t c=col; c<=TERMS; c++) M[r][c] -= f * M[col][c];
+        for (uint8_t c=col; c <= TERMS; c++) M[r][c] -= f * M[col][c];
         }
     }
-    for (uint8_t i=0;i<TERMS;i++) x[i] = M[i][TERMS];
+    for (uint8_t i = 0; i < TERMS; i++) x[i] = M[i][TERMS];
     return true;
 }
 
@@ -158,24 +158,24 @@ bool solveMapping() {
 
     // Normal equations: (A^T A) c = (A^T y)
     // A rows are basis b = [1, x, y, x^2, x*y, y^2]
-    static float ATA[TERMS][TERMS] = {0};
-    static float ATyL[TERMS] = {0};
-    static float ATyR[TERMS] = {0};
+    float ATA[TERMS][TERMS] = {0};
+    float ATyL[TERMS] = {0};
+    float ATyR[TERMS] = {0};
 
-    for (uint8_t i=0; i<calCount; i++) {
+    for (uint8_t i = 0; i < calCount; i++) {
         float x = calX[i], y = calY[i];
         float b[TERMS] = { 1.0f, x, y, x*x, x*y, y*y, x*x*x, x*x*y, x*y*y, y*y*y };
         float L = calL[i];
         float R = calR[i];
 
         // Accumulate ATA = Σ b*b^T
-        for (uint8_t r=0; r<TERMS; r++) {
-        for (uint8_t c=0; c<TERMS; c++) {
+        for (uint8_t r = 0; r < TERMS; r++) {
+        for (uint8_t c = 0; c < TERMS; c++) {
             ATA[r][c] += b[r]*b[c];
         }
         }
         // Accumulate ATy = Σ b*y
-        for (uint8_t k=0; k<TERMS; k++) {
+        for (uint8_t k = 0; k < TERMS; k++) {
         ATyL[k] += b[k]*L;
         ATyR[k] += b[k]*R;
         }
@@ -192,7 +192,7 @@ bool solveMapping() {
     }
 
     // Commit
-    for (uint8_t i=0;i<TERMS;i++) { ML[i] = MLtmp[i]; MR[i] = MRtmp[i]; }
+    for (uint8_t i = 0; i < TERMS; i++) { ML[i] = MLtmp[i]; MR[i] = MRtmp[i]; }
     mapReady = true;
 
     Serial.println(F("=== MAPPING SOLVED (quadratic least-squares) ==="));

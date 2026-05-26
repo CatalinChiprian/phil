@@ -20,7 +20,7 @@ namespace PHIL_GUI.Models
         P3 = 3,
         P4 = 4
     }
-    public class ScheduledAction : ObservableObject, IAction
+    public class ScheduleAction : ObservableObject, IAction
     {
         private const int INVALID_ID = 0;
 
@@ -123,7 +123,7 @@ namespace PHIL_GUI.Models
             }
         }
 
-        public ScheduledAction(int id, ActionType type, Pump pump1, Pump pump2, int amount, int frequency, TimeUnit unit, long startTime, long endTime)
+        public ScheduleAction(int id, ActionType type, Pump pump1, Pump pump2, int amount, int frequency, TimeUnit unit, long startTime, long endTime)
         {
             Id = id;
             Type = type;
@@ -136,7 +136,7 @@ namespace PHIL_GUI.Models
             EndEpoch = endTime;
         }
 
-        public ScheduledAction(ActionItem actionItem)
+        public ScheduleAction(ActionItem actionItem)
         {
             UpdateFromActionItem(actionItem);
         }
