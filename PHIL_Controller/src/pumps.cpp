@@ -3,7 +3,7 @@
 #include "../inc/hardware.h"
 #include "../inc/well_utils.h"
 
-static const int16_t ZMotorPumpPosition = -2496;
+static const int16_t ZMotorPumpPosition = -2304;
 static const float UL_PER_STEP = 0.1099f;
 
 long uLToSteps(float microliters) {

@@ -7,7 +7,7 @@
 
 static const int16_t steps = 4 * currentMicrosteps;
 
-const int16_t ZMotorNormalPosition = -384;
+const int16_t ZMotorNormalPosition = -128;
 
 int16_t times_x10 = 1;
 uint8_t wellIndex = 0;
