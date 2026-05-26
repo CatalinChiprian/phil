@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using PHIL_GUI.Services;
 using PHIL_GUI.ViewModels;
+using PHIL_GUI.Models;
 
 namespace PHIL_GUI;
 
@@ -21,12 +22,14 @@ public partial class App : Application
     public override void OnFrameworkInitializationCompleted()
     {
         ServiceCollection services = new ServiceCollection();
-        services.AddSingleton<SerialPortService>();
-        services.AddSingleton<AppSettingsService>();
+
         services.AddSingleton<RobotProtocolService>();
-        services.AddTransient<PortsWindowViewModel>();
-        services.AddTransient<MainWindowViewModel>();
-        services.AddTransient<SettingsWindowViewModel>();
+        services.AddSingleton<AppSettingsService>();
+
+        services.AddSingleton<IPlateContext>(sp =>
+            sp.GetRequiredService<AppSettingsService>().AppSettings
+        );
+
         Services = services.BuildServiceProvider();
 
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)

@@ -12,7 +12,7 @@ public partial class MainWindow : Window
     {
         InitializeComponent();
 
-        MainWindowViewModel mainVm = App.Services.GetRequiredService<MainWindowViewModel>();
+        MainWindowViewModel mainVm = new MainWindowViewModel();
         mainVm.Disconnected += OnDisconnected;
         Closed += (s, e) => mainVm.Disconnected -= OnDisconnected;
 

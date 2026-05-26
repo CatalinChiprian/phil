@@ -87,18 +87,18 @@ namespace PHIL_GUI.ViewModels
                 }
             }
 
-            if (e.Action == NotifyCollectionChangedAction.Replace)
-            {
-                foreach (ScheduledAction newAction in e.NewItems)
-                {
-                    ActionItem item = Items.FirstOrDefault(a => a.Id == newAction.Id);
-                    item.IsVisible = item.Type != ActionType.Exchange && AppSettings.Is96Well;
+            //if (e.Action == NotifyCollectionChangedAction.Replace)
+            //{
+            //    foreach (ScheduledAction newAction in e.NewItems)
+            //    {
+            //        ActionItem item = Items.FirstOrDefault(a => a.Id == newAction.Id);
+            //        item.IsVisible = item.Type != ActionType.Exchange && AppSettings.Is96Well;
 
-                    if (item == null) continue;
+            //        if (item == null) continue;
 
-                    item.Override(newAction);
-                }
-            }
+            //        item.Override(newAction);
+            //    }
+            //}
         }
 
         private void SelectTarget(string target)
@@ -161,7 +161,7 @@ namespace PHIL_GUI.ViewModels
         }
         public void DeleteAction(int actionId)
         {
-            ActionScheduler.DeleteAction(actionId);
+            RobotProtocolService.DeleteAction(actionId);
             OnPropertyChanged(nameof(ActionCount));
         }
 

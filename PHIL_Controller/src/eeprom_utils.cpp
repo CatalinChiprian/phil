@@ -4,13 +4,17 @@
 #include "../inc/calibration.h"
 
 void initPersistentState() {
-    if (!loadPositions()) {
-      calibrateHome();
-    }
     loadCurrentWell();
     loadCalibration();
     loadActionsSafe();
     loadWellActions();
+    
+    if (!loadPositions()) {
+      calibrateHome();
+    }
+    // The pipette might jump on start-up, causing a mismatch between software and mechanical position.
+    // On every start-up we must calibrate the home position.
+    //calibrateHome();
 }
 
 void savePositions() {

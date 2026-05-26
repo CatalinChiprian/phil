@@ -3,6 +3,7 @@
 #include "../inc/movement.h"
 #include "../inc/well_utils.h"
 #include "../inc/eeprom_utils.h"
+#include "../inc/commands.h"
 
 uint8_t calCount = 0;
 float ML[TERMS] = {0};
@@ -15,8 +16,8 @@ bool mapReady = false;
 
 void XYToWell(float x, float y, char& row, uint8_t& col) {
     uint8_t rowInt = y / WELL_DY;
-    col = x / WELL_DX;
     row = 'a' + rowInt;
+    col = x / WELL_DX + 1;
 }
 
 int8_t calibrateHome() {
@@ -24,15 +25,15 @@ int8_t calibrateHome() {
 
     disableAllMotors();
 
-    if(eStopRequested) {
-        eStopRequested = false;  
-        return -1;
-    }
-
     enableRMotor();
 
     stepperR.setSpeed(10 * currentMicrosteps);
     while(digitalRead(limitSwitchR) == HIGH){
+        if (isEmergencyStopRequest()) {
+            emergencyStop();
+            return 0;
+        }
+        
         stepperR.runSpeed();
     }
 
@@ -40,6 +41,11 @@ int8_t calibrateHome() {
 
     stepperR.moveTo(stepperR.currentPosition() - 500);
     while(stepperR.distanceToGo() != 0) {
+        if (isEmergencyStopRequest()) {
+            emergencyStop();
+            return 0;
+        }
+
         stepperR.run();
     }
 
@@ -49,6 +55,11 @@ int8_t calibrateHome() {
 
     stepperL.setSpeed(-10 * currentMicrosteps);
     while(digitalRead(limitSwitchL) == HIGH){
+        if (isEmergencyStopRequest()) {
+            emergencyStop();
+            return 0;
+        }
+
         stepperL.runSpeed();
     }
 
@@ -61,6 +72,11 @@ int8_t calibrateHome() {
     stepperR.move(345);
 
     while (stepperR.distanceToGo() != 0) {
+        if (isEmergencyStopRequest()) {
+            emergencyStop();
+            return 0;
+        }
+
         stepperR.run();
     }
 
@@ -94,7 +110,7 @@ void recordCalibrationPoint(char row, uint8_t col) {
     Serial.print(F("CAL_REC:"));
     Serial.print(F("Name=")); Serial.print(row); Serial.print(col);
     Serial.print(F(",X=")); Serial.print(x);
-    Serial.print(F(",Y=")); Serial.print(y);
+    Serial.print(F(",Y=")); Serial.println(y);
 
     Serial.print(F("CAL_COUNT:")); Serial.println(++calCount);
 }

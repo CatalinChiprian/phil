@@ -10,8 +10,6 @@ namespace PHIL_GUI.ViewModels
     public class PortsWindowViewModel : ViewModelBase
     {
         public event Action Connected;
-
-        private readonly SerialPortService serialService;
         public ObservableCollection<string> AvailablePorts { get; private set; } = new ObservableCollection<string>();
         public int WindowHeight => 150 + PortsHeight;
         public int PortsHeight => AvailablePorts.Count * 64;
@@ -34,9 +32,8 @@ namespace PHIL_GUI.ViewModels
         private RelayCommand connectCommand;
         public ICommand ConnectCommand => connectCommand;
 
-        public PortsWindowViewModel(SerialPortService serialService)
+        public PortsWindowViewModel()
         {
-            this.serialService = serialService;
             AvailablePorts.CollectionChanged += (_, _) =>
             {
                 OnPropertyChanged(nameof(PortsHeight));
@@ -49,15 +46,15 @@ namespace PHIL_GUI.ViewModels
         private void GetAvailablePorts()
         {
             AvailablePorts.Clear();
-            foreach (string port in serialService.GetAvailablePorts())
+            foreach (string port in RobotProtocolService.SerialPort.GetAvailablePorts())
                 AvailablePorts.Add(port);
         }
 
-        private bool CanConnect() => !string.IsNullOrWhiteSpace(SelectedPort) && !serialService.IsConnected;
+        private bool CanConnect() => !string.IsNullOrWhiteSpace(SelectedPort) && !RobotProtocolService.SerialPort.IsConnected;
 
         private void ConnectToSelectedPort()
         {
-            serialService.Connect(SelectedPort);
+            RobotProtocolService.SerialPort.Connect(SelectedPort);
             Connected?.Invoke();
         }
     }

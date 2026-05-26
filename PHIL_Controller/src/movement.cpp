@@ -207,12 +207,6 @@ void moveToWell(long moveL, long moveR, char* wellName) {
 }
 
 void goToHardcodedWells(char row, uint8_t column) {  
-
-    if(eStopRequested) {
-      eStopRequested = false;  
-      return;
-    }
-
     moveZMotors(ZMotorNormalPosition);
 
     switch(row) {
@@ -453,7 +447,7 @@ void goToCalculatedWell(char row, uint8_t col) {
         stepperR.run();
     }
 
-    uint8_t wellIndex = wellNameToIndex(row, col);
+    wellIndex = wellNameToIndex(row, col);
 
     saveCurrentWell(wellIndex);
     savePositions();
@@ -505,8 +499,7 @@ void printCurrentWell() {
 
   if (wellIndex != WELL_HOME) {
     wellIndexToRowCol(wellIndex, row, col);
-    if (row < 'a' || row > 'h') return;
-    if (col < 1 || col > 12) return;
+    if (isInvalidWell(row, col)) return;
     
     wellToXY(row, col, x, y);
 

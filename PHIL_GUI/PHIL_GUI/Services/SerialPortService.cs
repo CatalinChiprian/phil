@@ -77,7 +77,6 @@ public class SerialPortService
         if (serialPort != null && serialPort.IsOpen)
         {
             serialPort.DataReceived -= OnDataReceived;
-            GetStartUpMessage -= GetStartUpMessage;
             serialPort.Close();
         }
         isConnected = false;

@@ -24,7 +24,16 @@ namespace PHIL_GUI.Models
     {
         private const int INVALID_ID = 0;
 
-        public int Id { get; set; }
+        private int id;
+        public int Id
+        {
+            get => id;
+            set
+            {
+                if (id == value) return;
+                SetProperty(ref id, value);
+            }
+        }
 
         private ActionType type;
         public ActionType Type

@@ -25,7 +25,6 @@ extern bool LMotorCurrentlyEnabled;
 extern bool RMotorCurrentlyEnabled;
 extern bool P1MotorCurrentlyEnabled;
 extern bool P2MotorCurrentlyEnabled;
-extern bool eStopRequested;
 
 void initHardware();
 void setSlowMovementSpeed();
@@ -45,7 +44,6 @@ void disableLMotor();
 void disableRMotor();
 void disableAllMotors();
 void autoDisableMotors();
-bool isEmergencyStopRequest();
 void emergencyStop();
 void checkFaults();
 void checkSwitches();

@@ -31,7 +31,11 @@ namespace PHIL_GUI.ViewModels
 
         public void ApplyChanges()
         {
-            AppSettingsService.AppSettings.SelectedPlateType = PlateType;
+            if (AppSettingsService.AppSettings.SelectedPlateType != PlateType)
+            {
+                AppSettingsService.AppSettings.SelectedPlateType = PlateType;
+                RobotProtocolService.SetWellPlateType(PlateType);
+            }
         }
     }
 }

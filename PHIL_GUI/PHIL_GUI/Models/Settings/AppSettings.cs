@@ -3,7 +3,12 @@ using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace PHIL_GUI.Models
 {
-    public class AppSettings : ObservableObject
+    public enum PlateType
+    {
+        OrganOnChip,
+        Well96
+    };
+    public class AppSettings : ObservableObject, IPlateContext
     {
         private PlateType selectedPlateType;
         public PlateType SelectedPlateType
@@ -27,7 +32,6 @@ namespace PHIL_GUI.Models
 
         public AppSettings()
         {
-            SelectedPlateType = PlateType.OrganOnChip;
             AppKeyBindings = new AppKeyBindings();
         }
     }

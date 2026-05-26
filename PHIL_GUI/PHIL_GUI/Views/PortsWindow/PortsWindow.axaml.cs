@@ -14,7 +14,7 @@ public partial class PortsWindow : Window
     {
         InitializeComponent();
 
-        PortsWindowViewModel portsViewModel = App.Services.GetRequiredService<PortsWindowViewModel>();
+        PortsWindowViewModel portsViewModel = new PortsWindowViewModel();
         portsViewModel.Connected += OnConnected;
         Closed += (s,e) => portsViewModel.Connected -= OnConnected;
 

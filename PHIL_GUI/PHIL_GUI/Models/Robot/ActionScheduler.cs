@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 
@@ -18,28 +19,28 @@ namespace PHIL_GUI.Models
             if (Actions.Contains(scheduledAction)) return;
             if (Actions.Any(a => a.Id == action.Id)) return;
 
+            action.Model = scheduledAction;
             Actions.Add(scheduledAction);
         }
         public void UpdateAction(ActionItem action)
         {
             if (action == null) return;
+            ScheduledAction model = action.Model;
+            if (model == null) return;
 
-            ScheduledAction existingAction = Actions.FirstOrDefault(a => a.Id == action.Id);
-            if (existingAction == null) return;
-            int index = Actions.IndexOf(existingAction);
+            model.UpdateFromActionItem(action);
 
-            ScheduledAction updatedAction = new ScheduledAction(action);
-            Actions[index] = updatedAction;
         }
-        public void UpdateActionId(int tempId, int id)
+        public void UpdateAction(int tempId, int id)
         {
-            var action = Actions.FirstOrDefault(a => a.Id == tempId);
+            ScheduledAction action = Actions.FirstOrDefault(a => a.Id == tempId);
             if (action == null) return;
+            int index = Actions.IndexOf(action);
             action.Id = id;
         }
         public void DeleteAction(int actionId)
         { 
-            var action = Actions.FirstOrDefault(a => a.Id == actionId);
+            ScheduledAction action = Actions.FirstOrDefault(a => a.Id == actionId);
             if (action == null) return;
 
             Actions.Remove(action);

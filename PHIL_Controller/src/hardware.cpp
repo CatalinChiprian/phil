@@ -46,7 +46,6 @@ bool RMotorCurrentlyEnabled = false;
 bool ZMotorsCurrentlyEnabled = false;
 bool P1MotorCurrentlyEnabled = false;
 bool P2MotorCurrentlyEnabled = false;
-bool eStopRequested = false;
 
 const uint8_t faultR = 37;
 const uint8_t faultL = 39;
@@ -245,14 +244,6 @@ void disableAllMotors() {
     }
 }
 
-bool isEmergencyStopRequest() {
-    if (Serial.available() < 0) return false;
-    char c = Serial.read();
-    if(c != 's') return false;
-
-    return true;
-}
-
 void emergencyStop() {
     stepperL.stop();
     stepperR.stop();
@@ -262,7 +253,6 @@ void emergencyStop() {
     stepperP2.stop();
     disableAllMotors();
     lastMotorActivityTime = 0;
-    eStopRequested = true;
     Serial.println(F("WARNING:EMERGENCY_STOP,Motors disabled by user"));
 }
 

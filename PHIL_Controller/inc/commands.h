@@ -34,9 +34,11 @@ const char UNLINK_ACTION_WELL_CMD[] PROGMEM = "UNLINK_ACTION_WELL";
 const char CLEAR_ACTIONS_CMD[] PROGMEM = "CLEAR_ACTIONS";
 const char PRINT_ACTIONS_CMD[] PROGMEM = "PRINT_ACTIONS";
 const char PRINT_WELL_ACTIONS_CMD[] PROGMEM = "PRINT_WELL_ACTIONS";
-const char PRINT_TIME[] PROGMEM = "PRINT_TIME";
-const char SET_TIME[] PROGMEM = "SET_TIME";
+const char PRINT_TIME_CMD[] PROGMEM = "PRINT_TIME";
+const char SET_TIME_CMD[] PROGMEM = "SET_TIME";
+const char SET_PLATE_TYPE_CMD[] PROGMEM = "SET_PLATE_TYPE";
 
 const uint8_t COMMAND_STRING_SZ = 11;
 
 void parseCommands();
+bool isEmergencyStopRequest();

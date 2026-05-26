@@ -12,10 +12,6 @@ void setup() {
   Serial.begin(9600);
   initHardware();
   initPersistentState();
-
-  // The pipette might jump on start-up, causing a mismatch between software and mechanical position.
-  // On every start-up we must calibrate the home position.
-  //calibrateHome();
 }
 
 void loop() {

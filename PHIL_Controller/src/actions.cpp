@@ -138,7 +138,7 @@ void unlinkAction(uint16_t id, char* hex) {
 	unlinkActionByMask(id, mask);
 }
 
-uint16_t createAction(uint16_t tempId, uint8_t type, uint8_t pump1, uint8_t pump2, uint16_t amount, uint16_t frequency, uint8_t unit, uint32_t start, uint32_t end) {
+uint16_t createAction(int16_t tempId, ActionType type, uint8_t pump1, uint8_t pump2, uint16_t amount, uint16_t frequency, TimeUnit unit, uint32_t start, uint32_t end) {
     if (actionCount >= MAX_ACTIONS_TOTAL) {
         Serial.println(F("ERROR:FAILED TO CREATE ACTION"));
         return 0;
@@ -173,7 +173,7 @@ uint16_t createAction(uint16_t tempId, uint8_t type, uint8_t pump1, uint8_t pump
     return action.id;
 }
 
-void updateAction(uint16_t id, uint8_t type, uint8_t pump1, uint8_t pump2, uint16_t amount, uint16_t frequency, uint8_t unit, uint32_t start, uint32_t end) {
+void updateAction(uint16_t id, ActionType type, uint8_t pump1, uint8_t pump2, uint16_t amount, uint16_t frequency, TimeUnit unit, uint32_t start, uint32_t end) {
 
     Action* action = findActionById(id);
     if (!action) return;
@@ -237,11 +237,11 @@ void clearAllActions() {
     Serial.println(F("Actions Cleared"));
 }
 
-uint32_t unitToSeconds(uint8_t unit) {
+uint32_t unitToSeconds(TimeUnit unit) {
     switch (unit) {
-        case 0: return 60;           // Test only Minutes
-        case 1: return 3600;        // Hour
-        case 2: return 86400;      // Day
+        case MINUTE: return 60;           // Test only Minutes
+        case HOUR: return 3600;        // Hour
+        case DAY: return 86400;      // Day
         default: return 0;
     }
 }
@@ -277,13 +277,13 @@ void executeAction(Action &action) {
 
 
         switch (action.type) {
-        case 0:
+        case ASPIRATE:
             aspirate(action.pump1, action.amount_uL, wellName);
             break;
-        case 1:
+        case DISPENSE:
             dispense(action.pump1, action.amount_uL, wellName);
             break;
-        case 2:
+        case EXCHANGE:
         {
             char nxtRow = row + 1;
             uint8_t nxtCol = col + 1;
@@ -303,6 +303,15 @@ void executeAction(Action &action) {
     }
 }
 
+bool isActionCompatible(const Action& action) {
+    bool is96 = (getCurrentWellplate() == WELL96);
+
+    if (action.type == EXCHANGE && is96) return false;
+    if (action.type != EXCHANGE && !is96) return false;
+
+    return true;
+}
+
 void processActions() {
     uint32_t now = getTime();
 
@@ -310,6 +319,8 @@ void processActions() {
         Action &action = actions[i];
 
         if (!action.enabled) continue;
+
+        if (!isActionCompatible(action)) continue;
 
         if (now < action.startEpoch) continue;
         if (action.endEpoch != 0 && now > action.endEpoch) continue;
@@ -332,12 +343,12 @@ void processActions() {
 void printAction(const Action& action) {
     Serial.print(F("ACTION:"));
     Serial.print(F("Id="));Serial.print(action.id);
-    Serial.print(F(",ActionType=")); Serial.print(action.type);
+    Serial.print(F(",ActionType=")); Serial.print((uint8_t)action.type);
     Serial.print(F(",Pump1=")); Serial.print(action.pump1);
     Serial.print(F(",Pump2=")); Serial.print(action.pump2);
     Serial.print(F(",Amount=")); Serial.print(action.amount_uL);
     Serial.print(F(",Frequency=")); Serial.print(action.frequency);
-    Serial.print(F(",Unit=")); Serial.print(action.unit);
+    Serial.print(F(",Unit=")); Serial.print((uint8_t)action.unit);
     Serial.print(F(",Start=")); Serial.print(action.startEpoch);
     Serial.print(F(",End=")); Serial.print(action.endEpoch);
     Serial.print(F(",LastRun=")); Serial.print(action.lastRunEpoch);

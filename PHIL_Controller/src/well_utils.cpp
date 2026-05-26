@@ -3,12 +3,14 @@
 #include "../inc/calibration.h"
 #include <math.h>
 
+WellPlateType selectedPlateType;
+
 bool isInvalidWell(char row, uint8_t col) {
     return (col < 1 || col > 12 || row < 'a' || row > 'h');
 }
 
 void wellIndexToRowCol(uint8_t wellIndex, char& row, uint8_t& col) {
-    row = 'A' + (wellIndex / 12);
+    row = 'a' + (wellIndex / 12);
     col = (wellIndex % 12) + 1;
 }
 
@@ -56,4 +58,11 @@ void xyToAngles(float x, float y, float &Ldeg, float &Rdeg) {
 void wellStrToRowCol(char* wellStr, char& row, uint8_t& col) {
 	row = tolower(wellStr[0]);
 	col = atoi(wellStr + 1);
+}
+
+WellPlateType getCurrentWellplate() {
+    return selectedPlateType;
+}
+void setCurrentWellplate(WellPlateType t) {
+    selectedPlateType = t;
 }

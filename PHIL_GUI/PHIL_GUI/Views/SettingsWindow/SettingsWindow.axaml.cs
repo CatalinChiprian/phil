@@ -11,9 +11,7 @@ public partial class SettingsWindow : Window
     {
         InitializeComponent();
 
-        SettingsWindowViewModel settingsViewModel = App.Services.GetRequiredService<SettingsWindowViewModel>();
-
-        DataContext = settingsViewModel;
+        DataContext = new SettingsWindowViewModel();
     }
 
     private void BottomBarButton_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)

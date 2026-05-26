@@ -43,6 +43,12 @@ namespace PHIL_GUI.Services
         const string DEL_ACTION_CMD = "DEL_ACTION";
         const string LINK_ACTION_WELL_CMD = "LINK_ACTION_WELL";
         const string UNLINK_ACTION_WELL_CMD = "UNLINK_ACTION_WELL";
+        const string CLEAR_ACTIONS_CMD = "CLEAR_ACTIONS";
+        const string PRINT_ACTIONS_CMD = "PRINT_ACTIONS";
+        const string PRINT_WELL_ACTIONS_CMD = "PRINT_WELL_ACTIONS";
+        const string PRINT_TIME_CMD = "PRINT_TIME";
+        const string SET_TIME_CMD = "SET_TIME";
+        const string SET_PLATE_TYPE_CMD = "SET_PLATE_TYPE";
 
         const string WELL_PREFIX = "WELL:";
         const string POS_PREFIX = "POS:";
@@ -59,8 +65,8 @@ namespace PHIL_GUI.Services
 
         private bool ready;
 
-        private readonly SerialPortService serialPort;
-        public SerialPortService SerialPort => serialPort;
+        private readonly SerialPortService serialPortService;
+        public SerialPortService SerialPort => serialPortService;
         private readonly RobotState robotState;
         public RobotState RobotState => robotState;
 
@@ -74,7 +80,7 @@ namespace PHIL_GUI.Services
             private set => SetProperty(ref _receivedData, value);
         }
 
-        public RobotProtocolService(SerialPortService serial)
+        public RobotProtocolService(IPlateContext plateContext)
         {
             logTimer = new DispatcherTimer
             {
@@ -91,15 +97,17 @@ namespace PHIL_GUI.Services
             logTimer.Start();
 
 
-            serialPort = serial;
+            serialPortService = new SerialPortService();
             robotState = new RobotState();
-            serial.MessageReceived += OnMessageReceived;
-            serial.GetStartUpMessage += GetSetupInformation;
+            serialPortService.MessageReceived += OnMessageReceived;
+            serialPortService.GetStartUpMessage += GetSetupInformation;
+
+            SetSetupInformation(plateContext);
         }
 
         private void Send(string command)
         {
-            serialPort.SendMessage(command);
+            serialPortService.SendMessage(command);
         }
 
         public void CreateAction(ActionItem action)
@@ -123,6 +131,11 @@ namespace PHIL_GUI.Services
         public void ClearReceivedData()
         {
             ReceivedData = "";
+        }
+
+        public void SetWellPlateType(PlateType plateType)
+        {
+            Send($"{SET_PLATE_TYPE_CMD} {plateType}");
         }
         
         public void Stop()
@@ -231,13 +244,20 @@ namespace PHIL_GUI.Services
             Send("s");
         }
 
-        public void GetSetupInformation()
+        private void GetSetupInformation()
         {
             ready = true;
 
             Send(PRINT_WELL_CMD);
             Send(PRINT_CALIBRATION_CMD);
             Send(PRINT_STEPS_CMD);
+            Send(PRINT_ACTIONS_CMD);
+            Send(PRINT_WELL_ACTIONS_CMD);
+        }
+
+        private void SetSetupInformation(IPlateContext plateContext)
+        {
+            SetWellPlateType(plateContext.SelectedPlateType);
         }
 
         private void OnMessageReceived(string message)
@@ -374,14 +394,14 @@ namespace PHIL_GUI.Services
         {
             var kv = ParseKV(msg, ACTION_PREFIX);
             int id = int.Parse(kv["Id"], CultureInfo.InvariantCulture);
-            ActionType type = (ActionType)int.Parse(kv["Type"], CultureInfo.InvariantCulture);
+            ActionType type = (ActionType)int.Parse(kv["ActionType"], CultureInfo.InvariantCulture);
             Pump pump1 = (Pump)int.Parse(kv["Pump1"], CultureInfo.InvariantCulture);
             Pump pump2 = (Pump)int.Parse(kv["Pump2"], CultureInfo.InvariantCulture);
             int amount = int.Parse(kv["Amount"], CultureInfo.InvariantCulture);
             int frequency = int.Parse(kv["Frequency"], CultureInfo.InvariantCulture);
             TimeUnit unit = (TimeUnit)int.Parse(kv["Unit"], CultureInfo.InvariantCulture);
-            long startTime = long.Parse(kv["StartTime"], CultureInfo.InvariantCulture);
-            long endTime = long.Parse(kv["EndTime"], CultureInfo.InvariantCulture);
+            long startTime = long.Parse(kv["Start"], CultureInfo.InvariantCulture);
+            long endTime = long.Parse(kv["End"], CultureInfo.InvariantCulture);
 
             ScheduledAction action = new ScheduledAction(id, type, pump1, pump2, amount, frequency, unit, startTime, endTime);
 
@@ -393,7 +413,8 @@ namespace PHIL_GUI.Services
             var kv = ParseKV(msg, ACTION_CREATED_PREFIX);
             int tempId = int.Parse(kv["TempId"], CultureInfo.InvariantCulture);
             int id = int.Parse(kv["Id"], CultureInfo.InvariantCulture);
-            RobotState.ActionScheduler.UpdateActionId(tempId, id);
+
+            RobotState.ActionScheduler.UpdateAction(tempId, id);
         }
 
         private void ParseLimit(string msg, LimitType type)

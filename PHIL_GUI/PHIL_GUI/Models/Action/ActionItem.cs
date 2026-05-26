@@ -3,14 +3,12 @@ using Avalonia.Media;
 using CommunityToolkit.Mvvm.ComponentModel;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PHIL_GUI.Models
 {
     public class ActionItem : ObservableObject, IAction
     {
+        public ScheduledAction Model { get; set; }
         public int Id { get; set; }
         public int TempId { get; set; }
 
@@ -323,28 +321,35 @@ namespace PHIL_GUI.Models
         {
             TempId = tempId;
             Type = type;
-            Pump1 = pump1;
+            Pump1 = pump1;  
             Pump2 = pump2;
             Amount = amount;
             Frequency = frequency;
             TimeUnit = unit;
         }
 
-        public ActionItem(ScheduledAction other)
+        public ActionItem(ScheduledAction model)
         {
-            Override(other);
+            Model = model;
+            Model.PropertyChanged += ActionModel_PropertyChanged;
+            Override(model);
         }
 
-        public void Override(ScheduledAction other) {
-            Id = other.Id;
-            Type = other.Type;
-            Pump1 = other.Pump1;
-            Pump2 = other.Pump2;
-            Amount = other.Amount;
-            Frequency = other.Frequency;
-            TimeUnit = other.TimeUnit;
-            StartEpoch = other.StartEpoch;
-            EndEpoch = other.EndEpoch;
+        private void ActionModel_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            Override(Model);
+        }
+
+        public void Override(ScheduledAction model) {
+            Id = model.Id;
+            Type = model.Type;
+            Pump1 = model.Pump1;
+            Pump2 = model.Pump2;
+            Amount = model.Amount;
+            Frequency = model.Frequency;
+            TimeUnit = model.TimeUnit;
+            StartEpoch = model.StartEpoch;
+            EndEpoch = model.EndEpoch;
             StartTime = null;
             StartDate = null;
             EndTime = null;
@@ -375,6 +380,7 @@ namespace PHIL_GUI.Models
 
         public void Override(ActionItem other)
         {
+            Model = other.Model;
             Id = other.Id;
             Type = other.Type;
             Pump1 = other.Pump1;

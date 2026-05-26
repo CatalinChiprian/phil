@@ -8,12 +8,6 @@ namespace PHIL_GUI.Models
         Moving,
         EmergencyStopped,
     }
-
-    public enum PlateType
-    {
-        OrganOnChip,
-        Well96
-    };
     public class RobotSettings : ObservableObject
     {
         private MoveState state;
