@@ -1,4 +1,5 @@
 ﻿using Avalonia.Controls;
+using Avalonia.Metadata;
 using CommunityToolkit.Mvvm.Input;
 using PHIL_GUI.Helpers;
 using PHIL_GUI.Models;
@@ -54,8 +55,17 @@ namespace PHIL_GUI.ViewModels
                 : $"{wellItems.Count} wells";
         private string GetChannelText(List<WellPairItem> wellPairs) =>
             wellPairs.Count == 1
-                ? wellPairs[0].PairIndex.ToString()
+                ? $"Channel {wellPairs[0].PairIndex.ToString()}"
                 : $"{wellPairs.Count} channels";
+
+        public string WellActionsText => AppSettings.Is96Well
+            ? GetWellActionsText(WellPlateItem96.SelectedWellItems.Count)
+            : GetWellActionsText(WellPlateItemOoC.SelectedWellPairs.Count);
+
+        private string GetWellActionsText(int count) =>
+            count == 1
+                ? $"{CurrentWellActions.Count} action{(CurrentWellActions.Count == 1 ? "" : "s")} attached"
+                : $"{CurrentWellActions.Count} shared action{(CurrentWellActions.Count == 1 ? "" : "s")}";
 
         public Well CurrentWell => RobotProtocolService.RobotState.CurrentWell;
         public AppSettings AppSettings => AppSettingsService.AppSettings;
@@ -122,8 +132,18 @@ namespace PHIL_GUI.ViewModels
             LoadAvailableActions();
 
             OnPropertyChanged(nameof(SelectedWellText));
+            OnPropertyChanged(nameof(WellActionsText));
             OnPropertyChanged(nameof(IsDetailPageVisible));
             OnPropertyChanged(nameof(SelectedWellsCount));
+        }
+
+        public void AttachAction(ActionItem action)
+        {
+
+        }
+        public void DetachAction(ActionItem action)
+        {
+
         }
 
         private void LoadCurrentWellActions(string target)
@@ -181,6 +201,8 @@ namespace PHIL_GUI.ViewModels
                 WellPlateItemOoC.SelectAllPairs();
             }
 
+            OnPropertyChanged(nameof(SelectedWellText));
+            OnPropertyChanged(nameof(WellActionsText));
             OnPropertyChanged(nameof(IsDetailPageVisible));
             OnPropertyChanged(nameof(SelectedWellsCount));
         }
@@ -195,6 +217,8 @@ namespace PHIL_GUI.ViewModels
                 WellPlateItemOoC.SelectQuadrantPairs(quadNumber);
             }
 
+            OnPropertyChanged(nameof(SelectedWellText));
+            OnPropertyChanged(nameof(WellActionsText));
             OnPropertyChanged(nameof(IsDetailPageVisible));
             OnPropertyChanged(nameof(SelectedWellsCount));
         }
@@ -210,6 +234,8 @@ namespace PHIL_GUI.ViewModels
                 WellPlateItemOoC.ClearPairSelection();
             }
 
+            OnPropertyChanged(nameof(SelectedWellText));
+            OnPropertyChanged(nameof(WellActionsText));
             OnPropertyChanged(nameof(IsDetailPageVisible));
             OnPropertyChanged(nameof(SelectedWellsCount));
         }

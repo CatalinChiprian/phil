@@ -131,7 +131,7 @@ namespace PHIL_GUI.Models
             {
                 if (value == frequency) return;
                 SetProperty(ref frequency, value);
-                OnPropertyChanged(nameof(FrequencyLabel));
+                OnPropertyChanged(nameof(MetaLabel));
             }
         }
 
@@ -143,7 +143,7 @@ namespace PHIL_GUI.Models
             {
                 if (value == timeUnit) return;
                 SetProperty(ref timeUnit, value);
-                OnPropertyChanged(nameof(FrequencyLabel));
+                OnPropertyChanged(nameof(MetaLabel));
             }
         }
         private string GetTimeUnitLabel() =>
@@ -153,7 +153,6 @@ namespace PHIL_GUI.Models
                 TimeUnit.Day => "Day",
                 _ => ""
             }) + (Frequency == 1 ? "" : "s");
-        public string FrequencyLabel => $"Every {Frequency} {GetTimeUnitLabel()}";
 
         private long startEpoch;
         public long StartEpoch
@@ -195,7 +194,7 @@ namespace PHIL_GUI.Models
 
                 if (EndDate.HasValue && value > EndDate.Value.Date) EndDate = value;
 
-                OnPropertyChanged(nameof(ScheduleLabel));
+                OnPropertyChanged(nameof(MetaLabel));
             }
         }
 
@@ -218,7 +217,7 @@ namespace PHIL_GUI.Models
 
                 if (EndTime.HasValue && value > EndTime.Value) EndTime = value;
 
-                OnPropertyChanged(nameof(ScheduleLabel));
+                OnPropertyChanged(nameof(MetaLabel));
             }
         }
 
@@ -237,7 +236,7 @@ namespace PHIL_GUI.Models
                 if (Equals(endDate, value)) SetProperty(ref endDate, null);
 
                 SetProperty(ref endDate, value);
-                OnPropertyChanged(nameof(ScheduleLabel));
+                OnPropertyChanged(nameof(MetaLabel));
             }
         }
 
@@ -259,7 +258,7 @@ namespace PHIL_GUI.Models
 
                 if (endDate == null) EndDate = Today;
 
-                OnPropertyChanged(nameof(ScheduleLabel));
+                OnPropertyChanged(nameof(MetaLabel));
             }
         }
 
@@ -277,7 +276,6 @@ namespace PHIL_GUI.Models
             }
         }
 
-        public string ScheduleLabel => $"{GetStartLabel()} {GetEndLabel()}";
         private string GetStartLabel()
         {
             if (StartDate == null && StartTime == null) 
@@ -316,6 +314,8 @@ namespace PHIL_GUI.Models
             ActionType.Exchange => $"IN {Pump1Label} OUT {Pump2Label}",
             _ => ""
         };
+
+        public string MetaLabel => $"Every {Frequency} {GetTimeUnitLabel()} {GetStartLabel()} {GetEndLabel()}";
 
         private bool suppressValidation;
 

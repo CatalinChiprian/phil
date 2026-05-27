@@ -52,4 +52,22 @@ public partial class MediumExchangeView : UserControl
 
         vm.DeleteAction(actionId);
     }
+    private void AttachActionButton_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        if (DataContext is not MediumExchangeViewModel vm) return;
+
+        if (sender is not Button button) return;
+        if (button.Tag is not ActionItem action) return;
+
+        vm.AttachAction(action);
+    }
+    private void DetachActionButton_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        if (DataContext is not MediumExchangeViewModel vm) return;
+
+        if (sender is not Button button) return;
+        if (button.Tag is not ActionItem action) return;
+
+        vm.DetachAction(action);
+    }
 }
