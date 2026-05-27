@@ -15,6 +15,7 @@ namespace PHIL_GUI.Models
     }
     public enum Pump
     {
+        None = -1,
         P1 = 1,
         P2 = 2,
         P3 = 3,

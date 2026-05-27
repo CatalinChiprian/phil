@@ -74,7 +74,7 @@ namespace PHIL_GUI.ViewModels
             ClearEndCommand = new RelayCommand(ClearEnd);
 
             ActionTypes = Enum.GetValues<ActionType>().Cast<ActionType>();
-            if (AppSettings.Is96Well) ActionTypes.SkipLast(1);
+            if (AppSettings.Is96Well) ActionTypes = ActionTypes.SkipLast(1);
             Pumps = Enum.GetValues<Pump>().Cast<Pump>();
             TimeUnits = Enum.GetValues<TimeUnit>().Cast<TimeUnit>();
 
@@ -82,8 +82,8 @@ namespace PHIL_GUI.ViewModels
             {
                 int tempId = RobotProtocolService.RobotState.ActionScheduler.GetNextTempId();
                 ActionType selectedActionType = ActionTypes.First();
-                Pump selectedPump1 = Pumps.First();
-                Pump selectedPump2 = Pumps.Skip(1).First();
+                Pump selectedPump1 = Pump.P1;
+                Pump selectedPump2 = Pump.P2;
                 int amount = 50;
                 TimeUnit selectedTimeUnit = TimeUnits.First();
                 int frequency = 1;
@@ -147,7 +147,7 @@ namespace PHIL_GUI.ViewModels
 
         private bool IsFormValid()
         {
-            if (!AppSettings.Is96Well && (ActionItem.Pump1 == ActionItem.Pump2))
+            if (!AppSettings.Is96Well && (ActionItem.Pump1 == ActionItem.Pump2) && (ActionItem.Pump1 != Pump.None))
             {
                 SetError("Pump 1 and Pump 2 cannot be the same.");
                 return false;
