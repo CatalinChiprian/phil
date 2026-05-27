@@ -96,7 +96,7 @@ namespace PHIL_GUI.Models
                 OnPropertyChanged(nameof(Summary));
             }
         }
-        public string Pump1Label => $"Pump {(int)Pump1}";
+        public string Pump1Label => GetPumpName(pump1);
 
         private Pump pump2;
         public Pump Pump2
@@ -109,7 +109,8 @@ namespace PHIL_GUI.Models
                 OnPropertyChanged(nameof(Summary));
             }
         }
-        public string Pump2Label => Type == ActionType.Exchange ? $"Pump {(int)Pump2}" : "";
+        public string Pump2Label => Type == ActionType.Exchange ? GetPumpName(pump2) : "";
+        private string GetPumpName(Pump pump) => pump == Pump.None ? "" : $"Pump {pump.ToString()}";
 
         private int amount;
         public int Amount
