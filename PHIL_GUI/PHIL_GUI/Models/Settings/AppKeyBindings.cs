@@ -5,290 +5,331 @@ namespace PHIL_GUI.Models
 {
     public class AppKeyBindings : ObservableObject
     {
-        private string goHomeKey = "H";
-        public string GoHomeKey
+        private string goHomeStr = "H";
+        public string GoHomeStr
         {
-            get => goHomeKey;
+            get => goHomeStr;
             set
             {
                 if (value == null) return;
-                if (value == goHomeKey) return;
+                if (value == goHomeStr) return;
 
-                SetProperty(ref goHomeKey, value);
+                SetProperty(ref goHomeStr, value);
+                OnPropertyChanged(nameof(GoHomeKey));
             }
         }
 
-        private string calibrateHomeKey = "C";
-        public string CalibrateHomeKey
+        public KeyGesture GoHomeKey => KeyGesture.Parse(GoHomeStr);
+
+        private string calibrateHomeStr = "C";
+        public string CalibrateHomeStr
         {
-            get => calibrateHomeKey;
+            get => calibrateHomeStr;
             set
             {
                 if (value == null) return;
-                if (value == calibrateHomeKey) return;
+                if (value == calibrateHomeStr) return;
 
-                SetProperty(ref calibrateHomeKey, value);
+                SetProperty(ref calibrateHomeStr, value);
+                OnPropertyChanged(nameof(CalibrateHomeKey));
             }
         }
+        public KeyGesture CalibrateHomeKey => KeyGesture.Parse(CalibrateHomeStr);
 
-        private string moveUpKey = "Up";
-        public string MoveUpKey
+        private string moveUpStr = "Up";
+        public string MoveUpStr
         {
-            get => moveUpKey;
+            get => moveUpStr;
             set
             {
                 if (value == null) return;
-                if (value == moveUpKey) return;
+                if (value == moveUpStr) return;
 
-                SetProperty(ref moveUpKey, value);
+                SetProperty(ref moveUpStr, value);
+                OnPropertyChanged(nameof(MoveUpKey));
             }
         }
+        public KeyGesture MoveUpKey => KeyGesture.Parse(MoveUpStr);
 
-        private string moveDownKey = "Down";
-        public string MoveDownKey
+        private string moveDownStr = "Down";
+        public string MoveDownStr
         {
-            get => moveDownKey;
+            get => moveDownStr;
             set
             {
                 if (value == null) return;
-                if (value == moveDownKey) return;
+                if (value == moveDownStr) return;
 
-                SetProperty(ref moveDownKey, value);
+                SetProperty(ref moveDownStr, value);
+                OnPropertyChanged(nameof(MoveDownKey));
             }
         }
+        public KeyGesture MoveDownKey => KeyGesture.Parse(MoveDownStr);
 
-        private string moveLeftKey = "A";
-        public string MoveLeftKey
+        private string moveLeftStr = "A";
+        public string MoveLeftStr
         {
-            get => moveLeftKey;
+            get => moveLeftStr;
             set
             {
                 if (value == null) return;
-                if (value == moveLeftKey) return;
+                if (value == moveLeftStr) return;
 
-                SetProperty(ref moveLeftKey, value);
+                SetProperty(ref moveLeftStr, value);
+                OnPropertyChanged(nameof(MoveLeftKey));
             }
         }
+        public KeyGesture MoveLeftKey => KeyGesture.Parse(MoveLeftStr);
 
-        private string moveRightKey = "D";
-        public string MoveRightKey
+        private string moveRightStr = "D";
+        public string MoveRightStr
         {
-            get => moveRightKey;
+            get => moveRightStr;
             set
             {
                 if (value == null) return;
-                if (value == moveRightKey) return;
+                if (value == moveRightStr) return;
 
-                SetProperty(ref moveRightKey, value);
+                SetProperty(ref moveRightStr, value);
+                OnPropertyChanged(nameof(MoveRightKey));
             }
         }
+        public KeyGesture MoveRightKey => KeyGesture.Parse(MoveRightStr);
 
-        private string moveForwardKey = "W";
-        public string MoveForwardKey
+        private string moveForwardStr = "W";
+        public string MoveForwardStr
         {
-            get => moveForwardKey;
+            get => moveForwardStr;
             set
             {
                 if (value == null) return;
-                if (value == moveForwardKey) return;
+                if (value == moveForwardStr) return;
 
-                SetProperty(ref moveForwardKey, value);
+                SetProperty(ref moveForwardStr, value);
+                OnPropertyChanged(nameof(MoveForwardKey));
             }
         }
+        public KeyGesture MoveForwardKey => KeyGesture.Parse(MoveForwardStr);
 
-        private string moveBackwardKey = "S";
-        public string MoveBackwardKey
+        private string moveBackwardStr = "S";
+        public string MoveBackwardStr
         {
-            get => moveBackwardKey;
+            get => moveBackwardStr;
             set
             {
                 if (value == null) return;
-                if (value == moveBackwardKey) return;
+                if (value == moveBackwardStr) return;
 
-                SetProperty(ref moveBackwardKey, value);
+                SetProperty(ref moveBackwardStr, value);
+                OnPropertyChanged(nameof(MoveBackwardKey));
             }
         }
+        public KeyGesture MoveBackwardKey => KeyGesture.Parse(MoveBackwardStr);
 
-        private string recordPositionKey = "Z";
-        public string RecordPositionKey
+        private string recordPositionStr = "Z";
+        public string RecordPositionStr
         {
-            get => recordPositionKey;
+            get => recordPositionStr;
             set
             {
                 if (value == null) return;
-                if (value == recordPositionKey) return;
+                if (value == recordPositionStr) return;
 
-                SetProperty(ref recordPositionKey, value);
+                SetProperty(ref recordPositionStr, value);
+                OnPropertyChanged(nameof(RecordPositionKey));
             }
         }
+        public KeyGesture RecordPositionKey => KeyGesture.Parse(RecordPositionStr);
 
-        private string solveMapKey = "M";
-        public string SolveMapKey
+        private string solveMapStr = "M";
+        public string SolveMapStr
         {
-            get => solveMapKey;
+            get => solveMapStr;
             set
             {
                 if (value == null) return;
-                if (value == solveMapKey) return;
+                if (value == solveMapStr) return;
 
-                SetProperty(ref solveMapKey, value);
+                SetProperty(ref solveMapStr, value);
+                OnPropertyChanged(nameof(SolveMapKey));
             }
         }
+        public KeyGesture SolveMapKey => KeyGesture.Parse(SolveMapStr);
 
-        private string increaseStepKey = "+";
-        public string IncreaseStepKey
+        private string increaseStepStr = "+";
+        public string IncreaseStepStr
         {
-            get => increaseStepKey;
+            get => increaseStepStr;
             set
             {
                 if (value == null) return;
-                if (value == increaseStepKey) return;
+                if (value == increaseStepStr) return;
 
-                SetProperty(ref increaseStepKey, value);
+                SetProperty(ref increaseStepStr, value);
+                OnPropertyChanged(nameof(IncreaseStepKey));
             }
         }
+        public KeyGesture IncreaseStepKey => KeyGesture.Parse(IncreaseStepStr);
 
-        private string decreaseStepKey = "-";
-        public string DecreaseStepKey
+        private string decreaseStepStr = "-";
+        public string DecreaseStepStr
         {
-            get => decreaseStepKey;
+            get => decreaseStepStr;
             set
             {
                 if (value == null) return;
-                if (value == decreaseStepKey) return;
+                if (value == decreaseStepStr) return;
 
-                SetProperty(ref decreaseStepKey, value);
+                SetProperty(ref decreaseStepStr, value);
+                OnPropertyChanged(nameof(DecreaseStepKey));
             }
         }
+        public KeyGesture DecreaseStepKey => KeyGesture.Parse(DecreaseStepStr);
 
-        private string pump1InKey = "D1";
-        public string Pump1InKey
+        private string pump1InStr = "D1";
+        public string Pump1InStr
         {
-            get => pump1InKey;
+            get => pump1InStr;
             set
             {
                 if (value == null) return;
-                if (value == pump1InKey) return;
+                if (value == pump1InStr) return;
 
-                SetProperty(ref pump1InKey, value);
+                SetProperty(ref pump1InStr, value);
+                OnPropertyChanged(nameof(Pump1InKey));
             }
         }
+        public KeyGesture Pump1InKey => KeyGesture.Parse(Pump1InStr);
 
-        private string pump1OutKey = "Shift+D1";
-        public string Pump1OutKey
+        private string pump1OutStr = "Shift+D1";
+        public string Pump1OutStr
         {
-            get => pump1OutKey;
+            get => pump1OutStr;
             set
             {
                 if (value == null) return;
-                if (value == pump1OutKey) return;
+                if (value == pump1OutStr) return;
 
-                SetProperty(ref pump1OutKey, value);
+                SetProperty(ref pump1OutStr, value);
+                OnPropertyChanged(nameof(Pump1OutKey));
             }
         }
+        public KeyGesture Pump1OutKey => KeyGesture.Parse(Pump1OutStr);
 
-        private string pump2InKey = "D2";
-        public string Pump2InKey
+        private string pump2InStr = "D2";
+        public string Pump2InStr
         {
-            get => pump2InKey;
+            get => pump2InStr;
             set
             {
                 if (value == null) return;
-                if (value == pump2InKey) return;
+                if (value == pump2InStr) return;
 
-                SetProperty(ref pump2InKey, value);
+                SetProperty(ref pump2InStr, value);
+                OnPropertyChanged(nameof(Pump2InKey));
             }
         }
+        public KeyGesture Pump2InKey => KeyGesture.Parse(Pump2InStr);
 
-        private string pump2OutKey = "Shift+D2";
-        public string Pump2OutKey
+        private string pump2OutStr = "Shift+D2";
+        public string Pump2OutStr
         {
-            get => pump2OutKey;
+            get => pump2OutStr;
             set
             {
                 if (value == null) return;
-                if (value == pump2OutKey) return;
+                if (value == pump2OutStr) return;
 
-                SetProperty(ref pump2OutKey, value);
+                SetProperty(ref pump2OutStr, value);
+                OnPropertyChanged(nameof(Pump2OutKey));
             }
         }
+        public KeyGesture Pump2OutKey => KeyGesture.Parse(Pump2OutStr);
 
-        private string pump3InKey = "D3";
-        public string Pump3InKey
+        private string pump3InStr = "D3";
+        public string Pump3InStr
         {
-            get => pump3InKey;
+            get => pump3InStr;
             set
             {
                 if (value == null) return;
-                if (value == pump3InKey) return;
+                if (value == pump3InStr) return;
 
-                SetProperty(ref pump3InKey, value);
+                SetProperty(ref pump3InStr, value);
+                OnPropertyChanged(nameof(Pump3InKey));
             }
         }
+        public KeyGesture Pump3InKey => KeyGesture.Parse(Pump3InStr);
 
-        private string pump3OutKey = "Shift+D3";
-        public string Pump3OutKey
+        private string pump3OutStr = "Shift+D3";
+        public string Pump3OutStr
         {
-            get => pump3OutKey;
+            get => pump3OutStr;
             set
             {
                 if (value == null) return;
-                if (value == pump3OutKey) return;
+                if (value == pump3OutStr) return;
 
-                SetProperty(ref pump3OutKey, value);
+                SetProperty(ref pump3OutStr, value);
+                OnPropertyChanged(nameof(Pump3OutKey));
             }
         }
+        public KeyGesture Pump3OutKey => KeyGesture.Parse(Pump3OutStr);
 
-        private string pump4InKey = "D4";
-        public string Pump4InKey
+        private string pump4InStr = "D4";
+        public string Pump4InStr
         {
-            get => pump4InKey;
+            get => pump4InStr;
             set
             {
                 if (value == null) return;
-                if (value == pump4InKey) return;
+                if (value == pump4InStr) return;
 
-                SetProperty(ref pump4InKey, value);
+                SetProperty(ref pump4InStr, value);
+                OnPropertyChanged(nameof(Pump4InKey));
             }
         }
+        public KeyGesture Pump4InKey => KeyGesture.Parse(Pump4InStr);
 
-        private string pump4OutKey = "Shift+D4";
-        public string Pump4OutKey
+        private string pump4OutStr = "Shift+D4";
+        public string Pump4OutStr
         {
-            get => pump4OutKey;
+            get => pump4OutStr;
             set
             {
                 if (value == null) return;
-                if (value == pump4OutKey) return;
+                if (value == pump4OutStr) return;
 
-                SetProperty(ref pump4OutKey, value);
+                SetProperty(ref pump4OutStr, value);
+                OnPropertyChanged(nameof(Pump4OutKey));
             }
         }
+        public KeyGesture Pump4OutKey => KeyGesture.Parse(Pump4OutStr);
 
         public AppKeyBindings() { }
 
         public AppKeyBindings(AppKeyBindings other)
         {
-            GoHomeKey = other.GoHomeKey;
-            CalibrateHomeKey = other.CalibrateHomeKey;
-            MoveUpKey = other.MoveUpKey;
-            MoveDownKey = other.MoveDownKey;
-            MoveLeftKey = other.MoveLeftKey;
-            MoveRightKey = other.MoveRightKey;
-            MoveForwardKey = other.MoveForwardKey;
-            MoveBackwardKey = other.MoveBackwardKey;
-            RecordPositionKey = other.RecordPositionKey;
-            SolveMapKey = other.SolveMapKey;
-            IncreaseStepKey = other.IncreaseStepKey;
-            DecreaseStepKey = other.DecreaseStepKey;
-            Pump1InKey = other.Pump1InKey;
-            Pump1OutKey = other.Pump1OutKey;
-            Pump2InKey = other.Pump2InKey;
-            Pump2OutKey = other.Pump2OutKey;
-            Pump3InKey = other.Pump3InKey;
-            Pump3OutKey = other.Pump3OutKey;
-            Pump4InKey = other.Pump4InKey;
-            Pump4OutKey = other.Pump4OutKey;
+            GoHomeStr = other.GoHomeStr;
+            CalibrateHomeStr = other.CalibrateHomeStr;
+            MoveUpStr = other.MoveUpStr;
+            MoveDownStr = other.MoveDownStr;
+            MoveLeftStr = other.MoveLeftStr;
+            MoveRightStr = other.MoveRightStr;
+            MoveForwardStr = other.MoveForwardStr;
+            MoveBackwardStr = other.MoveBackwardStr;
+            RecordPositionStr = other.RecordPositionStr;
+            SolveMapStr = other.SolveMapStr;
+            IncreaseStepStr = other.IncreaseStepStr;
+            DecreaseStepStr = other.DecreaseStepStr;
+            Pump1InStr = other.Pump1InStr;
+            Pump1OutStr = other.Pump1OutStr;
+            Pump2InStr = other.Pump2InStr;
+            Pump2OutStr = other.Pump2OutStr;
+            Pump3InStr = other.Pump3InStr;
+            Pump3OutStr = other.Pump3OutStr;
+            Pump4InStr = other.Pump4InStr;
+            Pump4OutStr = other.Pump4OutStr;
         }
     }
 }

@@ -20,8 +20,8 @@
                         <TextBlock Text="Move arm to origin position" Classes="subtitle" FontSize="9"/>
                     </StackPanel>
 
-                    <Button Grid.Column="1" Tag="GoHomeKey"
-                            Content="{Binding AppKeyBindings.GoHomeKey, Converter={x:Static conv:KeyDisplayConverter.Instance}}" 
+                    <Button Grid.Column="1" Tag="GoHomeStr"
+                            Content="{Binding AppKeyBindings.GoHomeStr, Converter={x:Static conv:KeyDisplayConverter.Instance}}" 
                             Classes="btn btn-bind" Click="Button_Click"/>
                 </Grid>
 
@@ -31,8 +31,8 @@
                         <TextBlock Text="Run home calibration routine" Classes="subtitle" FontSize="9"/>
                     </StackPanel>
 
-                    <Button Grid.Column="1" Tag="CalibrateHomeKey"
-                            Content="{Binding AppKeyBindings.CalibrateHomeKey, Converter={x:Static conv:KeyDisplayConverter.Instance}}"
+                    <Button Grid.Column="1" Tag="CalibrateHomeStr"
+                            Content="{Binding AppKeyBindings.CalibrateHomeStr, Converter={x:Static conv:KeyDisplayConverter.Instance}}"
                             Classes="btn btn-bind" Click="Button_Click"/>
                 </Grid>
             </StackPanel>
@@ -46,8 +46,8 @@
                         <TextBlock Text="Z axis up" Classes="subtitle" FontSize="9"/>
                     </StackPanel>
 
-                    <Button Grid.Column="1" Tag="MoveUpKey"
-                            Content="{Binding AppKeyBindings.MoveUpKey, Converter={x:Static conv:KeyDisplayConverter.Instance}}" 
+                    <Button Grid.Column="1" Tag="MoveUpStr"
+                            Content="{Binding AppKeyBindings.MoveUpStr, Converter={x:Static conv:KeyDisplayConverter.Instance}}" 
                             Classes="btn btn-bind" Click="Button_Click"/>
                 </Grid>
 
@@ -57,8 +57,8 @@
                         <TextBlock Text="Z axis down" Classes="subtitle" FontSize="9"/>
                     </StackPanel>
 
-                    <Button Grid.Column="1" Tag="MoveDownKey"
-                            Content="{Binding AppKeyBindings.MoveDownKey, Converter={x:Static conv:KeyDisplayConverter.Instance}}" 
+                    <Button Grid.Column="1" Tag="MoveDownStr"
+                            Content="{Binding AppKeyBindings.MoveDownStr, Converter={x:Static conv:KeyDisplayConverter.Instance}}" 
                             Classes="btn btn-bind" Click="Button_Click"/>
                 </Grid>
 
@@ -68,8 +68,8 @@
                         <TextBlock Text="X axis left" Classes="subtitle" FontSize="9"/>
                     </StackPanel>
 
-                    <Button Grid.Column="1" Tag="MoveLeftKey"
-                            Content="{Binding AppKeyBindings.MoveLeftKey, Converter={x:Static conv:KeyDisplayConverter.Instance}}" 
+                    <Button Grid.Column="1" Tag="MoveLeftStr"
+                            Content="{Binding AppKeyBindings.MoveLeftStr, Converter={x:Static conv:KeyDisplayConverter.Instance}}" 
                             Classes="btn btn-bind" Click="Button_Click"/>
                 </Grid>
 
@@ -79,8 +79,8 @@
                         <TextBlock Text="X axis right" Classes="subtitle" FontSize="9"/>
                     </StackPanel>
 
-                    <Button Grid.Column="1" Tag="MoveRightKey"
-                            Content="{Binding AppKeyBindings.MoveRightKey, Converter={x:Static conv:KeyDisplayConverter.Instance}}" 
+                    <Button Grid.Column="1" Tag="MoveRightStr"
+                            Content="{Binding AppKeyBindings.MoveRightStr, Converter={x:Static conv:KeyDisplayConverter.Instance}}" 
                             Classes="btn btn-bind" Click="Button_Click"/>
                 </Grid>
 
@@ -90,8 +90,8 @@
                         <TextBlock Text="Y axis forward" Classes="subtitle" FontSize="9"/>
                     </StackPanel>
 
-                    <Button Grid.Column="1" Tag="MoveForwardKey"
-                            Content="{Binding AppKeyBindings.MoveForwardKey, Converter={x:Static conv:KeyDisplayConverter.Instance}}" 
+                    <Button Grid.Column="1" Tag="MoveForwardStr"
+                            Content="{Binding AppKeyBindings.MoveForwardStr, Converter={x:Static conv:KeyDisplayConverter.Instance}}" 
                             Classes="btn btn-bind" Click="Button_Click"/>
                 </Grid>
 
@@ -101,8 +101,8 @@
                         <TextBlock Text="Y axis backward" Classes="subtitle" FontSize="9"/>
                     </StackPanel>
 
-                    <Button Grid.Column="1" Tag="MoveBackwardKey"
-                            Content="{Binding AppKeyBindings.MoveBackwardKey, Converter={x:Static conv:KeyDisplayConverter.Instance}}" 
+                    <Button Grid.Column="1" Tag="MoveBackwardStr"
+                            Content="{Binding AppKeyBindings.MoveBackwardStr, Converter={x:Static conv:KeyDisplayConverter.Instance}}" 
                             Classes="btn btn-bind" Click="Button_Click"/>
                 </Grid>
             </StackPanel>
@@ -116,8 +116,8 @@
                         <TextBlock Text="Record current position" Classes="subtitle" FontSize="9"/>
                     </StackPanel>
 
-                    <Button Grid.Column="1" Tag="RecordPositionKey"
-                            Content="{Binding AppKeyBindings.RecordPositionKey, Converter={x:Static conv:KeyDisplayConverter.Instance}}" 
+                    <Button Grid.Column="1" Tag="RecordPositionStr"
+                            Content="{Binding AppKeyBindings.RecordPositionStr, Converter={x:Static conv:KeyDisplayConverter.Instance}}" 
                             Classes="btn btn-bind" Click="Button_Click"/>
                 </Grid>
 
@@ -127,8 +127,8 @@
                         <TextBlock Text="Solve the current map" Classes="subtitle" FontSize="9"/>
                     </StackPanel>
 
-                    <Button Grid.Column="1" Tag="SolveMapKey"
-                            Content="{Binding AppKeyBindings.SolveMapKey, Converter={x:Static conv:KeyDisplayConverter.Instance}}" 
+                    <Button Grid.Column="1" Tag="SolveMapStr"
+                            Content="{Binding AppKeyBindings.SolveMapStr, Converter={x:Static conv:KeyDisplayConverter.Instance}}" 
                             Classes="btn btn-bind" Click="Button_Click"/>
                 </Grid>
             </StackPanel>
@@ -142,8 +142,8 @@
                         <TextBlock Text="Increase the step size for movement" Classes="subtitle" FontSize="9"/>
                     </StackPanel>
 
-                    <Button Grid.Column="1" Tag="IncreaseStepKey"
-                            Content="{Binding AppKeyBindings.IncreaseStepKey, Converter={x:Static conv:KeyDisplayConverter.Instance}}" 
+                    <Button Grid.Column="1" Tag="IncreaseStepStr"
+                            Content="{Binding AppKeyBindings.IncreaseStepStr, Converter={x:Static conv:KeyDisplayConverter.Instance}}" 
                             Classes="btn btn-bind" Click="Button_Click"/>
                 </Grid>
 
@@ -153,8 +153,8 @@
                         <TextBlock Text="Decrease the step size for movement" Classes="subtitle" FontSize="9"/>
                     </StackPanel>
 
-                    <Button Grid.Column="1" Tag="DecreaseStepKey"
-                            Content="{Binding AppKeyBindings.DecreaseStepKey, Converter={x:Static conv:KeyDisplayConverter.Instance}}" 
+                    <Button Grid.Column="1" Tag="DecreaseStepStr"
+                            Content="{Binding AppKeyBindings.DecreaseStepStr, Converter={x:Static conv:KeyDisplayConverter.Instance}}" 
                             Classes="btn btn-bind" Click="Button_Click"/>
                 </Grid>
             </StackPanel>
@@ -169,8 +169,8 @@
                             <TextBlock Text="Aspirate liquid" Classes="subtitle" FontSize="9"/>
                         </StackPanel>
 
-                        <Button Grid.Column="1" Tag="Pump1InKey"
-                                Content="{Binding AppKeyBindings.Pump1InKey, Converter={x:Static conv:KeyDisplayConverter.Instance}}" 
+                        <Button Grid.Column="1" Tag="Pump1InStr"
+                                Content="{Binding AppKeyBindings.Pump1InStr, Converter={x:Static conv:KeyDisplayConverter.Instance}}" 
                                 Classes="btn btn-bind" Click="Button_Click"/>
                     </Grid>
 
@@ -179,8 +179,8 @@
                             <TextBlock Text="Pump 1 OUT" Classes="subtitle" FontSize="13"/>
                             <TextBlock Text="Dispense liquid" Classes="subtitle" FontSize="9"/>
                         </StackPanel>
-                        <Button Grid.Column="1" Tag="Pump1OutKey"
-                                Content="{Binding AppKeyBindings.Pump1OutKey, Converter={x:Static conv:KeyDisplayConverter.Instance}}" 
+                        <Button Grid.Column="1" Tag="Pump1OutStr"
+                                Content="{Binding AppKeyBindings.Pump1OutStr, Converter={x:Static conv:KeyDisplayConverter.Instance}}" 
                                 Classes="btn btn-bind" Click="Button_Click"/>
                     </Grid>
                 </StackPanel>
@@ -192,8 +192,8 @@
                             <TextBlock Text="Aspirate liquid" Classes="subtitle" FontSize="9"/>
                         </StackPanel>
 
-                        <Button Grid.Column="1" Tag="Pump2InKey"
-                                Content="{Binding AppKeyBindings.Pump2InKey, Converter={x:Static conv:KeyDisplayConverter.Instance}}" 
+                        <Button Grid.Column="1" Tag="Pump2InStr"
+                                Content="{Binding AppKeyBindings.Pump2InStr, Converter={x:Static conv:KeyDisplayConverter.Instance}}" 
                                 Classes="btn btn-bind" Click="Button_Click"/>
                     </Grid>
 
@@ -202,8 +202,8 @@
                             <TextBlock Text="Pump 2 OUT" Classes="subtitle" FontSize="13"/>
                             <TextBlock Text="Dispense liquid" Classes="subtitle" FontSize="9"/>
                         </StackPanel>
-                        <Button Grid.Column="1" Tag="Pump2OutKey"
-                                Content="{Binding AppKeyBindings.Pump2OutKey, Converter={x:Static conv:KeyDisplayConverter.Instance}}" 
+                        <Button Grid.Column="1" Tag="Pump2OutStr"
+                                Content="{Binding AppKeyBindings.Pump2OutStr, Converter={x:Static conv:KeyDisplayConverter.Instance}}" 
                                 Classes="btn btn-bind" Click="Button_Click"/>
                     </Grid>
                 </StackPanel>
@@ -215,8 +215,8 @@
                             <TextBlock Text="Aspirate liquid" Classes="subtitle" FontSize="9"/>
                         </StackPanel>
 
-                        <Button Grid.Column="1" Tag="Pump3InKey"
-                                Content="{Binding AppKeyBindings.Pump3InKey, Converter={x:Static conv:KeyDisplayConverter.Instance}}" 
+                        <Button Grid.Column="1" Tag="Pump3InStr"
+                                Content="{Binding AppKeyBindings.Pump3InStr, Converter={x:Static conv:KeyDisplayConverter.Instance}}" 
                                 Classes="btn btn-bind" Click="Button_Click"/>
                     </Grid>
 
@@ -225,8 +225,8 @@
                             <TextBlock Text="Pump 3 OUT" Classes="subtitle" FontSize="13"/>
                             <TextBlock Text="Dispense liquid" Classes="subtitle" FontSize="9"/>
                         </StackPanel>
-                        <Button Grid.Column="1" Tag="Pump3OutKey"
-                                Content="{Binding AppKeyBindings.Pump3OutKey, Converter={x:Static conv:KeyDisplayConverter.Instance}}" 
+                        <Button Grid.Column="1" Tag="Pump3OutStr"
+                                Content="{Binding AppKeyBindings.Pump3OutStr, Converter={x:Static conv:KeyDisplayConverter.Instance}}" 
                                 Classes="btn btn-bind" Click="Button_Click"/>
                     </Grid>
                 </StackPanel>
@@ -238,8 +238,8 @@
                             <TextBlock Text="Aspirate liquid" Classes="subtitle" FontSize="9"/>
                         </StackPanel>
 
-                        <Button Grid.Column="1" Tag="Pump4InKey"
-                                Content="{Binding AppKeyBindings.Pump4InKey, Converter={x:Static conv:KeyDisplayConverter.Instance}}" 
+                        <Button Grid.Column="1" Tag="Pump4InStr"
+                                Content="{Binding AppKeyBindings.Pump4InStr, Converter={x:Static conv:KeyDisplayConverter.Instance}}" 
                                 Classes="btn btn-bind" Click="Button_Click"/>
                     </Grid>
 
@@ -248,8 +248,8 @@
                             <TextBlock Text="Pump 4 OUT" Classes="subtitle" FontSize="13"/>
                             <TextBlock Text="Dispense liquid" Classes="subtitle" FontSize="9"/>
                         </StackPanel>
-                        <Button Grid.Column="1" Tag="Pump4OutKey"
-                                Content="{Binding AppKeyBindings.Pump4OutKey, Converter={x:Static conv:KeyDisplayConverter.Instance}}" 
+                        <Button Grid.Column="1" Tag="Pump4OutStr"
+                                Content="{Binding AppKeyBindings.Pump4OutStr, Converter={x:Static conv:KeyDisplayConverter.Instance}}" 
                                 Classes="btn btn-bind" Click="Button_Click"/>
                     </Grid>
                 </StackPanel>

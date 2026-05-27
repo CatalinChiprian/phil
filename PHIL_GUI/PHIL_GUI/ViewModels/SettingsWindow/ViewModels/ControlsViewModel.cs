@@ -21,37 +21,5 @@ namespace PHIL_GUI.ViewModels
         {
             AppSettingsService.AppSettings.AppKeyBindings = AppKeyBindings;
         }
-
-        public string FormatKeyDisplay(string key) => key switch
-        {
-            "Up" => "↑",
-            "Down" => "↓",
-            "Left" => "←",
-            "Right" => "→",
-
-            "D0" => "0",
-            "D1" => "1",
-            "D2" => "2",
-            "D3" => "3",
-            "D4" => "4",
-            "D5" => "5",
-            "D6" => "6",
-            "D7" => "7",
-            "D8" => "8",
-            "D9" => "9",
-
-            "NumPad0" => "Num0",
-            "NumPad1" => "Num1",
-            "NumPad2" => "Num2",
-            "NumPad3" => "Num3",
-            "NumPad4" => "Num4",
-            "NumPad5" => "Num5",
-            "NumPad6" => "Num6",
-            "NumPad7" => "Num7",
-            "NumPad8" => "Num8",
-            "NumPad9" => "Num9",
-
-            _ => key
-        };
     }
 }
