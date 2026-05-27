@@ -128,6 +128,19 @@ namespace PHIL_GUI.Services
             RobotState.ActionScheduler.DeleteAction(actionId);
         }
 
+        public void AttachAction(ActionItem action, IEnumerable<int> selectedWellIndices)
+        {
+            byte[] bitmask = selectedWellIndices.WellIndicesToBitmask();
+            Send($"{LINK_ACTION_WELL_CMD} {action.Id} {bitmask}");
+            RobotState.ActionScheduler.AttachAction(action, selectedWellIndices);
+        }
+        public void DetachAction(ActionItem action, IEnumerable<int> selectedWellIndices)
+        {
+            byte[] bitmask = selectedWellIndices.WellIndicesToBitmask();
+            Send($"{UNLINK_ACTION_WELL_CMD} {action.Id} {bitmask}");
+            RobotState.ActionScheduler.DetachAction(action, selectedWellIndices);
+        }
+
         public void ClearReceivedData()
         {
             ReceivedData = "";

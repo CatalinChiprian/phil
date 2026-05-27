@@ -30,6 +30,8 @@ namespace PHIL_GUI.ViewModels
         public IWellPlateItem WellPlate { get; private set; }
         public WellPlateItemOoC? WellPlateItemOoC => WellPlate as WellPlateItemOoC;
         public WellPlateItem96? WellPlateItem96 => WellPlate as WellPlateItem96;
+
+        private string lastSelectedTarget = string.Empty;
         public bool IsDetailPageVisible => AppSettings.Is96Well ? 
             WellPlateItem96.SelectedWellItems.Count > 0 : 
             WellPlateItemOoC.SelectedWellPairs.Count > 0;
@@ -87,6 +89,11 @@ namespace PHIL_GUI.ViewModels
 
             AppSettings.PropertyChanged += AppSettings_PropertyChanged;
             ActionScheduler.Actions.CollectionChanged += Actions_CollectionChanged;
+            
+            foreach (ObservableCollection<ScheduleAction> actions in ActionScheduler.WellActions.Values)
+            {
+                //actions.CollectionChanged += WellActions_CollectionChanged;
+            }
 
         }
 
@@ -125,8 +132,9 @@ namespace PHIL_GUI.ViewModels
             else
             {
                 WellPlateItemOoC.SelectWellPair(int.Parse(target));
-
             }
+
+            lastSelectedTarget = target;
 
             LoadCurrentWellActions(target);
             LoadAvailableActions();
@@ -139,40 +147,74 @@ namespace PHIL_GUI.ViewModels
 
         public void AttachAction(ActionItem action)
         {
+            IEnumerable<string> selectedWellNames = GetSelectedWellNames();
 
+            IEnumerable<int> selectedWellIndices = selectedWellNames.ToIndex();
+
+            RobotProtocolService.AttachAction(action, selectedWellIndices);
+
+            LoadCurrentWellActions(lastSelectedTarget);
+            LoadAvailableActions();
         }
         public void DetachAction(ActionItem action)
         {
+            IEnumerable<string> selectedWellNames = GetSelectedWellNames();
 
+            IEnumerable<int> selectedWellIndices = selectedWellNames.ToIndex();
+
+            RobotProtocolService.DetachAction(action, selectedWellIndices);
+
+            LoadCurrentWellActions(lastSelectedTarget);
+            LoadAvailableActions();
+        }
+
+        private IEnumerable<string> GetSelectedWellNames()
+        {
+            List<string> selectedWellNames = new List<string>();
+            if (AppSettings.Is96Well)
+            {
+                selectedWellNames = WellPlateItem96.SelectedWellItems.Select(w => w.Name).ToList();
+            }
+            else
+            {
+                var selectedPairs = WellPlateItemOoC.SelectedWellPairs;
+                foreach (WellPairItem pair in selectedPairs)
+                {
+                    selectedWellNames.Add(pair.In.Name);
+                }
+            }
+
+            return selectedWellNames;
         }
 
         private void LoadCurrentWellActions(string target)
         {
-            int wellIndex = target.ToIndex();
-
-            if (!ActionScheduler.WellActions.TryGetValue(wellIndex, out List<ScheduleAction> actions) || actions.Count == 0)
-            {
-                CurrentWellActions.Clear();
-                return;
-            }
-
-            // FIRST selection
-            if (CurrentWellActions.Count == 0)
-            {
-                foreach (ScheduleAction action in actions)
-                    CurrentWellActions.Add(new ActionItem(action));
-
-                return;
-            }
-
-            // INTERSECTION
-            HashSet<int> matchingIds = actions.Select(a => a.Id).ToHashSet();
-            List<ActionItem> filteredActions = CurrentWellActions.Where(cw => matchingIds.Contains(cw.Id)).ToList();
+            List<int> selectedIndices = GetSelectedWellNames().ToIndex().ToList();
 
             CurrentWellActions.Clear();
 
-            foreach (ActionItem action in filteredActions)
-                CurrentWellActions.Add(action);
+            var allSets = selectedIndices
+                .Select(i => ActionScheduler.WellActions.TryGetValue(i, out var list)
+                    ? list.Select(a => a.Id).ToHashSet()
+                    : new HashSet<int>())
+                .ToList();
+
+
+            if (selectedIndices.Count == 0) return;
+
+            var intersection = allSets.Aggregate((a, b) =>
+            {
+                a.IntersectWith(b);
+                return a;
+            });
+
+            foreach (var actionItem in ActionItems)
+            {
+                if (intersection.Contains(actionItem.Id))
+                {
+                    CurrentWellActions.Add(actionItem);
+                }
+            }
         }
 
         private void LoadAvailableActions()

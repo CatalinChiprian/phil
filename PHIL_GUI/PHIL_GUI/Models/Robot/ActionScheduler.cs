@@ -9,7 +9,7 @@ namespace PHIL_GUI.Models
     {
         private int nextTempId = -1;
         public ObservableCollection<ScheduleAction> Actions { get; } = new ObservableCollection<ScheduleAction>();
-        public Dictionary<int, List<ScheduleAction>> WellActions { get; } = new Dictionary<int, List<ScheduleAction>>();
+        public Dictionary<int, ObservableCollection<ScheduleAction>> WellActions { get; } = new Dictionary<int, ObservableCollection<ScheduleAction>>();
         public ActionScheduler() { }
 
         public void CreateAction(ActionItem action)
@@ -46,13 +46,25 @@ namespace PHIL_GUI.Models
             Actions.Remove(action);
         }
         
-        public void LinkActionToWell(ActionItem action,  WellItem well)
+        public void AttachAction(ActionItem action, IEnumerable<int> selectedWellIndices)
         {
+            foreach (int selectedIndex in selectedWellIndices)
+            {
+                if (!WellActions.ContainsKey(selectedIndex))
+                {
+                    WellActions[selectedIndex] = new ObservableCollection<ScheduleAction>();
+                }
 
+                WellActions[selectedIndex].Add(action.Model);
+            }
         }
-        public void UnlinkActionToWell(ActionItem action,  WellItem well)
-        {
 
+        public void DetachAction(ActionItem action, IEnumerable<int> selectedWellIndices)
+        {
+            foreach (int selectedIndex in selectedWellIndices)
+            {
+                WellActions[selectedIndex].Remove(action.Model);
+            }
         }
 
         public int GetNextTempId()

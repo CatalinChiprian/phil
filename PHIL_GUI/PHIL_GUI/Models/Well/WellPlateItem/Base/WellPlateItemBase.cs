@@ -6,7 +6,8 @@ namespace PHIL_GUI.Models
 {
     public class WellPlateItemBase : IWellPlateItemBase
     {
-        protected const int COLUMN_COUNT = 12;
+        public const int COLUMN_COUNT = 12;
+        public const int ROW_COUNT = 6;
         public List<string> ColHeaders { get; } = Enumerable.Range(1, COLUMN_COUNT).Select(i => i.ToString()).ToList();
         public List<char> RowHeaders { get; } = new() { 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H' };
         public PlateType PlateType { get; set; }

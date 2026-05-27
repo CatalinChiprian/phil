@@ -6,8 +6,8 @@ namespace PHIL_GUI.Models
 {
     public class WellPlateItemOoC : WellPlateItemBase, IWellPlateItem
     {
-        const int PAIRS_PER_QUADRANT_ROW = 3;
-        const int PAIR_COUNT = 2;
+        public const int PAIRS_PER_QUADRANT_ROW = 3;
+        public const int PAIR_COUNT = 2;
         public ObservableCollection<WellPairItem> Wells { get; } = new();
         public List<WellItem> VisibleWells
         {
