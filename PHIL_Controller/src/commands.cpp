@@ -130,8 +130,8 @@ void parseCommands() {
 			// TempId must be signed integer to in order to avoid id tempid-id collisions, rest can be unsigned.
 			int16_t tempId = atoi(tokens[1]);
 			uint8_t type = atoi(tokens[2]);
-			uint8_t pump1 = atoi(tokens[3]);
-			uint8_t pump2 = atoi(tokens[4]);
+			int8_t pump1 = atoi(tokens[3]);
+			int8_t pump2 = atoi(tokens[4]);
 			uint16_t amount = atoi(tokens[5]);
 			uint16_t frequency = atoi(tokens[6]);
 			uint8_t unit = atoi(tokens[7]);
@@ -151,8 +151,8 @@ void parseCommands() {
 
 			uint16_t id = atoi(tokens[1]);
 			uint8_t type = atoi(tokens[2]);
-			uint8_t pump1 = atoi(tokens[3]);
-			uint8_t pump2 = atoi(tokens[4]);
+			int8_t pump1 = atoi(tokens[3]);
+			int8_t pump2 = atoi(tokens[4]);
 			uint16_t amount = atoi(tokens[5]);
 			uint16_t frequency = atoi(tokens[6]);
 			uint8_t unit = atoi(tokens[7]);

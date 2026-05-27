@@ -24,8 +24,8 @@ constexpr uint16_t INVALID = 0xFF;
 struct Action {
     uint16_t id;
     ActionType type;
-    uint8_t pump1; // 96-well: the pump. OoC: dispense/IN pump
-    uint8_t pump2; // 96-well: unused. OoC: aspirate/OUT pump
+    int8_t pump1; // 96-well: the pump. OoC: dispense/IN pump
+    int8_t pump2; // 96-well: unused. OoC: aspirate/OUT pump
     uint16_t amount_uL;
     uint16_t frequency;
     TimeUnit unit;
@@ -46,8 +46,8 @@ extern WellAction wellActions[MAX_WELLS];
 extern uint8_t actionCount;
 extern uint16_t nextActionId;
 
-uint16_t createAction(int16_t tempId, ActionType type, uint8_t pump1, uint8_t pump2, uint16_t amount, uint16_t frequency, TimeUnit unit, uint32_t start, uint32_t end);
-void updateAction(uint16_t id, ActionType type, uint8_t pump1, uint8_t pump2, uint16_t amount, uint16_t frequency, TimeUnit unit, uint32_t start, uint32_t end);
+uint16_t createAction(int16_t tempId, ActionType type, int8_t pump1, int8_t pump2, uint16_t amount, uint16_t frequency, TimeUnit unit, uint32_t start, uint32_t end);
+void updateAction(uint16_t id, ActionType type, int8_t pump1, int8_t pump2, uint16_t amount, uint16_t frequency, TimeUnit unit, uint32_t start, uint32_t end);
 void deleteAction(uint16_t id);
 void linkAction(uint16_t id, char* hex);
 void unlinkAction(uint16_t id, char* hex);

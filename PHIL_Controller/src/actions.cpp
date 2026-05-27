@@ -138,7 +138,7 @@ void unlinkAction(uint16_t id, char* hex) {
 	unlinkActionByMask(id, mask);
 }
 
-uint16_t createAction(int16_t tempId, ActionType type, uint8_t pump1, uint8_t pump2, uint16_t amount, uint16_t frequency, TimeUnit unit, uint32_t start, uint32_t end) {
+uint16_t createAction(int16_t tempId, ActionType type, int8_t pump1, int8_t pump2, uint16_t amount, uint16_t frequency, TimeUnit unit, uint32_t start, uint32_t end) {
     if (actionCount >= MAX_ACTIONS_TOTAL) {
         Serial.println(F("ERROR:FAILED TO CREATE ACTION"));
         return 0;
@@ -173,7 +173,7 @@ uint16_t createAction(int16_t tempId, ActionType type, uint8_t pump1, uint8_t pu
     return action.id;
 }
 
-void updateAction(uint16_t id, ActionType type, uint8_t pump1, uint8_t pump2, uint16_t amount, uint16_t frequency, TimeUnit unit, uint32_t start, uint32_t end) {
+void updateAction(uint16_t id, ActionType type, int8_t pump1, int8_t pump2, uint16_t amount, uint16_t frequency, TimeUnit unit, uint32_t start, uint32_t end) {
 
     Action* action = findActionById(id);
     if (!action) return;
@@ -292,11 +292,11 @@ void executeAction(Action &action) {
             itoa(nxtCol, &outWellName[1], 10);
 
             if (isInvalidWell(nxtRow, nxtCol)) return;
-
-            aspirate(action.pump2, action.amount_uL, outWellName);
-            dispense(action.pump1, action.amount_uL, wellName);
-            aspirate(action.pump2, action.amount_uL, outWellName);
-            dispense(action.pump1, action.amount_uL, wellName);
+            
+            if (action.pump2 >= 0) aspirate(action.pump2, action.amount_uL, outWellName);
+            if (action.pump1 >= 0) dispense(action.pump1, action.amount_uL, wellName);
+            if (action.pump2 >= 0) aspirate(action.pump2, action.amount_uL, outWellName);
+            if (action.pump1 >= 0) dispense(action.pump1, action.amount_uL, wellName);
             break;
         }
         }
