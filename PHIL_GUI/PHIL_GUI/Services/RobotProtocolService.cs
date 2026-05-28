@@ -101,9 +101,9 @@ namespace PHIL_GUI.Services
             serialPortService = new SerialPortService();
             robotState = new RobotState();
             serialPortService.MessageReceived += OnMessageReceived;
-            //serialPortService.GetStartUpMessage += GetSetupInformation;
+            serialPortService.GetStartUpMessage += GetSetupInformation;
 
-            //SetSetupInformation(plateContext);
+            SetSetupInformation(plateContext);
         }
 
         private void Send(string command)
