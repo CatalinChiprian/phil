@@ -34,8 +34,11 @@ public partial class ActionWindow : Window
         if (DataContext is not ActionWindowViewModel vm) return;
         if (sender is not Button button) return;
 
-        if (button.Tag?.ToString() == "Save") vm.Save();
-        if (vm.DisplayError) return;
+        if (button.Tag?.ToString() == "Save")
+        {
+            vm.Save();
+            if (vm.DisplayError) return;
+        }
 
         Close();
     }

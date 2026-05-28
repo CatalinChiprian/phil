@@ -17,7 +17,7 @@ namespace PHIL_GUI.ViewModels
     public class ActionWindowViewModel : ViewModelBase
     {
         private const int WINDOW_HEIGHT_NORMAL = 510;
-        private const int ERROR_HEIGHT = 40;
+        private const int ERROR_HEIGHT = 60;
         private const int REPEAT_HEIGHT = 130;
 
         public ICommand SaveCommand { get; }
@@ -77,7 +77,7 @@ namespace PHIL_GUI.ViewModels
                 if (value) WindowHeight += ERROR_HEIGHT;
                 else WindowHeight -= ERROR_HEIGHT;
 
-                displayError = value;
+                SetProperty(ref displayError, value);
             }
         }
 
@@ -198,11 +198,38 @@ namespace PHIL_GUI.ViewModels
                 return false;
             }
 
-            if (ActionItem.StartDate.HasValue && ActionItem.EndDate.HasValue &&
-                ActionItem.StartDate.Value.Date == ActionItem.EndDate.Value.Date && ActionItem.StartTime == ActionItem.EndTime)
+            if (ActionItem.StartDate.HasValue && ActionItem.EndDate.HasValue)
             {
-                SetError("Start and end time cannot be the same.");
-                return false;
+                var startDate = ActionItem.StartDate.Value;
+                var startTime = ActionItem.StartTime.Value;
+
+                var endDate = ActionItem.EndDate.Value;
+                var endTime = ActionItem.EndTime.Value;
+
+                DateTimeOffset start = new DateTimeOffset(
+                    startDate.Year,
+                    startDate.Month,
+                    startDate.Day,
+                    startTime.Hours,
+                    startTime.Minutes,
+                    startTime.Seconds,
+                    startDate.Offset);
+
+                DateTimeOffset end = new DateTimeOffset(
+                    endDate.Year,
+                    endDate.Month,
+                    endDate.Day,
+                    endTime.Hours,
+                    endTime.Minutes,
+                    endTime.Seconds,
+                    endDate.Offset);
+
+
+                if ((end - start).TotalMinutes < 1)
+                {
+                    SetError("Start and end must be at least 1 minute apart.");
+                    return false;
+                }
             }
 
             return true;
