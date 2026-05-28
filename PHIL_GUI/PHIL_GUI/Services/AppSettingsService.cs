@@ -1,14 +1,16 @@
-﻿using PHIL_GUI.Models;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using PHIL_GUI.Models;
 using System;
 using System.IO;
+using System.Text;
 using System.Text.Json;
 
 namespace PHIL_GUI.Services
 {
-    public class AppSettingsService
+    public class AppSettingsService : ObservableObject
     {
         private static readonly string SettingsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "PHIL", "settings.json");
-        public AppSettings AppSettings { get; set; }
+        public AppSettings AppSettings { get; } = new AppSettings();
 
         public AppSettingsService()
         {
@@ -21,11 +23,13 @@ namespace PHIL_GUI.Services
             {
                 if (!File.Exists(SettingsPath)) throw new Exception();
                 var json = File.ReadAllText(SettingsPath);
-                AppSettings = JsonSerializer.Deserialize<AppSettings>(json) ?? throw new Exception();
+                var loaded = JsonSerializer.Deserialize<AppSettings>(json) ?? throw new Exception();
+
+                ApplySettings(loaded);
+
             }
             catch 
             { 
-                AppSettings = new AppSettings();
             }
         }
 
@@ -33,6 +37,13 @@ namespace PHIL_GUI.Services
         {
             Directory.CreateDirectory(Path.GetDirectoryName(SettingsPath));
             File.WriteAllText(SettingsPath, JsonSerializer.Serialize(AppSettings, new JsonSerializerOptions { WriteIndented = true }));
+        }
+
+
+        private void ApplySettings(AppSettings loaded)
+        {
+            AppSettings.SelectedPlateType = loaded.SelectedPlateType;
+            AppSettings.AppKeyBindings.Override(loaded.AppKeyBindings);
         }
     }
 }

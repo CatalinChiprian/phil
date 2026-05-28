@@ -19,7 +19,7 @@ namespace PHIL_GUI.ViewModels
 
         public void ApplyChanges()
         {
-            AppSettingsService.AppSettings.AppKeyBindings = AppKeyBindings;
+            AppSettingsService.AppSettings.AppKeyBindings.Override(AppKeyBindings);
         }
     }
 }

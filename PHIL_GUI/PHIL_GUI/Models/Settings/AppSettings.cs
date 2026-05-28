@@ -23,16 +23,9 @@ namespace PHIL_GUI.Models
 
         public bool Is96Well => SelectedPlateType == PlateType.Well96;
 
-        private AppKeyBindings appKeyBindings;
-        public AppKeyBindings AppKeyBindings
-        {
-            get => appKeyBindings;
-            set => SetProperty(ref appKeyBindings, value);
-        }
+        public AppKeyBindings AppKeyBindings { get; } = new AppKeyBindings();
 
         public AppSettings()
-        {
-            AppKeyBindings = new AppKeyBindings();
-        }
+        { }
     }
 }

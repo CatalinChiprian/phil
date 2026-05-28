@@ -1,7 +1,9 @@
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
+using Avalonia.Input;
 using Microsoft.Extensions.DependencyInjection;
+using PHIL_GUI.Models;
 using PHIL_GUI.ViewModels;
 
 namespace PHIL_GUI.Views;
@@ -13,12 +15,18 @@ public partial class MainWindow : Window
         InitializeComponent();
 
         MainWindowViewModel mainVm = new MainWindowViewModel();
+        mainVm.AppKeyBindings.PropertyChanged += AppKeyBindings_PropertyChanged;
+
         mainVm.Disconnected += OnDisconnected;
         Closed += (s, e) => mainVm.Disconnected -= OnDisconnected;
 
         DataContext = mainVm;
     }
 
+    private void AppKeyBindings_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+        RefreshKeyBindings();
+    }
 
     private void OnDisconnected()
     {
@@ -39,5 +47,36 @@ public partial class MainWindow : Window
     private async void SettingsButton_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
         await new SettingsWindow().ShowDialog(this);
+    }
+
+    private void RefreshKeyBindings()
+    {
+        if (DataContext is not MainWindowViewModel vm) return;
+
+        KeyBindings.Clear();
+
+        KeyBindings.Add(new KeyBinding
+        {
+            Gesture = vm.AppKeyBindings.GoHomeKey,
+            Command = vm.GoHomeCommand
+        });
+
+        KeyBindings.Add(new KeyBinding
+        {
+            Gesture = vm.AppKeyBindings.CalibrateHomeKey,
+            Command = vm.CalibrateHomeCommand
+        });
+
+        KeyBindings.Add(new KeyBinding
+        {
+            Gesture = vm.AppKeyBindings.MoveUpKey,
+            Command = vm.MoveUpCommand
+        });
+
+        KeyBindings.Add(new KeyBinding
+        {
+            Gesture = vm.AppKeyBindings.MoveDownKey,
+            Command = vm.MoveDownCommand
+        });
     }
 }

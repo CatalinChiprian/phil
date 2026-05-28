@@ -310,6 +310,11 @@ namespace PHIL_GUI.Models
 
         public AppKeyBindings(AppKeyBindings other)
         {
+            Override(other);
+        }
+
+        public void Override(AppKeyBindings other)
+        {
             GoHomeStr = other.GoHomeStr;
             CalibrateHomeStr = other.CalibrateHomeStr;
             MoveUpStr = other.MoveUpStr;

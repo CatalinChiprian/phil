@@ -2,6 +2,7 @@
 /* Created by Catalin Chiprian
 Based on Phillip Dettinger work availible on https://github.com/CSDGroup/PHIL.git */
 
+using Avalonia.Input;
 using PHIL_GUI.Commands;
 using PHIL_GUI.Models;
 using PHIL_GUI.ViewModels.Base;
