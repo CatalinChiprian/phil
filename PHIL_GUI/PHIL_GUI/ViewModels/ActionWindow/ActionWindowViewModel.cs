@@ -16,8 +16,9 @@ namespace PHIL_GUI.ViewModels
     }
     public class ActionWindowViewModel : ViewModelBase
     {
-        private const int WINDOW_HEIGHT_NORMAL = 400;
-        private const int WINDOW_HEIGHT_ERROR = 440;
+        private const int WINDOW_HEIGHT_NORMAL = 510;
+        private const int ERROR_HEIGHT = 40;
+        private const int REPEAT_HEIGHT = 130;
 
         public ICommand SaveCommand { get; }
         public ICommand ClearStartCommand { get; }
@@ -33,8 +34,37 @@ namespace PHIL_GUI.ViewModels
         public string SaveButtonText => Mode == ActionWindowMode.Create ? "Create Action" : "Save Changes";
         public string Pump1Text => AppSettings.Is96Well ? $"PUMP" : $"PUMP IN";
         public string Pump2Text => AppSettings.Is96Well ? $"" : $"PUMP OUT";
+        public string DateTimeSectionLabel => IsRepeating ? "Schedule" : "When";
+        public string StartLabel => IsRepeating ? "START DATE & TIME" : "EXECUTE AT DATE & TIME";
         public Thickness Pump1Margin => AppSettings.Is96Well ? new Thickness(6, 0, 0, 0) : new Thickness(0, 0, 6, 0);
         public int Pump1Column => AppSettings.Is96Well ? 1 : 0;
+
+        private bool isRepeating = true;
+        public bool IsRepeating
+        {
+            get => isRepeating;
+            set
+            {
+                if (isRepeating == value) return;
+
+                if (value)
+                {
+                    ActionItem.Frequency = 1;
+                    WindowHeight += REPEAT_HEIGHT;
+                }
+                else
+                {
+                    ActionItem.Frequency = -1;
+                    WindowHeight -= REPEAT_HEIGHT;
+                }
+
+
+                SetProperty(ref isRepeating, value);
+
+                OnPropertyChanged(nameof(StartLabel));
+                OnPropertyChanged(nameof(DateTimeSectionLabel));
+            }
+        }
 
         private bool displayError;
         public bool DisplayError
@@ -44,9 +74,10 @@ namespace PHIL_GUI.ViewModels
             {
                 if (value == displayError) return;
 
-                SetProperty(ref displayError, value);
+                if (value) WindowHeight += ERROR_HEIGHT;
+                else WindowHeight -= ERROR_HEIGHT;
 
-                OnPropertyChanged(nameof(WindowHeight));
+                displayError = value;
             }
         }
 
@@ -61,7 +92,17 @@ namespace PHIL_GUI.ViewModels
                 SetProperty(ref errorMessage, value);
             }
         }
-        public int WindowHeight => DisplayError ? WINDOW_HEIGHT_ERROR : WINDOW_HEIGHT_NORMAL;
+        private int windowHeight = WINDOW_HEIGHT_NORMAL;
+        public int WindowHeight
+        {
+            get => windowHeight;
+            set
+            {
+                if (value ==  windowHeight) return;
+
+                SetProperty(ref windowHeight, value);
+            }
+        }
 
         public AppSettings AppSettings => AppSettingsService.AppSettings;
 
@@ -93,7 +134,11 @@ namespace PHIL_GUI.ViewModels
                 ActionItem = new ActionItem(tempId, selectedActionType, selectedPump1, selectedPump2, amount, frequency, selectedTimeUnit);
             }
 
-            if (mode == ActionWindowMode.Update) ActionItem = new ActionItem(action);
+            if (mode == ActionWindowMode.Update)
+            {
+                ActionItem = new ActionItem(action);
+                IsRepeating = ActionItem.Frequency != -1;
+            }
         }
 
         public ActionWindowViewModel()

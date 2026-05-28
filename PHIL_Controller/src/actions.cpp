@@ -138,7 +138,7 @@ void unlinkAction(uint16_t id, char* hex) {
 	unlinkActionByMask(id, mask);
 }
 
-uint16_t createAction(int16_t tempId, ActionType type, int8_t pump1, int8_t pump2, uint16_t amount, uint16_t frequency, TimeUnit unit, uint32_t start, uint32_t end) {
+uint16_t createAction(int16_t tempId, ActionType type, int8_t pump1, int8_t pump2, uint16_t amount, int8_t frequency, TimeUnit unit, uint32_t start, uint32_t end) {
     if (actionCount >= MAX_ACTIONS_TOTAL) {
         Serial.println(F("ERROR:FAILED TO CREATE ACTION"));
         return 0;
@@ -173,7 +173,7 @@ uint16_t createAction(int16_t tempId, ActionType type, int8_t pump1, int8_t pump
     return action.id;
 }
 
-void updateAction(uint16_t id, ActionType type, int8_t pump1, int8_t pump2, uint16_t amount, uint16_t frequency, TimeUnit unit, uint32_t start, uint32_t end) {
+void updateAction(uint16_t id, ActionType type, int8_t pump1, int8_t pump2, uint16_t amount, int8_t frequency, TimeUnit unit, uint32_t start, uint32_t end) {
 
     Action* action = findActionById(id);
     if (!action) return;
@@ -325,6 +325,20 @@ void processActions() {
         if (now < action.startEpoch) continue;
         if (action.endEpoch != 0 && now > action.endEpoch) continue;
 
+        // ONE-TIME ACTION
+        // When Frequency is not set Actions run only once on the specified time
+        if (action.frequency < 0) {
+            if (action.lastRunEpoch != 0) continue;
+            if (now < action.startEpoch) continue;
+
+            executeAction(action);
+            action.lastRunEpoch = now;
+            saveAction(action, i);
+            continue;
+        }
+
+        // REPEATING ACTION
+        // Frequency is set, thus it must run every TimeUnit
         uint32_t period = action.frequency * unitToSeconds(action.unit);
         if (period == 0) continue;
 

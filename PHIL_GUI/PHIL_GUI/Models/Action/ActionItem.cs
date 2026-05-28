@@ -136,6 +136,8 @@ namespace PHIL_GUI.Models
             }
         }
 
+        private string GetFrequencyLabel() => Frequency != -1 ? $"Every {Frequency} {GetTimeUnitLabel()}" : "";
+
         private TimeUnit timeUnit;
         public TimeUnit TimeUnit
         {
@@ -316,7 +318,7 @@ namespace PHIL_GUI.Models
             _ => ""
         };
 
-        public string MetaLabel => $"Every {Frequency} {GetTimeUnitLabel()} {GetStartLabel()} {GetEndLabel()}";
+        public string MetaLabel => $"{GetFrequencyLabel()} {GetStartLabel()} {GetEndLabel()}";
 
         private bool suppressValidation;
 

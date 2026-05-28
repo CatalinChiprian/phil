@@ -3,7 +3,7 @@
         xmlns:vm="using:PHIL_GUI.ViewModels"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="300" d:DesignHeight="400"
+        mc:Ignorable="d" d:DesignWidth="300" d:DesignHeight="510"
         x:Class="PHIL_GUI.Views.ActionWindow"
         x:DataType="vm:ActionWindowViewModel"
         Icon="/Assets/applied-nanotechnology.ico"
@@ -57,48 +57,85 @@
                 <NumericUpDown Value="{Binding ActionItem.Amount}" Minimum="1" FormatString="0"/>
             </StackPanel>
 
-        <Grid ColumnDefinitions="*,*" HorizontalAlignment="Stretch">
-            <StackPanel Grid.Column="0" Spacing="4" Margin="0,0,6,0">
-                <TextBlock Classes="subtitle" Text="EVERY" LetterSpacing="1.2"/>
-                <NumericUpDown Value="{Binding ActionItem.Frequency}" Minimum="1" FormatString="0"/>
-            </StackPanel>
-            <StackPanel Grid.Column="1" Spacing="4" Margin="6,0,0,0">
-                <TextBlock Classes="subtitle" Text="UNIT" LetterSpacing="1.2"/>
-                <ComboBox ItemsSource="{Binding TimeUnits}" SelectedItem="{Binding ActionItem.TimeUnit}" HorizontalAlignment="Stretch"/>
-            </StackPanel>
-        </Grid>
+            <Border Height="1" Background="{StaticResource BorderColor}"/>
 
-        <StackPanel Spacing="4">
-            <TextBlock Classes="subtitle" Text="START DATE &amp; TIME (EMPTY = IMMEDIATELY)" LetterSpacing="1.2"/>
+            <StackPanel Spacing="4">
+                <TextBlock FontWeight="SemiBold"
+                           LetterSpacing="1.2"
+                           FontSize="10"
+                           Text="Repeatable"/>
+                <CheckBox IsChecked="{Binding IsRepeating}"
+                          Content="Repeat"
+                          FontSize="13"/>
+            </StackPanel>
 
-            <Grid ColumnDefinitions="Auto,Auto,Auto" ColumnSpacing="8">
-                <DatePicker Grid.Column="0" MinWidth="110" SelectedDate="{Binding ActionItem.StartDate}" YearVisible="False" MonthFormat="MMM"/>
-                <TimePicker Grid.Column="1" MinWidth="110" SelectedTime="{Binding ActionItem.StartTime}"/>
+            <Grid ColumnDefinitions="*,*" HorizontalAlignment="Stretch" IsVisible="{Binding IsRepeating}">
+                <StackPanel Grid.Column="0" Spacing="4" Margin="0,0,6,0">
+                    <TextBlock Classes="subtitle" Text="EVERY" LetterSpacing="1.2"/>
+                    <NumericUpDown Value="{Binding ActionItem.Frequency}" Minimum="1" FormatString="0"/>
+                </StackPanel>
+                <StackPanel Grid.Column="1" Spacing="4" Margin="6,0,0,0">
+                    <TextBlock Classes="subtitle" Text="UNIT" LetterSpacing="1.2"/>
+                    <ComboBox ItemsSource="{Binding TimeUnits}" SelectedItem="{Binding ActionItem.TimeUnit}" HorizontalAlignment="Stretch"/>
+                </StackPanel>
+            </Grid>
+
+            <Border Height="1" Background="{StaticResource BorderColor}"/>
+
+            <StackPanel Spacing="4">
+                <TextBlock FontWeight="SemiBold" Text="{Binding DateTimeSectionLabel}" FontSize="10" LetterSpacing="1.2"/>
+                <StackPanel Spacing="4">
+                    <StackPanel Orientation="Horizontal" Spacing="5" VerticalAlignment="Center">
+                        <TextBlock Classes="subtitle" Text="{Binding StartLabel}" LetterSpacing="1.2"/>
+                        <TextBlock Text="ⓘ"
+                                   FontSize="18"
+                                   Height="13"
+                                   Margin="0"
+                                   Padding="0"
+                                   ToolTip.Tip="Leaving this empty executes immediately"/>
+                    </StackPanel>
+
+                    <Grid ColumnDefinitions="Auto,Auto,Auto" ColumnSpacing="8">
+                        <DatePicker Grid.Column="0" MinWidth="110" SelectedDate="{Binding ActionItem.StartDate}" YearVisible="False" MonthFormat="MMM"/>
+                        <TimePicker Grid.Column="1" MinWidth="110" SelectedTime="{Binding ActionItem.StartTime}"/>
                 
-                <Button Grid.Column="2" Classes="btn btn-svg btn-svg-clear" Command="{Binding ClearStartCommand}">
-                    <Path Classes="svg"
-                          Width="9"
-                          Height="9"
-                          Data="M19.207 6.207a1 1 0 0 0-1.414-1.414L12 10.586 6.207 4.793a1 1 0 0 0-1.414 1.414L10.586 12l-5.793 5.793a1 1 0 1 0 1.414 1.414L12 13.414l5.793 5.793a1 1 0 0 0 1.414-1.414L13.414 12l5.793-5.793z"/>
-                </Button>
+                        <Button Grid.Column="2" Classes="btn btn-svg btn-svg-clear" Command="{Binding ClearStartCommand}">
+                            <Path Classes="svg"
+                                  Width="9"
+                                  Height="9"
+                                  Data="M19.207 6.207a1 1 0 0 0-1.414-1.414L12 10.586 6.207 4.793a1 1 0 0 0-1.414 1.414L10.586 12l-5.793 5.793a1 1 0 1 0 1.414 1.414L12 13.414l5.793 5.793a1 1 0 0 0 1.414-1.414L13.414 12l5.793-5.793z"/>
+                        </Button>
 
-            </Grid>
-        </StackPanel>
+                    </Grid>
+                </StackPanel>
 
-        <StackPanel Spacing="4">
-            <TextBlock Classes="subtitle" Text="END DATE &amp; TIME (EMPTY = NEVER)" LetterSpacing="1.2"/>
+                <StackPanel Spacing="4" IsVisible="{Binding IsRepeating}">
+                    <StackPanel Orientation="Horizontal" Spacing="5" VerticalAlignment="Center">
+                        <TextBlock Classes="subtitle" Text="END DATE &amp; TIME" LetterSpacing="1.2"/>
 
-            <Grid ColumnDefinitions="Auto,Auto,Auto" ColumnSpacing="8">
-                <DatePicker Grid.Column="0" MinWidth="110" SelectedDate="{Binding ActionItem.EndDate}" YearVisible="False" MonthFormat="MMM"/>
-                <TimePicker Grid.Column="1" MinWidth="110" SelectedTime="{Binding ActionItem.EndTime}"/>
-                <Button Grid.Column="2" Classes="btn btn-svg btn-svg-clear" Command="{Binding ClearEndCommand}">
-                    <Path Classes="svg"
-                          Width="9"
-                          Height="9"
-                          Data="M19.207 6.207a1 1 0 0 0-1.414-1.414L12 10.586 6.207 4.793a1 1 0 0 0-1.414 1.414L10.586 12l-5.793 5.793a1 1 0 1 0 1.414 1.414L12 13.414l5.793 5.793a1 1 0 0 0 1.414-1.414L13.414 12l5.793-5.793z"/>
-                </Button>
-            </Grid>
-        </StackPanel>
+                        <TextBlock Text="ⓘ"
+                                   FontSize="18"
+                                   Height="13"
+                                   Margin="0"
+                                   Padding="0"
+                                   ToolTip.Tip="Leaving this empty runs indefinitely"/>
+
+                    </StackPanel>
+
+                    <Grid ColumnDefinitions="Auto,Auto,Auto" ColumnSpacing="8">
+                        <DatePicker Grid.Column="0" MinWidth="110" SelectedDate="{Binding ActionItem.EndDate}" YearVisible="False" MonthFormat="MMM" ToolTip.Tip="(EMPTY = NEVER)"/>
+                        <TimePicker Grid.Column="1" MinWidth="110" SelectedTime="{Binding ActionItem.EndTime}"/>
+                        <Button Grid.Column="2" Classes="btn btn-svg btn-svg-clear" Command="{Binding ClearEndCommand}">
+                            <Path Classes="svg"
+                                  Width="9"
+                                  Height="9"
+                                  Data="M19.207 6.207a1 1 0 0 0-1.414-1.414L12 10.586 6.207 4.793a1 1 0 0 0-1.414 1.414L10.586 12l-5.793 5.793a1 1 0 1 0 1.414 1.414L12 13.414l5.793 5.793a1 1 0 0 0 1.414-1.414L13.414 12l5.793-5.793z"/>
+                        </Button>
+                    </Grid>
+                </StackPanel>
+            </StackPanel>
+
+
 
         </StackPanel>
     </DockPanel>

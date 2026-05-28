@@ -133,7 +133,7 @@ void parseCommands() {
 			int8_t pump1 = atoi(tokens[3]);
 			int8_t pump2 = atoi(tokens[4]);
 			uint16_t amount = atoi(tokens[5]);
-			uint16_t frequency = atoi(tokens[6]);
+			int8_t frequency = atoi(tokens[6]);
 			uint8_t unit = atoi(tokens[7]);
 			uint32_t start = 0;
 			uint32_t end = 0;
@@ -154,7 +154,7 @@ void parseCommands() {
 			int8_t pump1 = atoi(tokens[3]);
 			int8_t pump2 = atoi(tokens[4]);
 			uint16_t amount = atoi(tokens[5]);
-			uint16_t frequency = atoi(tokens[6]);
+			int8_t frequency = atoi(tokens[6]);
 			uint8_t unit = atoi(tokens[7]);
 			uint32_t start = strtoul(tokens[8], nullptr, 10);
 			uint32_t end = strtoul(tokens[9], nullptr, 10);
