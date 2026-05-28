@@ -70,8 +70,8 @@ namespace PHIL_GUI.ViewModels
             MoveBackwardCommand = new RelayCommand(RobotProtocolService.MoveBackward);
             MoveLeftCommand = new RelayCommand(RobotProtocolService.MoveLeft);
             MoveRightCommand = new RelayCommand(RobotProtocolService.MoveRight);
-            DecreaseStepSizeCommand = new RelayCommand(RobotProtocolService.IncreaseStepSize);
-            IncreaseStepSizeCommand = new RelayCommand(RobotProtocolService.DecreaseStepSize);
+            DecreaseStepSizeCommand = new RelayCommand(RobotProtocolService.DecreaseStepSize);
+            IncreaseStepSizeCommand = new RelayCommand(RobotProtocolService.IncreaseStepSize);
             WellsPositionCommand = new RelayCommand<string>(SelectWell);
             RecordPositionCommand = new RelayCommand(RecordPosition);
             SolveMappingCommand = new RelayCommand(SolveMapping);

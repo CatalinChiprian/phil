@@ -9,7 +9,16 @@ namespace PHIL_GUI.Models
     public class ActionItem : ObservableObject, IAction
     {
         public ScheduleAction Model { get; set; }
-        public int Id { get; set; }
+        private int id;
+        public int Id
+        {
+            get => id;
+            set
+            {
+                if (value == id) return;
+                SetProperty(ref id, value);
+            }
+        }
         public int TempId { get; set; }
 
         private ActionType type;

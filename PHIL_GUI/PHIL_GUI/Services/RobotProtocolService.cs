@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 
 namespace PHIL_GUI.Services
 {
@@ -132,13 +133,15 @@ namespace PHIL_GUI.Services
         public void AttachAction(ActionItem action, IEnumerable<int> selectedWellIndices)
         {
             byte[] bitmask = selectedWellIndices.WellIndicesToBitmask();
-            Send($"{LINK_ACTION_WELL_CMD} {action.Id} {bitmask}");
+            string hex = BitConverter.ToString(bitmask).Replace("-", "");
+            Send($"{LINK_ACTION_WELL_CMD} {action.Id} {hex}");
             RobotState.ActionScheduler.AttachAction(action, selectedWellIndices);
         }
         public void DetachAction(ActionItem action, IEnumerable<int> selectedWellIndices)
         {
             byte[] bitmask = selectedWellIndices.WellIndicesToBitmask();
-            Send($"{UNLINK_ACTION_WELL_CMD} {action.Id} {bitmask}");
+            string hex = BitConverter.ToString(bitmask).Replace("-", "");
+            Send($"{UNLINK_ACTION_WELL_CMD} {action.Id} {hex}");
             RobotState.ActionScheduler.DetachAction(action, selectedWellIndices);
         }
 
@@ -294,7 +297,7 @@ namespace PHIL_GUI.Services
             else if (message.StartsWith(POS_PREFIX)) ParsePosition(message);
             else if (message.StartsWith(RMS_PREFIX)) ParseRms(message);
             else if (message.StartsWith(ACTION_PREFIX)) ParseAction(message);
-            else if (message.StartsWith(WELL_ACTION_PREFIX)) { /* TODO: Parse well-action links */ }
+            else if (message.StartsWith(WELL_ACTION_PREFIX)) ParseWellAction(message);
             else if (message.StartsWith(ACTION_CREATED_PREFIX)) ParseActionCreated(message);
             else if (message.StartsWith(LIMIT_PRESSED_PREFIX)) ParseLimit(message, LimitType.Pressed);
             else if (message.StartsWith(LIMIT_RELEASED_PREFIX)) ParseLimit(message, LimitType.Released);
@@ -420,6 +423,19 @@ namespace PHIL_GUI.Services
             ScheduleAction action = new ScheduleAction(id, type, pump1, pump2, amount, frequency, unit, startTime, endTime);
 
             RobotState.ActionScheduler.Actions.Add(action);
+        }
+
+        private void ParseWellAction(string msg)
+        {
+            var kv = ParseKV(msg, WELL_ACTION_PREFIX);
+
+            string actions = kv["Actions"];
+            HashSet<int> actionIds = JsonSerializer.Deserialize<HashSet<int>>(actions);
+
+            string well = kv["Well"];
+            int wellIndex = well.ToIndex();
+
+            RobotState.ActionScheduler.AddWellActions(actionIds, wellIndex);
         }
 
         private void ParseActionCreated(string msg)
