@@ -161,6 +161,7 @@ namespace PHIL_GUI.Models
         private string GetTimeUnitLabel() =>
             (TimeUnit switch
             {
+                TimeUnit.Minute => "Minute",
                 TimeUnit.Hour => "Hour",
                 TimeUnit.Day => "Day",
                 _ => ""

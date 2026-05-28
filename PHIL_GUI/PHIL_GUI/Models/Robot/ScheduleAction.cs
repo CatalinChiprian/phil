@@ -11,6 +11,7 @@ namespace PHIL_GUI.Models
     }
     public enum TimeUnit
     {
+        Minute,
         Hour,
         Day
     }
