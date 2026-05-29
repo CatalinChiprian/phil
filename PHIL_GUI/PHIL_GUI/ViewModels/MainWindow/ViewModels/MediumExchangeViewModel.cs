@@ -1,10 +1,7 @@
-﻿using Avalonia.Controls;
-using Avalonia.Metadata;
-using CommunityToolkit.Mvvm.Input;
+﻿using CommunityToolkit.Mvvm.Input;
 using PHIL_GUI.Helpers;
 using PHIL_GUI.Models;
 using PHIL_GUI.ViewModels.Base;
-using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
@@ -89,12 +86,6 @@ namespace PHIL_GUI.ViewModels
 
             AppSettings.PropertyChanged += AppSettings_PropertyChanged;
             ActionScheduler.Actions.CollectionChanged += Actions_CollectionChanged;
-            
-            foreach (ObservableCollection<ScheduleAction> actions in ActionScheduler.WellActions.Values)
-            {
-                //actions.CollectionChanged += WellActions_CollectionChanged;
-            }
-
         }
 
         private void Actions_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
@@ -151,7 +142,7 @@ namespace PHIL_GUI.ViewModels
 
             IEnumerable<int> selectedWellIndices = selectedWellNames.ToIndex();
 
-            RobotProtocolService.AttachAction(action, selectedWellIndices);
+            RobotProtocolService.AttachAction(action.Model, selectedWellIndices);
 
             LoadCurrentWellActions(lastSelectedTarget);
             LoadAvailableActions();
@@ -162,7 +153,7 @@ namespace PHIL_GUI.ViewModels
 
             IEnumerable<int> selectedWellIndices = selectedWellNames.ToIndex();
 
-            RobotProtocolService.DetachAction(action, selectedWellIndices);
+            RobotProtocolService.DetachAction(action.Model, selectedWellIndices);
 
             LoadCurrentWellActions(lastSelectedTarget);
             LoadAvailableActions();

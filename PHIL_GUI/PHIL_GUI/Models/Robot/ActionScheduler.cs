@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using static System.Collections.Specialized.BitVector32;
 
 namespace PHIL_GUI.Models
 {
@@ -68,7 +67,7 @@ namespace PHIL_GUI.Models
             }
         }
 
-        public void AttachAction(ActionItem action, IEnumerable<int> selectedWellIndices)
+        public void AttachAction(ScheduleAction action, IEnumerable<int> selectedWellIndices)
         {
             foreach (int selectedIndex in selectedWellIndices)
             {
@@ -77,22 +76,33 @@ namespace PHIL_GUI.Models
                     WellActions[selectedIndex] = new ObservableCollection<ScheduleAction>();
                 }
 
-                if (WellActions[selectedIndex].Contains(action.Model)) continue;
+                if (WellActions[selectedIndex].Contains(action)) continue;
 
-                WellActions[selectedIndex].Add(action.Model);
+                WellActions[selectedIndex].Add(action);
             }
         }
 
-        public void DetachAction(ActionItem action, IEnumerable<int> selectedWellIndices)
+        public void DetachAction(ScheduleAction action, IEnumerable<int> selectedWellIndices)
         {
             foreach (int selectedIndex in selectedWellIndices)
             {
                 if (!WellActions.ContainsKey(selectedIndex)) continue;
 
-                if (!WellActions[selectedIndex].Contains(action.Model)) continue;
+                if (!WellActions[selectedIndex].Contains(action)) continue;
 
-                WellActions[selectedIndex].Remove(action.Model);
+                WellActions[selectedIndex].Remove(action);
             }
+        }
+
+        public bool IsRobotTimeValid(long robotUnixTime)
+        {
+            DateTimeOffset robotTime = DateTimeOffset.FromUnixTimeSeconds(robotUnixTime);
+
+            DateTimeOffset now = DateTimeOffset.Now;
+
+            double diffSeconds = Math.Abs((now - robotTime).TotalSeconds);
+
+            return diffSeconds < 30;
         }
 
         public int GetNextTempId()

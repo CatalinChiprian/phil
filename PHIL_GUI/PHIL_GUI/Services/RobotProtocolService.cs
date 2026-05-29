@@ -64,6 +64,7 @@ namespace PHIL_GUI.Services
         const string LIMIT_RELEASED_PREFIX = "LIMIT_RELEASED:";
         const string STEP_SIZE_PREFIX = "STEP_SIZE:";
         const string MICROSTEPS_PREFIX = "MICROSTEPS:";
+        const string TIME_PREFIX = "TIME:";
 
         private bool ready;
 
@@ -130,14 +131,14 @@ namespace PHIL_GUI.Services
             RobotState.ActionScheduler.DeleteAction(actionId);
         }
 
-        public void AttachAction(ActionItem action, IEnumerable<int> selectedWellIndices)
+        public void AttachAction(ScheduleAction action, IEnumerable<int> selectedWellIndices)
         {
             byte[] bitmask = selectedWellIndices.WellIndicesToBitmask();
             string hex = BitConverter.ToString(bitmask).Replace("-", "");
             Send($"{LINK_ACTION_WELL_CMD} {action.Id} {hex}");
             RobotState.ActionScheduler.AttachAction(action, selectedWellIndices);
         }
-        public void DetachAction(ActionItem action, IEnumerable<int> selectedWellIndices)
+        public void DetachAction(ScheduleAction action, IEnumerable<int> selectedWellIndices)
         {
             byte[] bitmask = selectedWellIndices.WellIndicesToBitmask();
             string hex = BitConverter.ToString(bitmask).Replace("-", "");
@@ -270,6 +271,7 @@ namespace PHIL_GUI.Services
             Send(PRINT_STEPS_CMD);
             Send(PRINT_ACTIONS_CMD);
             Send(PRINT_WELL_ACTIONS_CMD);
+            Send(PRINT_TIME_CMD);
         }
 
         private void SetSetupInformation(IPlateContext plateContext)
@@ -303,6 +305,7 @@ namespace PHIL_GUI.Services
             else if (message.StartsWith(LIMIT_RELEASED_PREFIX)) ParseLimit(message, LimitType.Released);
             else if (message.StartsWith(STEP_SIZE_PREFIX)) ParseStepSize(message);
             else if (message.StartsWith(MICROSTEPS_PREFIX)) ParseMicrosteps(message);
+            else if (message.StartsWith(TIME_PREFIX)) ParseTime(message);
         }
 
         private Dictionary<string, string> ParseKV(string msg, string prefix)
@@ -463,14 +466,31 @@ namespace PHIL_GUI.Services
 
         private void ParseStepSize(string msg)
         {
-            string d = msg.Substring(STEP_SIZE_PREFIX.Length).Trim();
-            robotState.Settings.StepSize = double.Parse(d, CultureInfo.InvariantCulture);
+            string stepSize = msg.Substring(STEP_SIZE_PREFIX.Length).Trim();
+            robotState.Settings.StepSize = double.Parse(stepSize, CultureInfo.InvariantCulture);
         }
 
         private void ParseMicrosteps(string msg)
         {
-            string d = msg.Substring(MICROSTEPS_PREFIX.Length).Trim();
-            robotState.Settings.Microsteps = d;
+            string microSteps = msg.Substring(MICROSTEPS_PREFIX.Length).Trim();
+            robotState.Settings.Microsteps = microSteps;
+        }
+
+        private void ParseTime(string msg)
+        {
+            string unixTimeStr = msg.Substring(TIME_PREFIX.Length).Trim();
+            long unixTime = long.Parse(unixTimeStr, CultureInfo.InvariantCulture);
+
+            bool isValid = robotState.ActionScheduler.IsRobotTimeValid(unixTime);
+
+            if (isValid) return;
+
+            SetTime(DateTimeOffset.Now.ToLocalTime().ToUnixTimeSeconds());
+        }
+
+        private void SetTime(long unixTime)
+        {
+            Send($"{SET_TIME_CMD} {unixTime}");
         }
     }
 }
