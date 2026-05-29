@@ -68,44 +68,36 @@ namespace PHIL_GUI.Services
 
         private bool ready;
 
-        private readonly SerialPortService serialPortService;
+        private readonly SerialPortService serialPortService = new SerialPortService();
         public SerialPortService SerialPort => serialPortService;
-        private readonly RobotState robotState;
+        private readonly RobotState robotState = new RobotState();
         public RobotState RobotState => robotState;
 
         private readonly StringBuilder logBuffer = new();
-        private readonly DispatcherTimer logTimer;
+        private readonly DispatcherTimer logTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(100) };
 
-        private string _receivedData = "";
+        private string receivedData = "";
         public string ReceivedData
         {
-            get => _receivedData;
-            private set => SetProperty(ref _receivedData, value);
+            get => receivedData;
+            private set => SetProperty(ref receivedData, value);
         }
 
-        public RobotProtocolService(IPlateContext plateContext)
+        public RobotProtocolService()
         {
-            logTimer = new DispatcherTimer
-            {
-                Interval = TimeSpan.FromMilliseconds(100)
-            };
-            logTimer.Tick += (_, _) =>
-            {
-                if (logBuffer.Length > 0)
-                {
-                    ReceivedData += logBuffer.ToString();
-                    logBuffer.Clear();
-                }
-            };
+            logTimer.Tick += LogTimer_Tick;
             logTimer.Start();
 
-
-            serialPortService = new SerialPortService();
-            robotState = new RobotState();
             serialPortService.MessageReceived += OnMessageReceived;
-            serialPortService.GetStartUpMessage += GetSetupInformation;
+            serialPortService.OnConnected += OnSerialPortConnected;
+        }
 
-            SetSetupInformation(plateContext);
+        private void LogTimer_Tick(object? sender, EventArgs e)
+        {
+            if (logBuffer.Length <= 0) return;
+
+            ReceivedData += logBuffer.ToString();
+            logBuffer.Clear();
         }
 
         private void Send(string command)
@@ -262,7 +254,7 @@ namespace PHIL_GUI.Services
             Send("s");
         }
 
-        private void GetSetupInformation()
+        private void OnSerialPortConnected()
         {
             ready = true;
 
@@ -272,11 +264,6 @@ namespace PHIL_GUI.Services
             Send(PRINT_ACTIONS_CMD);
             Send(PRINT_WELL_ACTIONS_CMD);
             Send(PRINT_TIME_CMD);
-        }
-
-        private void SetSetupInformation(IPlateContext plateContext)
-        {
-            SetWellPlateType(plateContext.SelectedPlateType);
         }
 
         private void OnMessageReceived(string message)

@@ -2,6 +2,7 @@
 #include "../inc/movement.h"
 #include "../inc/hardware.h"
 #include "../inc/calibration.h"
+#include "../inc/well_utils.h"
 
 void initPersistentState() {
     loadCurrentWell();
@@ -22,12 +23,12 @@ void savePositions() {
     EEPROM.put(POS_ADDR_R, (int16_t)stepperR.currentPosition());
     EEPROM.put(POS_ADDR_Z1, (int16_t)stepperZ1.currentPosition());
     EEPROM.put(POS_ADDR_Z2, (int16_t)stepperZ2.currentPosition());
-    EEPROM.put(16, MAGIC);
+    EEPROM.put(EEPROM_POS_MAGIC_ADDR, MAGIC);
 }
 
 bool loadPositions() {
     uint8_t ok;
-    EEPROM.get(16, ok);
+    EEPROM.get(EEPROM_POS_MAGIC_ADDR, ok);
 
     if (ok != MAGIC) {
         Serial.println(F("No valid stored positions – doing normal home"));
@@ -46,6 +47,26 @@ bool loadPositions() {
     stepperZ2.setCurrentPosition(Z2);
 
     return true;
+}
+
+bool saveWellPlateType() {
+    EEPROM.put(EEPROM_PLATE_TYPE_MAGIC_ADDR, MAGIC);
+    EEPROM.put(EEPROM_PLATE_TYPE_ADDR, getCurrentWellplate());
+}
+
+bool loadWellPlateType() {
+    uint8_t ok;
+    EEPROM.get(EEPROM_PLATE_TYPE_MAGIC_ADDR, ok);
+
+    if (ok != MAGIC) {
+        Serial.println(F("No valid stored WellPlateType"));
+        return false;
+    }
+
+    WellPlateType plateType;
+    EEPROM.get(EEPROM_PLATE_TYPE_ADDR, plateType);
+
+    setCurrentWellplate(plateType);
 }
 
 void saveCalibration() {

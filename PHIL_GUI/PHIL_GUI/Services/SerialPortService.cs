@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO.Ports;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace PHIL_GUI.Services;
 
@@ -13,7 +14,7 @@ public class SerialPortService
 
 
     public event Action<string> MessageReceived;
-    public event Action GetStartUpMessage;
+    public event Action OnConnected;
 
     public List<string> GetAvailablePorts()
     {
@@ -31,6 +32,7 @@ public class SerialPortService
                 DataBits = 8,
                 StopBits = StopBits.One,
                 Handshake = Handshake.None,
+                WriteTimeout = 200,
 
             };
 
@@ -41,7 +43,7 @@ public class SerialPortService
 
             PortName = portName;
 
-            GetStartUpMessage?.Invoke();
+            OnConnected?.Invoke();
         }
         catch (Exception ex)
         {
@@ -63,13 +65,22 @@ public class SerialPortService
             MessageReceived?.Invoke($"Error reading: {ex.Message}");
         }
     }
-    
-    public void SendMessage(string message)
+
+    public async void SendMessage(string message)
     {
-        if (isConnected && serialPort != null && serialPort.IsOpen)
+        if (!isConnected || serialPort == null || !serialPort.IsOpen) return;
+
+        await Task.Run(() =>
         {
-            serialPort.WriteLine(message);
-        }
+            try
+            {
+                serialPort.WriteLine(message);
+            }
+            catch (TimeoutException)
+            {
+                // device not responding - probably running GUI without PHIL.
+            }
+        });
     }
     
     public void Disconnect()

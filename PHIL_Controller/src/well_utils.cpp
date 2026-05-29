@@ -63,6 +63,7 @@ void wellStrToRowCol(char* wellStr, char& row, uint8_t& col) {
 WellPlateType getCurrentWellplate() {
     return selectedPlateType;
 }
+
 void setCurrentWellplate(WellPlateType t) {
     selectedPlateType = t;
 }

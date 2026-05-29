@@ -9,6 +9,10 @@ constexpr uint16_t POS_ADDR_L = 0;
 constexpr uint16_t POS_ADDR_R = 4;
 constexpr uint16_t POS_ADDR_Z1 = 8;
 constexpr uint16_t POS_ADDR_Z2 = 12;
+constexpr uint16_t EEPROM_POS_MAGIC_ADDR = 16;
+
+constexpr uint16_t EEPROM_PLATE_TYPE_MAGIC_ADDR = 18;
+constexpr uint16_t EEPROM_PLATE_TYPE_ADDR = 19;
 
 constexpr uint16_t EEPROM_CAL_BASE = 64;
 constexpr uint16_t EEPROM_WELL_BASE = 800;
@@ -22,6 +26,8 @@ constexpr uint16_t EEPROM_WELL_ACTIONS_ADDR = 2000;
 void initPersistentState();
 void savePositions();
 bool loadPositions();
+bool saveWellPlateType();
+bool loadWellPlateType();
 void saveCalibration();
 void loadCalibration();
 void saveCurrentWell(uint8_t wellIndex);
