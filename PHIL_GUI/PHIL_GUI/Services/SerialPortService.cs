@@ -78,11 +78,11 @@ public class SerialPortService
         }
     }
 
-    public async void SendMessage(string message)
+    public void SendMessage(string message)
     {
         if (!isConnected || serialPort == null || !serialPort.IsOpen) return;
 
-        await Task.Run(() =>
+        Task.Run(() =>
         {
             try
             {
