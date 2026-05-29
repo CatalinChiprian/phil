@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO.Ports;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace PHIL_GUI.Services;
@@ -12,6 +13,7 @@ public class SerialPortService
     private bool isConnected;
     public string PortName { get; private set; }
 
+    private StringBuilder buffer = new StringBuilder();
 
     public event Action<string> MessageReceived;
     public event Action OnConnected;
@@ -56,12 +58,22 @@ public class SerialPortService
     {
         try
         {
-            string data = serialPort.ReadLine();
-            MessageReceived?.Invoke(data);
+            string chunk = serialPort.ReadExisting();
+            buffer.Append(chunk);
+
+            int newlineIndex;
+
+            while ((newlineIndex = buffer.ToString().IndexOf('\n')) >= 0)
+            {
+                string line = buffer.ToString(0, newlineIndex).Trim();
+                buffer.Remove(0, newlineIndex + 1);
+
+                MessageReceived?.Invoke(line);
+            }
+
         }
         catch (Exception ex)
         {
-            // read errors (timeout, etc.)
             MessageReceived?.Invoke($"Error reading: {ex.Message}");
         }
     }
