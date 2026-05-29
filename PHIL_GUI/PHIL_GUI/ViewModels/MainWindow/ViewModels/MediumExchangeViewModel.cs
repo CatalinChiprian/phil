@@ -97,7 +97,9 @@ namespace PHIL_GUI.ViewModels
                     ActionItem item = new ActionItem(newAction);
                     SetItemVisibility(item);
                     ActionItems.Add(item);
-                    
+
+                    RefreshWellActionsList();
+
                 }
             }
 
@@ -110,6 +112,8 @@ namespace PHIL_GUI.ViewModels
                     if (item == null) continue;
 
                     ActionItems.Remove(item);
+
+                    RefreshWellActionsList();
                 }
             }
         }
@@ -127,8 +131,7 @@ namespace PHIL_GUI.ViewModels
 
             lastSelectedTarget = target;
 
-            LoadCurrentWellActions(target);
-            LoadAvailableActions();
+            RefreshWellActionsList();
 
             OnPropertyChanged(nameof(SelectedWellText));
             OnPropertyChanged(nameof(WellActionsText));
@@ -144,8 +147,7 @@ namespace PHIL_GUI.ViewModels
 
             RobotProtocolService.AttachAction(action.Model, selectedWellIndices);
 
-            LoadCurrentWellActions(lastSelectedTarget);
-            LoadAvailableActions();
+            RefreshWellActionsList();
         }
         public void DetachAction(ActionItem action)
         {
@@ -155,8 +157,7 @@ namespace PHIL_GUI.ViewModels
 
             RobotProtocolService.DetachAction(action.Model, selectedWellIndices);
 
-            LoadCurrentWellActions(lastSelectedTarget);
-            LoadAvailableActions();
+            RefreshWellActionsList();
         }
 
         private IEnumerable<string> GetSelectedWellNames()
@@ -176,6 +177,12 @@ namespace PHIL_GUI.ViewModels
             }
 
             return selectedWellNames;
+        }
+
+        private void RefreshWellActionsList()
+        {
+            LoadCurrentWellActions(lastSelectedTarget);
+            LoadAvailableActions();
         }
 
         private void LoadCurrentWellActions(string target)

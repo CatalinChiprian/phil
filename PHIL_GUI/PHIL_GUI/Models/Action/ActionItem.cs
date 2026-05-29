@@ -119,7 +119,7 @@ namespace PHIL_GUI.Models
             }
         }
         public string Pump2Label => Type == ActionType.Exchange ? GetPumpName(pump2) : "";
-        private string GetPumpName(Pump pump) => pump == Pump.None ? "" : $"Pump {pump.ToString()}";
+        private string GetPumpName(Pump pump) => pump == Pump.None ? "" : $"{pump.ToString()}";
 
         private int amount;
         public int Amount
@@ -141,11 +141,11 @@ namespace PHIL_GUI.Models
             {
                 if (value == frequency) return;
                 SetProperty(ref frequency, value);
-                OnPropertyChanged(nameof(MetaLabel));
+                OnPropertyChanged(nameof(FrequencyLabel));
             }
         }
 
-        private string GetFrequencyLabel() => Frequency != -1 ? $"Every {Frequency} {GetTimeUnitLabel()}" : "";
+        public string FrequencyLabel => Frequency != -1 ? $"Every {Frequency} {GetTimeUnitLabel()}" : "";
 
         private TimeUnit timeUnit;
         public TimeUnit TimeUnit
@@ -155,7 +155,7 @@ namespace PHIL_GUI.Models
             {
                 if (value == timeUnit) return;
                 SetProperty(ref timeUnit, value);
-                OnPropertyChanged(nameof(MetaLabel));
+                OnPropertyChanged(nameof(FrequencyLabel));
             }
         }
         private string GetTimeUnitLabel() =>
@@ -207,7 +207,7 @@ namespace PHIL_GUI.Models
 
                 if (EndDate.HasValue && value > EndDate.Value.Date) EndDate = value;
 
-                OnPropertyChanged(nameof(MetaLabel));
+                OnPropertyChanged(nameof(PeriodLabel));
             }
         }
 
@@ -230,7 +230,7 @@ namespace PHIL_GUI.Models
 
                 if (EndTime.HasValue && value > EndTime.Value) EndTime = value;
 
-                OnPropertyChanged(nameof(MetaLabel));
+                OnPropertyChanged(nameof(PeriodLabel));
             }
         }
 
@@ -249,7 +249,7 @@ namespace PHIL_GUI.Models
                 if (Equals(endDate, value)) SetProperty(ref endDate, null);
 
                 SetProperty(ref endDate, value);
-                OnPropertyChanged(nameof(MetaLabel));
+                OnPropertyChanged(nameof(PeriodLabel));
             }
         }
 
@@ -271,7 +271,7 @@ namespace PHIL_GUI.Models
 
                 if (endDate == null) EndDate = Today;
 
-                OnPropertyChanged(nameof(MetaLabel));
+                OnPropertyChanged(nameof(PeriodLabel));
             }
         }
 
@@ -324,11 +324,11 @@ namespace PHIL_GUI.Models
         {
             ActionType.Aspirate => $"{Pump1Label}",
             ActionType.Dispense => $"{Pump1Label}",
-            ActionType.Exchange => $"IN {Pump1Label} OUT {Pump2Label}",
+            ActionType.Exchange => $"{Pump1Label}→{Pump2Label}",
             _ => ""
         };
 
-        public string MetaLabel => $"{GetFrequencyLabel()} {GetStartLabel()} {GetEndLabel()}";
+        public string PeriodLabel => $"{GetStartLabel()} {GetEndLabel()}";
 
         private bool suppressValidation;
 
