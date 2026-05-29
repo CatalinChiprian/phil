@@ -32,7 +32,7 @@ namespace PHIL_GUI.ViewModels
         public PumpsWindowViewModel()
         {
             Volume = 20;
-            PumpOptions = Enum.GetValues<Pump>().Cast<Pump>();
+            PumpOptions = Enum.GetValues<Pump>().Cast<Pump>().SkipLast(1);
             SelectedPump = PumpOptions.First();
 
             AspirateCommand = new RelayCommand(Aspirate);
