@@ -6,7 +6,7 @@
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="PHIL_GUI.Views.MediumExchangeView"
              x:DataType="vm:MediumExchangeViewModel">
-    <Grid ColumnDefinitions="350, *, 300">
+    <Grid ColumnDefinitions="350, *, Auto">
         <Border Grid.Column="0" Classes="sidebar" BorderThickness="0,0,1,0">
             <Grid RowDefinitions="Auto, *">
 
@@ -304,7 +304,7 @@
 
         </DockPanel>
 
-        <Border Grid.Column="2" Classes="sidebar" IsVisible="{Binding IsDetailPageVisible}" BorderThickness="1,0,0,0">
+        <Border Grid.Column="2" Classes="sidebar" Width="{Binding DetailsPageWidth}" BorderThickness="1,0,0,0">
             <Grid RowDefinitions="Auto, Auto, *">
                 <Border Grid.Row="0" BorderThickness="0,0,0,1">
 					<TextBlock DockPanel.Dock="Left" Classes="subtitle" 
@@ -321,35 +321,36 @@
                 </StackPanel>
 
                 <!--Sections-->
-                <Grid Grid.Row="2" RowDefinitions="*, Auto, *">
+                <Grid Grid.Row="2" RowDefinitions="2*, Auto, *">
 					
-                    <!--Action to Attach-->
-                    <StackPanel Grid.Row="0" Spacing="6" Margin="12, 8">
-						<TextBlock Classes="subtitle"
+                    <!--Attached Actions-->
+                    <Grid Grid.Row="0" RowDefinitions="Auto, *" RowSpacing="6" Margin="12, 8">
+						<TextBlock Grid.Row="0"
+                                   Classes="subtitle"
                                    FontSize="10"
                                    LetterSpacing="1.5"
                                    Text="ATTACHED"/>
-                        <ScrollViewer>
+                        <ScrollViewer Grid.Row="1">
 							<ItemsControl ItemsSource="{Binding CurrentWellActions}">
 								<ItemsControl.ItemTemplate>
 									<DataTemplate>
-										<Border Classes="action-card" Margin="0,0,0,4"  IsVisible="{Binding IsVisible}">
+										<Border Classes="action-card" Margin="0,0,6,4" IsVisible="{Binding IsVisible}">
 											<Grid ColumnDefinitions="Auto, Auto, *, Auto" ColumnSpacing="6" Margin="8,6">
                                                 <TextBlock Grid.Column="0"
                                                         Text="{Binding Id, StringFormat='#{0}'}"
                                                         Classes="subtitle"
-                                                        FontSize="10"
+                                                        FontSize="12"
                                                         VerticalAlignment="Center"/>
-										        <Border Grid.Column="1" Padding="2,0" Classes="action-badge" BorderBrush="{Binding ActionTypeBorderColor}" Background="{Binding ActionTypeBackgroundColor}">
-                                                    <TextBlock Padding="0" Margin="0" FontSize="8" Text="{Binding ActionTypeLabel}" Foreground="{Binding ActionTypeTextColor}"/>
+										        <Border Grid.Column="1" Padding="2" Height="16" Classes="action-badge" BorderBrush="{Binding ActionTypeBorderColor}" Background="{Binding ActionTypeBackgroundColor}">
+                                                    <TextBlock Padding="0" Margin="0" FontSize="10" Text="{Binding ActionTypeLabel}" Foreground="{Binding ActionTypeTextColor}"/>
                                                 </Border>
                                                 <TextBlock Grid.Column="2"
                                                            Classes="subtitle"
                                                            Text="{Binding Summary}"
                                                            VerticalAlignment="Center"
-                                                           FontSize="8"/>
+                                                           FontSize="10"/>
 
-                                                <Button Grid.Column="3" Padding="0" Margin="0" Classes="btn btn-svg inline btn-svg-clear" Width="12" Height="12" ToolTip.Tip="Deatach Action" Click="DetachActionButton_Click" Tag="{Binding}">
+                                                <Button Grid.Column="3" Padding="0" Margin="0" Classes="btn btn-svg inline btn-svg-clear" Width="6" Height="6" ToolTip.Tip="Deatach Action" Click="DetachActionButton_Click" Tag="{Binding}">
 													    <Path Classes="svg"
                                                                 Width="6"
                                                                 Height="6"
@@ -361,39 +362,42 @@
                                 </ItemsControl.ItemTemplate>
                             </ItemsControl>
                         </ScrollViewer>
-                    </StackPanel>
+                    </Grid>
 
-                    <Border Grid.Row="1" Height="1" Margin="12,0"/>
+                    <Border Grid.Row="1" Height="1" Margin="12,0" Background="{StaticResource BorderColor}"/>
 
-                    <!--Action to Detach-->
-                    <StackPanel Grid.Row="2" Spacing="6" Margin="12,8">
-						<TextBlock Classes="subtitle"
+                    <!--Detached Actions-->
+                    <Grid Grid.Row="2" RowDefinitions="Auto, *" RowSpacing="6" Margin="12,8">
+						<TextBlock Grid.Row="0"
+                                   Classes="subtitle"
                                    FontSize="10"
                                    LetterSpacing="1.5"
                                    Text="AVALABLE TO ATTACH"/>
-                        <ScrollViewer>
+                        <ScrollViewer Grid.Row="1">
 							<ItemsControl ItemsSource="{Binding AvailableWellActions}">
 								<ItemsControl.ItemTemplate>
 									<DataTemplate>
-									    <Border Classes="action-card" Margin="0,0,0,4" IsVisible="{Binding IsVisible}">
+									    <Border Classes="action-card" Margin="0,0,6,4" IsVisible="{Binding IsVisible}">
 											<Grid ColumnDefinitions="Auto, Auto, *, Auto" ColumnSpacing="6" Margin="8,6">
                                                 <TextBlock Grid.Column="0"
                                                         Text="{Binding Id, StringFormat='#{0}'}"
                                                         Classes="subtitle"
-                                                        FontSize="10"
+                                                        FontSize="12"
                                                         VerticalAlignment="Center"/>
-										        <Border Grid.Column="1" Padding="2,0" Classes="action-badge" BorderBrush="{Binding ActionTypeBorderColor}" Background="{Binding ActionTypeBackgroundColor}">
-                                                    <TextBlock Padding="0" Margin="0" FontSize="8" Text="{Binding ActionTypeLabel}" Foreground="{Binding ActionTypeTextColor}"/>
+										        <Border Grid.Column="1" Padding="2" Height="16" Classes="action-badge" BorderBrush="{Binding ActionTypeBorderColor}" Background="{Binding ActionTypeBackgroundColor}">
+                                                    <TextBlock Padding="0" Margin="0" FontSize="10" Text="{Binding ActionTypeLabel}" Foreground="{Binding ActionTypeTextColor}"/>
                                                 </Border>
                                                 <TextBlock Grid.Column="2"
                                                            Classes="subtitle"
                                                            Text="{Binding Summary}"
                                                            VerticalAlignment="Center"
-                                                           FontSize="8"/>
+                                                           FontSize="10"/>
    
 						                        <Button Grid.Column="3"
                                                         Classes="btn btn-add inline"
                                                         Content="+"
+                                                        FontSize="16"
+                                                        VerticalAlignment="Center"
                                                         Click="AttachActionButton_Click"
                                                         Tag="{Binding}"
                                                         ToolTip.Tip="Attach Action"/>
@@ -403,7 +407,7 @@
                                 </ItemsControl.ItemTemplate>
                             </ItemsControl>
                         </ScrollViewer>
-                    </StackPanel>
+                    </Grid>
                 </Grid>
             </Grid>
         </Border>

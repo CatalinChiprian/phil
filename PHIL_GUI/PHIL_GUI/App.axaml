@@ -64,6 +64,12 @@
 
         <Style Selector="Border">
 			<Setter Property="BorderBrush" Value="{StaticResource BorderColor}"/>
+
+            <Setter Property="Transitions">
+                <Transitions>
+				    <DoubleTransition Property="Width" Duration="0:0:0.2"/>
+                </Transitions>
+            </Setter>
         </Style>
 
         <Style Selector="DataGrid DataGridColumnHeader">
@@ -146,8 +152,8 @@
             <Setter Property="Margin" Value="0,6"/>
             <Setter Property="Transitions">
                 <Transitions>
-                    <BrushTransition  Property="Background" Duration="0:0:0.15"/>
-                    <BrushTransition  Property="BorderBrush" Duration="0:0:0.15"/>
+                    <BrushTransition Property="Background" Duration="0:0:0.15"/>
+                    <BrushTransition Property="BorderBrush" Duration="0:0:0.15"/>
                 </Transitions>
             </Setter>
         </Style>
@@ -157,8 +163,8 @@
             <Setter Property="FontFamily" Value="avares://PHIL_GUI/Assets/Fonts/SpaceMono-Regular.ttf#Space Mono"/>
             <Setter Property="Transitions">
                 <Transitions>
-                    <BrushTransition  Property="Background" Duration="0:0:0.15"/>
-                    <BrushTransition  Property="Foreground" Duration="0:0:0.15"/>
+                    <BrushTransition Property="Background" Duration="0:0:0.15"/>
+                    <BrushTransition Property="Foreground" Duration="0:0:0.15"/>
                 </Transitions>
             </Setter>
         </Style>

@@ -29,9 +29,9 @@ namespace PHIL_GUI.ViewModels
         public WellPlateItem96? WellPlateItem96 => WellPlate as WellPlateItem96;
 
         private string lastSelectedTarget = string.Empty;
-        public bool IsDetailPageVisible => AppSettings.Is96Well ? 
-            WellPlateItem96.SelectedWellItems.Count > 0 : 
-            WellPlateItemOoC.SelectedWellPairs.Count > 0;
+        public int DetailsPageWidth => AppSettings.Is96Well ? 
+            (WellPlateItem96.SelectedWellItems.Count > 0 ? 300 : 0) : 
+            (WellPlateItemOoC.SelectedWellPairs.Count > 0 ? 300 : 0);
 
         public string SelectedWellsCount => AppSettings.Is96Well
             ? GetWellCountText(WellPlateItem96.SelectedWellItems.Count)
@@ -135,7 +135,7 @@ namespace PHIL_GUI.ViewModels
 
             OnPropertyChanged(nameof(SelectedWellText));
             OnPropertyChanged(nameof(WellActionsText));
-            OnPropertyChanged(nameof(IsDetailPageVisible));
+            OnPropertyChanged(nameof(DetailsPageWidth));
             OnPropertyChanged(nameof(SelectedWellsCount));
         }
 
@@ -183,6 +183,8 @@ namespace PHIL_GUI.ViewModels
         {
             LoadCurrentWellActions(lastSelectedTarget);
             LoadAvailableActions();
+
+            OnPropertyChanged(nameof(WellActionsText));
         }
 
         private void LoadCurrentWellActions(string target)
@@ -243,7 +245,7 @@ namespace PHIL_GUI.ViewModels
 
             OnPropertyChanged(nameof(SelectedWellText));
             OnPropertyChanged(nameof(WellActionsText));
-            OnPropertyChanged(nameof(IsDetailPageVisible));
+            OnPropertyChanged(nameof(DetailsPageWidth));
             OnPropertyChanged(nameof(SelectedWellsCount));
         }
 
@@ -259,7 +261,7 @@ namespace PHIL_GUI.ViewModels
 
             OnPropertyChanged(nameof(SelectedWellText));
             OnPropertyChanged(nameof(WellActionsText));
-            OnPropertyChanged(nameof(IsDetailPageVisible));
+            OnPropertyChanged(nameof(DetailsPageWidth));
             OnPropertyChanged(nameof(SelectedWellsCount));
         }
 
@@ -276,7 +278,7 @@ namespace PHIL_GUI.ViewModels
 
             OnPropertyChanged(nameof(SelectedWellText));
             OnPropertyChanged(nameof(WellActionsText));
-            OnPropertyChanged(nameof(IsDetailPageVisible));
+            OnPropertyChanged(nameof(DetailsPageWidth));
             OnPropertyChanged(nameof(SelectedWellsCount));
         }
         public void DeleteAction(int actionId)
@@ -327,3 +329,5 @@ namespace PHIL_GUI.ViewModels
         }
     }
 }
+// TO DO SEE SCROLLVIEWER ON ACTIONS
+
