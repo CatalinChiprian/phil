@@ -69,7 +69,7 @@ namespace PHIL_GUI.Services
         private bool ready;
 
         private readonly SerialPortService serialPortService = new SerialPortService();
-        public SerialPortService SerialPort => serialPortService;
+        public SerialPortService SerialPortService => serialPortService;
         private readonly RobotState robotState = new RobotState();
         public RobotState RobotState => robotState;
 

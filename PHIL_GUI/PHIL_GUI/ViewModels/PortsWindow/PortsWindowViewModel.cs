@@ -48,13 +48,13 @@ namespace PHIL_GUI.ViewModels
         private void GetAvailablePorts()
         {
             AvailablePorts.Clear();
-            foreach (string port in RobotProtocolService.SerialPort.GetAvailablePorts())
+            foreach (string port in RobotProtocolService.SerialPortService.GetAvailablePorts())
                 AvailablePorts.Add(port);
         }
 
         private void ConnectToSelectedPort()
         {
-            RobotProtocolService.SerialPort.Connect(SelectedPort);
+            RobotProtocolService.SerialPortService.Connect(SelectedPort);
             Connected?.Invoke();
         }
     }

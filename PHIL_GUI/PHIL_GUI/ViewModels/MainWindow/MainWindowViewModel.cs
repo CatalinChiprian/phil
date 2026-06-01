@@ -55,7 +55,7 @@ namespace PHIL_GUI.ViewModels
 
         public MainWindowViewModel()
         {
-            ConnectedPort = RobotProtocolService.SerialPort.PortName;
+            ConnectedPort = RobotProtocolService.SerialPortService.PortName;
 
             Pages = new List<PageItem>
             {
@@ -76,7 +76,7 @@ namespace PHIL_GUI.ViewModels
 
         private void Disconnect()
         {
-            RobotProtocolService.SerialPort.Disconnect();
+            RobotProtocolService.SerialPortService.Disconnect();
             Disconnected?.Invoke();
         }
     }
