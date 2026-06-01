@@ -22,7 +22,7 @@ namespace PHIL_GUI.Helpers
             return ChannelToInWellIndex(channelIndex);
         }
 
-        public static IEnumerable<int> ToIndex(this IEnumerable<string> wells)
+        public static IEnumerable<int> ToIndices(this IEnumerable<string> wells)
         {
             return wells.Select(w => w.ToIndex());
         }

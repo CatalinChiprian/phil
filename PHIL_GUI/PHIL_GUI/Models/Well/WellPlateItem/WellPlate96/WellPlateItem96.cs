@@ -14,6 +14,8 @@ namespace PHIL_GUI.Models
             set => visibleWells = value;
         }
 
+        public int SelectedCount => SelectedWellItems.Count;
+
         public WellPlateItem96(bool isCalibrationPage = false)
             : base(isCalibrationPage)
         {
@@ -29,5 +31,32 @@ namespace PHIL_GUI.Models
 
             visibleWells = Wells.Where(w => w.IsVisible).ToList();
         }
+
+        public void Select(string name)
+        {
+            SelectWell(name);
+        }
+
+        public void SelectAll()
+        {
+            SelectAllWells();
+        }
+
+        public void Clear()
+        {
+            ClearSelection();
+        }
+
+        public List<string> GetSelectedWellNames()
+        {
+            return SelectedWellItems.Select(w => w.Name).ToList();
+        }
+
+        public List<string> GetSelectedNames()
+        {
+            return GetSelectedWellNames();
+        }
+
+        public void SelectQuadrant(int quadrant) { }
     }
 }

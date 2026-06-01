@@ -61,7 +61,7 @@ namespace PHIL_GUI.ViewModels
         }
 
         public bool IsWellMenuVisibile => WellPlate.SelectedWellItems.Count > 0;
-        public IWellPlateItem WellPlate { get; } = new WellPlateItemOoC(true);
+        public IWellPlateItemBase WellPlate { get; } = new WellPlateItemOoC(true);
         public WellPlateItemOoC? WellPlateItemOoC => WellPlate as WellPlateItemOoC;
 
         public CalibrationViewModel()

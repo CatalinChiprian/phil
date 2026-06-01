@@ -23,6 +23,8 @@ namespace PHIL_GUI.Models
             }
         }
 
+        public int SelectedCount => SelectedWellPairs.Count;
+
         public WellPlateItemOoC(bool isCalibrationPage = false)
             : base(isCalibrationPage)
         {
@@ -76,7 +78,44 @@ namespace PHIL_GUI.Models
                 .ToList();
         }
 
-        public void SelectWellPair(int pairIndex)
+        public void Select(string name)
+        {
+            int pairIndex = int.Parse(name);
+            SelectWellPair(pairIndex);
+        }
+
+        public void SelectAll()
+        {
+            foreach (WellPairItem pair in Wells)
+            {
+                pair.IsSelected = true;
+            }
+        }
+
+        public void SelectQuadrant(int quadrant)
+        {
+            SelectQuadrantPairs(quadrant);
+        }
+
+        public void Clear()
+        {
+            foreach (WellPairItem pair in Wells)
+            {
+                pair.IsSelected = false;
+            }
+        }
+
+        public List<string> GetSelectedWellNames()
+        {
+            return SelectedWellPairs.Select(p => p.In.Name).ToList();
+        }
+
+        public List<string> GetSelectedNames()
+        {
+            return SelectedWellPairs.Select(p => p.PairIndex.ToString()).ToList();
+        }
+
+        private void SelectWellPair(int pairIndex)
         {
             foreach (WellPairItem pair in Wells)
             {
@@ -94,15 +133,7 @@ namespace PHIL_GUI.Models
             }
         }
 
-        public void SelectAllPairs()
-        {
-            foreach (WellPairItem pair in Wells)
-            {
-                pair.IsSelected = true;
-            }
-        }
-
-        public void SelectQuadrantPairs(int quadrantIndex)
+        private void SelectQuadrantPairs(int quadrantIndex)
         {
             int startPairIndex = (quadrantIndex - 1) * PAIRS_PER_QUADRANT_ROW * PAIR_COUNT + 1;
             int endPairIndex = startPairIndex + PAIRS_PER_QUADRANT_ROW * PAIR_COUNT - 1;
@@ -131,7 +162,7 @@ namespace PHIL_GUI.Models
             }
         }
 
-        public void DeselectQuadrantPairs(int quadrantIndex)
+        private void DeselectQuadrantPairs(int quadrantIndex)
         {
             int startPairIndex = (quadrantIndex - 1) * PAIRS_PER_QUADRANT_ROW * PAIR_COUNT + 1;
             int endPairIndex = startPairIndex + PAIRS_PER_QUADRANT_ROW * PAIR_COUNT - 1;
@@ -141,14 +172,6 @@ namespace PHIL_GUI.Models
                 {
                     pair.IsSelected = false;
                 }
-            }
-        }
-
-        public void ClearPairSelection()
-        {
-            foreach (WellPairItem pair in Wells)
-            {
-                pair.IsSelected = false;
             }
         }
     }

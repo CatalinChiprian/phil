@@ -12,6 +12,7 @@ namespace PHIL_GUI.ViewModels
 {
     public class MediumExchangeViewModel : ViewModelBase
     {
+        private const int DETAILS_PAGE_WIDTH = 300;
         public ICommand SelectTargetCommand { get; }
         public ICommand SelectAllCommand { get; }
         public ICommand ClearSelectionCommand { get; }
@@ -29,13 +30,11 @@ namespace PHIL_GUI.ViewModels
         public WellPlateItem96? WellPlateItem96 => WellPlate as WellPlateItem96;
 
         private string lastSelectedTarget = string.Empty;
-        public int DetailsPageWidth => AppSettings.Is96Well ? 
-            (WellPlateItem96.SelectedWellItems.Count > 0 ? 300 : 0) : 
-            (WellPlateItemOoC.SelectedWellPairs.Count > 0 ? 300 : 0);
+        public int DetailsPageWidth => WellPlate.SelectedCount > 0 ? DETAILS_PAGE_WIDTH : 0;
 
         public string SelectedWellsCount => AppSettings.Is96Well
-            ? GetWellCountText(WellPlateItem96.SelectedWellItems.Count)
-            : GetChannelCountText(WellPlateItemOoC.SelectedWellPairs.Count);
+            ? GetWellCountText(WellPlate.SelectedCount)
+            : GetChannelCountText(WellPlate.SelectedCount);
 
         private string GetWellCountText(int count) => $"Selected {count} well{(count == 1 ? "" : "s")}";
 
@@ -44,22 +43,24 @@ namespace PHIL_GUI.ViewModels
         public string ActionCount => GetActionText(ActionScheduler.WellActions.Count);
 
         private string GetActionText(int count) => $"Scheduled {count} action{(count == 1 ? "" : "s")}";
-        public string SelectedWellText => AppSettings.Is96Well
-            ? GetWellText(WellPlateItem96.SelectedWellItems)
-            : GetChannelText(WellPlateItemOoC.SelectedWellPairs);
+        public string SelectedWellText => GetTargetText(WellPlate.GetSelectedNames());
+        private string GetTargetText(List<string> targets)
+        {
+            if (targets.Count == 0)
+                return string.Empty;
 
-        private string GetWellText(List<WellItem> wellItems) =>
-            wellItems.Count == 1
-                ? wellItems[0].Name
-                : $"{wellItems.Count} wells";
-        private string GetChannelText(List<WellPairItem> wellPairs) =>
-            wellPairs.Count == 1
-                ? $"Channel {wellPairs[0].PairIndex.ToString()}"
-                : $"{wellPairs.Count} channels";
+            if (targets.Count == 1)
+            {
+                return AppSettings.Is96Well
+                    ? targets[0]
+                    : $"Channel {targets[0]}";
+            }
 
-        public string WellActionsText => AppSettings.Is96Well
-            ? GetWellActionsText(WellPlateItem96.SelectedWellItems.Count)
-            : GetWellActionsText(WellPlateItemOoC.SelectedWellPairs.Count);
+            return $"{targets.Count} {GetTargetTypeName()}s";
+        }
+        private string GetTargetTypeName() => AppSettings.Is96Well ? "Well" : "Channel";
+
+        public string WellActionsText => GetWellActionsText(WellPlate.SelectedCount);
 
         private string GetWellActionsText(int count) =>
             count == 1
@@ -120,30 +121,18 @@ namespace PHIL_GUI.ViewModels
 
         private void SelectTarget(string target)
         {
-            if (AppSettings.Is96Well)
-            {
-                WellPlateItem96.SelectWell(target);
-            }
-            else
-            {
-                WellPlateItemOoC.SelectWellPair(int.Parse(target));
-            }
-
+            WellPlate.Select(target);
             lastSelectedTarget = target;
-
             RefreshWellActionsList();
 
-            OnPropertyChanged(nameof(SelectedWellText));
-            OnPropertyChanged(nameof(WellActionsText));
-            OnPropertyChanged(nameof(DetailsPageWidth));
-            OnPropertyChanged(nameof(SelectedWellsCount));
+            RefreshUI();
         }
 
         public void AttachAction(ActionItem action)
         {
-            IEnumerable<string> selectedWellNames = GetSelectedWellNames();
+            IEnumerable<string> selectedWellNames = WellPlate.GetSelectedWellNames();
 
-            IEnumerable<int> selectedWellIndices = selectedWellNames.ToIndex();
+            IEnumerable<int> selectedWellIndices = selectedWellNames.ToIndices();
 
             RobotProtocolService.AttachAction(action.Model, selectedWellIndices);
 
@@ -151,32 +140,13 @@ namespace PHIL_GUI.ViewModels
         }
         public void DetachAction(ActionItem action)
         {
-            IEnumerable<string> selectedWellNames = GetSelectedWellNames();
+            IEnumerable<string> selectedWellNames = WellPlate.GetSelectedWellNames();
 
-            IEnumerable<int> selectedWellIndices = selectedWellNames.ToIndex();
+            IEnumerable<int> selectedWellIndices = selectedWellNames.ToIndices();
 
             RobotProtocolService.DetachAction(action.Model, selectedWellIndices);
 
             RefreshWellActionsList();
-        }
-
-        private IEnumerable<string> GetSelectedWellNames()
-        {
-            List<string> selectedWellNames = new List<string>();
-            if (AppSettings.Is96Well)
-            {
-                selectedWellNames = WellPlateItem96.SelectedWellItems.Select(w => w.Name).ToList();
-            }
-            else
-            {
-                var selectedPairs = WellPlateItemOoC.SelectedWellPairs;
-                foreach (WellPairItem pair in selectedPairs)
-                {
-                    selectedWellNames.Add(pair.In.Name);
-                }
-            }
-
-            return selectedWellNames;
         }
 
         private void RefreshWellActionsList()
@@ -189,7 +159,9 @@ namespace PHIL_GUI.ViewModels
 
         private void LoadCurrentWellActions(string target)
         {
-            List<int> selectedIndices = GetSelectedWellNames().ToIndex().ToList();
+            IEnumerable<string> selectedWellNames = WellPlate.GetSelectedWellNames();
+
+            List<int> selectedIndices = selectedWellNames.ToIndices().ToList();
 
             CurrentWellActions.Clear();
 
@@ -234,52 +206,23 @@ namespace PHIL_GUI.ViewModels
 
         private void SelectAllTargets()
         {
-            if (AppSettings.Is96Well)
-            {
-                WellPlateItem96.SelectAllWells();
-            }
-            else
-            {
-                WellPlateItemOoC.SelectAllPairs();
-            }
+            WellPlate.SelectAll();
 
-            OnPropertyChanged(nameof(SelectedWellText));
-            OnPropertyChanged(nameof(WellActionsText));
-            OnPropertyChanged(nameof(DetailsPageWidth));
-            OnPropertyChanged(nameof(SelectedWellsCount));
+            RefreshUI();
         }
 
         private void SelectQuad(int quadNumber)
         {
-            if (AppSettings.Is96Well)
-            {
-            }
-            else
-            {
-                WellPlateItemOoC.SelectQuadrantPairs(quadNumber);
-            }
+            WellPlate.SelectQuadrant(quadNumber);
 
-            OnPropertyChanged(nameof(SelectedWellText));
-            OnPropertyChanged(nameof(WellActionsText));
-            OnPropertyChanged(nameof(DetailsPageWidth));
-            OnPropertyChanged(nameof(SelectedWellsCount));
+            RefreshUI();
         }
 
         private void ClearSelection()
         {
-            if (AppSettings.Is96Well)
-            {
-                WellPlateItem96.ClearSelection();
-            }
-            else
-            {
-                WellPlateItemOoC.ClearPairSelection();
-            }
+            WellPlate.Clear();
 
-            OnPropertyChanged(nameof(SelectedWellText));
-            OnPropertyChanged(nameof(WellActionsText));
-            OnPropertyChanged(nameof(DetailsPageWidth));
-            OnPropertyChanged(nameof(SelectedWellsCount));
+            RefreshUI();
         }
         public void DeleteAction(int actionId)
         {
@@ -327,7 +270,14 @@ namespace PHIL_GUI.ViewModels
         {
             item.IsVisible = (item.Type == ActionType.Exchange) != AppSettings.Is96Well;
         }
+
+        private void RefreshUI()
+        {
+            OnPropertyChanged(nameof(SelectedWellText));
+            OnPropertyChanged(nameof(WellActionsText));
+            OnPropertyChanged(nameof(DetailsPageWidth));
+            OnPropertyChanged(nameof(SelectedWellsCount));
+        }
     }
 }
-// TO DO SEE SCROLLVIEWER ON ACTIONS
 
