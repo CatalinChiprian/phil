@@ -100,26 +100,26 @@ namespace PHIL_GUI.Services
             logBuffer.Clear();
         }
 
-        private void Send(string command)
+        private void SendCommand(string command)
         {
             serialPortService.SendMessage(command);
         }
 
         public void CreateAction(ActionItem action)
         {
-            Send($"{CREATE_ACTION_CMD} {(int)action.TempId} {(int)action.Type} {(int)action.Pump1} {(int)action.Pump2} {action.Amount} {action.Frequency} {(int)action.TimeUnit} {action.StartEpoch} {action.EndEpoch}");
+            SendCommand($"{CREATE_ACTION_CMD} {(int)action.TempId} {(int)action.Type} {(int)action.Pump1} {(int)action.Pump2} {action.Amount} {action.Frequency} {(int)action.TimeUnit} {action.StartEpoch} {action.EndEpoch}");
             RobotState.ActionScheduler.CreateAction(action);
         }
 
         public void UpdateAction(ActionItem action)
         {
-            Send($"{UPDATE_ACTION_CMD} {action.Id} {(int)action.Type} {(int)action.Pump1} {(int)action.Pump2} {action.Amount} {action.Frequency} {(int)action.TimeUnit} {action.StartEpoch} {action.EndEpoch}");
+            SendCommand($"{UPDATE_ACTION_CMD} {action.Id} {(int)action.Type} {(int)action.Pump1} {(int)action.Pump2} {action.Amount} {action.Frequency} {(int)action.TimeUnit} {action.StartEpoch} {action.EndEpoch}");
             RobotState.ActionScheduler.UpdateAction(action);
         }
 
         public void DeleteAction(int actionId)
         {
-            Send($"{DEL_ACTION_CMD} {actionId}");
+            SendCommand($"{DEL_ACTION_CMD} {actionId}");
             RobotState.ActionScheduler.DeleteAction(actionId);
         }
 
@@ -127,14 +127,14 @@ namespace PHIL_GUI.Services
         {
             byte[] bitmask = selectedWellIndices.WellIndicesToBitmask();
             string hex = BitConverter.ToString(bitmask).Replace("-", "");
-            Send($"{LINK_ACTION_WELL_CMD} {action.Id} {hex}");
+            SendCommand($"{LINK_ACTION_WELL_CMD} {action.Id} {hex}");
             RobotState.ActionScheduler.AttachAction(action, selectedWellIndices);
         }
         public void DetachAction(ScheduleAction action, IEnumerable<int> selectedWellIndices)
         {
             byte[] bitmask = selectedWellIndices.WellIndicesToBitmask();
             string hex = BitConverter.ToString(bitmask).Replace("-", "");
-            Send($"{UNLINK_ACTION_WELL_CMD} {action.Id} {hex}");
+            SendCommand($"{UNLINK_ACTION_WELL_CMD} {action.Id} {hex}");
             RobotState.ActionScheduler.DetachAction(action, selectedWellIndices);
         }
 
@@ -145,125 +145,125 @@ namespace PHIL_GUI.Services
 
         public void SetWellPlateType(PlateType plateType)
         {
-            Send($"{SET_PLATE_TYPE_CMD} {plateType}");
+            SendCommand($"{SET_PLATE_TYPE_CMD} {plateType}");
         }
         
         public void Stop()
         {
-            Send("s");
+            SendCommand("s");
         }
 
         public void MoveUp()
         {
-            Send(MOVE_UP_CMD);
+            SendCommand(MOVE_UP_CMD);
         }
 
         public void MoveDown()
         {
-            Send(MOVE_DOWN_CMD);
+            SendCommand(MOVE_DOWN_CMD);
         }
 
         public void MoveForward()
         {
-            Send(MOVE_FORWARD_CMD);
+            SendCommand(MOVE_FORWARD_CMD);
         }
 
         public void MoveBackward()
         {
-            Send(MOVE_BACKWARD_CMD);
+            SendCommand(MOVE_BACKWARD_CMD);
         }
 
         public void MoveLeft()
         {
-            Send(MOVE_LEFT_CMD);
+            SendCommand(MOVE_LEFT_CMD);
         }
 
         public void MoveRight()
         {
-            Send(MOVE_RIGHT_CMD);
+            SendCommand(MOVE_RIGHT_CMD);
         }
 
         public void DecreaseStepSize()
         {
-            Send(DEC_STEP_CMD);
+            SendCommand(DEC_STEP_CMD);
         }
 
         public void IncreaseStepSize()
         {
-            Send(INC_STEP_CMD);
+            SendCommand(INC_STEP_CMD);
         }
 
         public void RecordCalibrationPoint(string wellName)
         {
-            Send($"{RECORD_POINT_CMD} {wellName}");
+            SendCommand($"{RECORD_POINT_CMD} {wellName}");
         }
 
         public void SolveMap()
         {
-            Send(SOLVE_MAP_CMD);
+            SendCommand(SOLVE_MAP_CMD);
         }
 
         public void DeleteCalibrationPoint(string wellName)
         {
-            Send($"{DELETE_POINT_CMD} {wellName}");
+            SendCommand($"{DELETE_POINT_CMD} {wellName}");
         }
 
         public void Aspirate(int pumpNumber, int volume)
         {
-            Send($"{ASPIRATE_CMD} {pumpNumber} {volume}");
+            SendCommand($"{ASPIRATE_CMD} {pumpNumber} {volume}");
         }
 
         public void Dispense(int pumpNumber, int volume)
         {
-            Send($"{DISPENSE_CMD} {pumpNumber} {volume}");
+            SendCommand($"{DISPENSE_CMD} {pumpNumber} {volume}");
         }
 
         public void Prime(int pumpNumber)
         {
-            Send($"{DISPENSE_CMD} {pumpNumber} {int.MaxValue}");
+            SendCommand($"{DISPENSE_CMD} {pumpNumber} {int.MaxValue}");
         }
 
         public void MoveToHardcodedWell(string wellName)
         {
-            Send($"{MOVE_HARD_WELL_CMD} {wellName}");
+            SendCommand($"{MOVE_HARD_WELL_CMD} {wellName}");
         }
 
         public void MoveToCalculatedWell(string wellName)
         {
-            Send($"{MOVE_CALC_WELL_CMD} {wellName}");
+            SendCommand($"{MOVE_CALC_WELL_CMD} {wellName}");
         }
 
         public void GoHome()
         {
             robotState.CurrentWell.Type = WellType.Home;
             robotState.Settings.State = MoveState.Moving;
-            Send(GO_HOME_CMD);
+            SendCommand(GO_HOME_CMD);
         }
 
         public void CalibrateHome()
         {
             robotState.CurrentWell.Type = WellType.Home;
             robotState.Settings.State = MoveState.Moving;
-            Send(CALIBRATE_HOME_CMD);
+            SendCommand(CALIBRATE_HOME_CMD);
         }
 
         public void EmergencyStop()
         {
             robotState.CurrentWell.Type = WellType.Unknown;
             robotState.Settings.State = MoveState.EmergencyStopped;
-            Send("s");
+            SendCommand("s");
         }
 
         private void OnSerialPortConnected()
         {
             ready = true;
 
-            Send(PRINT_WELL_CMD);
-            Send(PRINT_CALIBRATION_CMD);
-            Send(PRINT_STEPS_CMD);
-            Send(PRINT_ACTIONS_CMD);
-            Send(PRINT_WELL_ACTIONS_CMD);
-            Send(PRINT_TIME_CMD);
+            SendCommand(PRINT_WELL_CMD);
+            SendCommand(PRINT_CALIBRATION_CMD);
+            SendCommand(PRINT_STEPS_CMD);
+            SendCommand(PRINT_ACTIONS_CMD);
+            SendCommand(PRINT_WELL_ACTIONS_CMD);
+            SendCommand(PRINT_TIME_CMD);
         }
 
         private void OnMessageReceived(string message)
@@ -274,11 +274,11 @@ namespace PHIL_GUI.Services
 
             Dispatcher.UIThread.Post(() =>
             {
-                ApplyMessage(message);
+                ParseMessage(message);
             }, DispatcherPriority.Background);
         }
 
-        private void ApplyMessage(string message)
+        private void ParseMessage(string message)
         {
             if (message.StartsWith(WELL_PREFIX)) ParseWellArrival(message);
             else if (message.StartsWith(CAL_REC_PREFIX)) ParseCalRecorded(message);
@@ -477,7 +477,7 @@ namespace PHIL_GUI.Services
 
         private void SetTime(long unixTime)
         {
-            Send($"{SET_TIME_CMD} {unixTime}");
+            SendCommand($"{SET_TIME_CMD} {unixTime}");
         }
     }
 }
