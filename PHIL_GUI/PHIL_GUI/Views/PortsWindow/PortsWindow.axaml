@@ -52,6 +52,7 @@
           <Button Classes="btn btn-primary"
                   Content="Connect"
                   Command="{Binding ConnectCommand}"
+                  IsEnabled="{Binding CanConnect}"
                   Width="80"/>
       </StackPanel>
   </StackPanel>

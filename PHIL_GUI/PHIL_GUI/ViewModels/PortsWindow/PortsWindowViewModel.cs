@@ -1,4 +1,4 @@
-﻿using PHIL_GUI.Commands;
+﻿using CommunityToolkit.Mvvm.Input;
 using PHIL_GUI.Services;
 using PHIL_GUI.ViewModels.Base;
 using System;
@@ -21,16 +21,18 @@ namespace PHIL_GUI.ViewModels
             get => selectedPort;
             set
             {
-                if (SetProperty(ref selectedPort, value))
-                {
-                    connectCommand.RaiseCanExecuteChanged();
-                }
+                if (value == selectedPort) return;
+
+                SetProperty(ref selectedPort, value);
+
+                OnPropertyChanged(nameof(CanConnect));
             }
         }
 
+        public bool CanConnect => !string.IsNullOrEmpty(SelectedPort);
+
         public ICommand GetPortsCommand { get; }
-        private RelayCommand connectCommand;
-        public ICommand ConnectCommand => connectCommand;
+        public ICommand ConnectCommand { get; }
 
         public PortsWindowViewModel()
         {
@@ -40,7 +42,7 @@ namespace PHIL_GUI.ViewModels
                 OnPropertyChanged(nameof(WindowHeight));
             };
             GetPortsCommand = new RelayCommand(GetAvailablePorts);
-            connectCommand = new RelayCommand(ConnectToSelectedPort, CanConnect);
+            ConnectCommand = new RelayCommand(ConnectToSelectedPort);
         }
 
         private void GetAvailablePorts()
@@ -49,8 +51,6 @@ namespace PHIL_GUI.ViewModels
             foreach (string port in RobotProtocolService.SerialPort.GetAvailablePorts())
                 AvailablePorts.Add(port);
         }
-
-        private bool CanConnect() => !string.IsNullOrWhiteSpace(SelectedPort) && !RobotProtocolService.SerialPort.IsConnected;
 
         private void ConnectToSelectedPort()
         {

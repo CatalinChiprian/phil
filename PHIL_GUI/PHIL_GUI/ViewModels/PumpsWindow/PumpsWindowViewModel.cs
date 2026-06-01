@@ -1,4 +1,4 @@
-﻿using PHIL_GUI.Commands;
+﻿using CommunityToolkit.Mvvm.Input;
 using PHIL_GUI.Models;
 using PHIL_GUI.ViewModels.Base;
 using System;
