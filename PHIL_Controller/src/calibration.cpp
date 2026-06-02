@@ -8,17 +8,10 @@
 uint8_t calCount = 0;
 float ML[TERMS] = {0};
 float MR[TERMS] = {0};
-float calX[MAX_CAL] = {0};
-float calY[MAX_CAL] = {0};
+uint8_t calWellIndex[MAX_CAL] = {0};
 float calL[MAX_CAL] = {0};
 float calR[MAX_CAL] = {0};
 bool mapReady = false;
-
-void XYToWell(float x, float y, char& row, uint8_t& col) {
-    uint8_t rowInt = y / WELL_DY;
-    row = 'a' + rowInt;
-    col = x / WELL_DX + 1;
-}
 
 int8_t calibrateHome() {
     moveZMotors(ZMotorNormalPosition);
@@ -99,10 +92,20 @@ void recordCalibrationPoint(char row, uint8_t col) {
 
     float x = 0;
     float y = 0;
-    wellToXY(row, col, x, y);
+    uint8_t wellIndex = RowColToWellIndex(row, col);
+    wellIndexToXY(wellIndex, x, y);
 
-    calX[calCount] = x;
-    calY[calCount] = y;
+    for (uint8_t i = 0; i < calCount; i++) {
+        if (calWellIndex[i] == wellIndex) {
+            Serial.println(F("ERROR:CAL_DUPLICATE"));
+            return;
+        }
+    }
+
+    calWellIndex[calCount] = wellIndex;
+
+    Serial.print("RAW L steps: "); Serial.println(stepperL.currentPosition());
+    Serial.print("RAW R steps: "); Serial.println(stepperR.currentPosition());
 
     calL[calCount] = stepsToDegrees(stepperL.currentPosition());
     calR[calCount] = stepsToDegrees(stepperR.currentPosition());
@@ -163,7 +166,9 @@ bool solveMapping() {
     float ATyR[TERMS] = {0};
 
     for (uint8_t i = 0; i < calCount; i++) {
-        float x = calX[i], y = calY[i];
+        uint8_t wellIndex = calWellIndex[i];
+        float x, y;
+        wellIndexToXY(wellIndex, x, y);
         float b[TERMS] = { 1.0f, x, y, x*x, x*y, y*y, x*x*x, x*x*y, x*y*y, y*y*y };
         float L = calL[i];
         float R = calR[i];
@@ -216,23 +221,21 @@ void clearCalibration() {
 }
 
 void deleteCalibrationPoint(char row, uint8_t col) {
-	float x = 0;
-	float y = 0;
-	wellToXY(row, col, x, y);
+    uint8_t targetIndex = RowColToWellIndex(row, col);
 	
 	int8_t foundIdx = -1;
-	for (uint8_t i = 0; i < calCount; i++) {
-		if (fabs(calX[i] - x) < 0.1f && fabs(calY[i] - y) < 0.1f) {
-			foundIdx = i;
-			break;
-		}
-	}
-	
+
+    for (uint8_t i = 0; i < calCount; i++) {
+        if (calWellIndex[i] == targetIndex) {
+            foundIdx = i;
+            break;
+        }
+    }
+
 	if (foundIdx == -1) return;
 
 	for (int8_t i = foundIdx; i < calCount - 1; i++) {
-		calX[i] = calX[i+1];
-		calY[i] = calY[i+1];
+		calWellIndex[i] = calWellIndex[i+1];
 		calL[i] = calL[i+1];
 		calR[i] = calR[i+1];
 	}
@@ -256,10 +259,12 @@ void printCalibrationPoints() {
     }
 
     for (uint8_t i=0; i<calCount; i++) {
-        float x = calX[i], y = calY[i];
+        uint8_t wellIndex = calWellIndex[i];
+        float x, y;
+        wellIndexToXY(wellIndex, x, y);
         char row;
         uint8_t col;
-        XYToWell(calX[i], calY[i], row, col);
+        wellIndexToRowCol(wellIndex, row, col);
         float b[TERMS] = { 1.0f, x, y, x*x, x*y, y*y, x*x*x, x*x*y, x*y*y, y*y*y };
         float predL = dot10(ML, b);
         float predR = dot10(MR, b);
@@ -270,11 +275,11 @@ void printCalibrationPoints() {
         if (fabs(errR) > maxErrR) maxErrR = fabs(errR);
         Serial.print(F("CAL_PT:"));
         Serial.print(F("Name=")); Serial.print(row); Serial.print(col);
-        Serial.print(F(",X=")); Serial.print(calX[i], 2);
-        Serial.print(F(",Y=")); Serial.print(calY[i], 2);
-
+        Serial.print(F(",X=")); Serial.print(x, 2);
+        Serial.print(F(",Y=")); Serial.print(y, 2);
 
         if (!mapReady) {
+            Serial.println();
             continue;
         }
         

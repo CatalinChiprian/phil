@@ -346,11 +346,15 @@ void processActions() {
 
         uint32_t nextRun = action.lastRunEpoch + period;
 
-        if (action.lastRunEpoch == 0) nextRun = action.startEpoch;
+        if (action.lastRunEpoch == 0)
+        {
+            if (action.startEpoch == 0) nextRun = now;
+            else nextRun = action.startEpoch;
+        }
 
         if (now < nextRun) continue;
 
-        action.lastRunEpoch = nextRun;
+        action.lastRunEpoch = now;
         executeAction(action);
         saveAction(action, i);
     }

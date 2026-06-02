@@ -77,10 +77,10 @@ void saveCalibration() {
     EEPROM.put(addr, calCount);  addr += sizeof(uint8_t);
 
     for (uint8_t i = 0; i < calCount; i++) {
-        EEPROM.put(addr, calX[i]);  addr += sizeof(float);
-        EEPROM.put(addr, calY[i]);  addr += sizeof(float);
-        EEPROM.put(addr, calL[i]);  addr += sizeof(float);
-        EEPROM.put(addr, calR[i]);  addr += sizeof(float);
+        EEPROM.put(addr, calWellIndex[i]);  addr += sizeof(uint8_t);
+        
+        EEPROM.put(addr, calL[i]); addr += sizeof(float);
+        EEPROM.put(addr, calR[i]); addr += sizeof(float);
     }
 
     Serial.println(F("Calibration saved to EEPROM"));
@@ -104,10 +104,10 @@ void loadCalibration() {
     }
 
     for (uint8_t i = 0; i < calCount; i++) {
-        EEPROM.get(addr, calX[i]);  addr += sizeof(float);
-        EEPROM.get(addr, calY[i]);  addr += sizeof(float);
-        EEPROM.get(addr, calL[i]);  addr += sizeof(float);
-        EEPROM.get(addr, calR[i]);  addr += sizeof(float);
+        EEPROM.get(addr, calWellIndex[i]);  addr += sizeof(uint8_t);
+        
+        EEPROM.get(addr, calL[i]); addr += sizeof(float);
+        EEPROM.get(addr, calR[i]); addr += sizeof(float);
     }
 
     solveMapping();

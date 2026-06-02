@@ -77,8 +77,8 @@ namespace PHIL_GUI.Models
         {
             get
             {
-                if (!RmsL.HasValue && !RmsR.HasValue) return "Muted"; 
-                double worst = Math.Max(Math.Abs(RmsL!.Value), Math.Abs(RmsR!.Value));
+                if (!RmsL.HasValue || !RmsR.HasValue) return "Muted"; 
+                double worst = Math.Max(Math.Abs(RmsL.Value), Math.Abs(RmsR.Value));
                 if (worst > 1.5) return "Warn";
                 if (worst > 1.0) return "Caution";
                 return "Accent";

@@ -14,6 +14,12 @@ void wellIndexToRowCol(uint8_t wellIndex, char& row, uint8_t& col) {
     col = (wellIndex % 12) + 1;
 }
 
+void wellIndexToXY(uint8_t wellIndex, float& x, float& y) {
+    char row; uint8_t col;
+    wellIndexToRowCol(wellIndex, row, col);
+    wellToXY(row, col, x, y);
+}
+
 uint8_t RowColToWellIndex(char row, uint8_t column) {
     return (row - 'a') * 12 + (column - 1);
 }

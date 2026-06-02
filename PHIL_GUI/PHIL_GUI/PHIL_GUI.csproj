@@ -29,6 +29,8 @@
             <PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
         </PackageReference>
         <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.1" />
+        <PackageReference Include="Emgu.CV" Version="4.13.0.5924" />
+        <PackageReference Include="Emgu.CV.runtime.windows" Version="4.13.0.5924" />
         <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.3" />
         <PackageReference Include="System.IO.Ports" Version="8.0.0" />
     </ItemGroup>

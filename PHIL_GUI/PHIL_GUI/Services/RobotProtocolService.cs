@@ -82,6 +82,8 @@ namespace PHIL_GUI.Services
 
         private bool ready;
 
+        private readonly MediaService mediaService = new MediaService();
+        public MediaService MediaService => mediaService;
         private readonly SerialPortService serialPortService = new SerialPortService();
         public SerialPortService SerialPortService => serialPortService;
         private readonly RobotState robotState = new RobotState();
@@ -492,6 +494,10 @@ namespace PHIL_GUI.Services
             int id = int.Parse(kv["Id"], CultureInfo.InvariantCulture);
             long lastRunEpoch = long.Parse(kv["LastRun"], CultureInfo.InvariantCulture);
             RobotState.ActionScheduler.UpdateAction(id, lastRunEpoch);
+
+            // Temp Testing
+
+            _ = MediaService.RecordVideo(id);
         }
 
         private void ParseLimit(string msg, LimitType type)
