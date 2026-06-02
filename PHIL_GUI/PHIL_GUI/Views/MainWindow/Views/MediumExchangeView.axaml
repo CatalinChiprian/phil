@@ -18,7 +18,8 @@
                                 Click="CreateActionButton_Click"
                                 FontSize="15"
                                 Padding="13,0"
-                                ToolTip.Tip="Create Action"/>
+                                IsEnabled="{Binding IsCreateActionEnabled}"
+                                ToolTip.Tip="{Binding CreateActionTooltip}"/>
 
 					    <TextBlock DockPanel.Dock="Left" Classes="subtitle" FontSize="10" LetterSpacing="1.5" Text="ACTIONS"/>
                     </DockPanel>
@@ -401,7 +402,9 @@
                                                         VerticalAlignment="Center"
                                                         Click="AttachActionButton_Click"
                                                         Tag="{Binding}"
-                                                        ToolTip.Tip="Attach Action"/>
+                                                        IsEnabled="{Binding $parent[ItemsControl].DataContext.CanAttachAction}"
+                                                        ToolTip.Tip="{Binding $parent[ItemsControl].DataContext.AttachActionTooltip}"
+                                                        />
                                             </Grid>
                                         </Border>
                                     </DataTemplate>

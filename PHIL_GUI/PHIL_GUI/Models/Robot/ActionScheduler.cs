@@ -10,6 +10,9 @@ namespace PHIL_GUI.Models
         const int MAX_ALLOWED_SECONDS_DRIFT = 5;
 
         private int nextTempId = -1;
+
+        public int MaxTotalActions { get; set; }
+        public int MaxActionsPerWell { get; set; }
         public ObservableCollection<ScheduleAction> Actions { get; } = new ObservableCollection<ScheduleAction>();
         public Dictionary<int, ObservableCollection<ScheduleAction>> WellActions { get; } = new Dictionary<int, ObservableCollection<ScheduleAction>>();
         public ActionScheduler() { }

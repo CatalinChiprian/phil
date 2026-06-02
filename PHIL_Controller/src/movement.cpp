@@ -201,7 +201,12 @@ void moveToWell(long moveL, long moveR, char* wellName) {
       stepperL.run();
     }
 
-    saveCurrentWell(wellName);
+    char row; uint8_t col;
+    wellStrToRowCol(wellName, row, col);
+
+    wellIndex = RowColToWellIndex(row, col);
+
+    saveCurrentWell(wellIndex);
     savePositions();
     printCurrentWell();
 }
@@ -447,7 +452,7 @@ void goToCalculatedWell(char row, uint8_t col) {
         stepperR.run();
     }
 
-    wellIndex = wellNameToIndex(row, col);
+    wellIndex = RowColToWellIndex(row, col);
 
     saveCurrentWell(wellIndex);
     savePositions();

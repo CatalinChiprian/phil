@@ -249,6 +249,12 @@ float clampZero(float v, float eps = 5e-4f) {
 void printCalibrationPoints() {
     Serial.print(F("CAL_COUNT:")); Serial.println(calCount);
     float maxErrL = 0, maxErrR = 0, rmsL = 0, rmsR = 0;
+
+    if (calCount == 0) {
+        Serial.println(F("END_CAL"));
+        return;
+    }
+
     for (uint8_t i=0; i<calCount; i++) {
         float x = calX[i], y = calY[i];
         char row;
@@ -269,8 +275,7 @@ void printCalibrationPoints() {
 
 
         if (!mapReady) {
-        Serial.println();
-        continue;
+            continue;
         }
         
         Serial.print(F(",ErrorLeft=")); Serial.print(clampZero(errL), 3);
@@ -285,4 +290,6 @@ void printCalibrationPoints() {
     Serial.print(F(",R=")); Serial.print(rmsR, 3);
     Serial.print(F(",MAX_L=")); Serial.print(maxErrL, 3);
     Serial.print(F(",MAX_R=")); Serial.println(maxErrR, 3);
+    
+    Serial.println(F("END_CAL"));
 }

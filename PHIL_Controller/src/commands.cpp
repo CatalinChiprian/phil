@@ -215,6 +215,12 @@ void parseCommands() {
 		else if (strcmp_P(cmd, PRINT_TIME_CMD) == 0) {
 			printTime();
 		}
+		else if (strcmp_P(cmd, PRINT_MAX_ACTIONS_CMD) == 0) {
+			printMaxActions();
+		}
+		else if (strcmp_P(cmd, PRINT_MAX_ACTIONS_PER_WELL_CMD) == 0) {
+			printMaxActionsPerWell();
+		}
 		else {
 			Serial.print(F("ERROR:UNKNOWN_COMMAND: ")); Serial.println(cmd);
 		}

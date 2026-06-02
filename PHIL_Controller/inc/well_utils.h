@@ -9,7 +9,7 @@ enum WellPlateType : uint8_t {
 
 bool isInvalidWell(char row, uint8_t col);
 void wellIndexToRowCol(uint8_t wellIndex, char& row, uint8_t& col);
-uint8_t wellNameToIndex(char row, uint8_t column);
+uint8_t RowColToWellIndex(char row, uint8_t column);
 long degToSteps(float deg);
 float stepsToDegrees(long steps);
 void wellToXY(char row, uint8_t col, float &x, float &y);

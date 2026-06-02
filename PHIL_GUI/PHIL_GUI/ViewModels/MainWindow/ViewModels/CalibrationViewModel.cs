@@ -23,6 +23,7 @@ namespace PHIL_GUI.ViewModels
         public ICommand SolveMappingCommand { get; }
         public ICommand GoToSelectedWellCommand { get; }
         public ICommand DeleteRecordPositionCommand { get; }
+        public ICommand ClearCalibrationCommand { get; }
         public ICommand CancelCommand { get; }
         public bool IsDecreaseStepSizeEnabled => RobotProtocolService.RobotState.Settings.StepSize > 0.1;
         public bool RecordEnabled
@@ -77,6 +78,7 @@ namespace PHIL_GUI.ViewModels
             SolveMappingCommand = new RelayCommand(SolveMapping);
             GoToSelectedWellCommand = new RelayCommand(GoToSelectedWell);
             DeleteRecordPositionCommand = new RelayCommand(DeleteRecordPosition);
+            ClearCalibrationCommand = new RelayCommand(ClearCalibration);
             CancelCommand = new RelayCommand(Cancel);
 
             Calibration.Points.CollectionChanged += Points_CollectionChanged;
@@ -186,6 +188,11 @@ namespace PHIL_GUI.ViewModels
             RobotProtocolService.RecordCalibrationPoint(wellName);
         }
 
+        private void ClearCalibration()
+        {
+            RobotProtocolService.ClearCalibration();
+        }
+
         private void Cancel()
         {
             SelectedCalibrationPoint = null;
@@ -199,6 +206,8 @@ namespace PHIL_GUI.ViewModels
         private void UpdateWellClass(CalibrationPoint point)
         {
             WellItem wellItem = WellPlate.GetWell(point.Name);
+
+            if (wellItem == null) return;
 
             wellItem.Calibration = point;
 

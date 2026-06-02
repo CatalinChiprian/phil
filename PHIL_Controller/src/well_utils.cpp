@@ -14,7 +14,7 @@ void wellIndexToRowCol(uint8_t wellIndex, char& row, uint8_t& col) {
     col = (wellIndex % 12) + 1;
 }
 
-uint8_t wellNameToIndex(char row, uint8_t column) {
+uint8_t RowColToWellIndex(char row, uint8_t column) {
     return (row - 'a') * 12 + (column - 1);
 }
 

@@ -22,10 +22,11 @@ namespace PHIL_GUI.Models
             {
                 SetProperty(ref rmsL, value);
 
-                OnPropertyChanged(nameof(rmsL));
-                OnPropertyChanged(nameof(rmsLColor));
-                OnPropertyChanged(nameof(rmsColor));
+                OnPropertyChanged(nameof(RmsLText));
+                OnPropertyChanged(nameof(RmsLColor));
+                OnPropertyChanged(nameof(RmsColor));
                 OnPropertyChanged(nameof(IsCalibrated));
+                OnPropertyChanged(nameof(RmsDisplayText));
             }
         }
 
@@ -38,9 +39,10 @@ namespace PHIL_GUI.Models
                 SetProperty(ref rmsR, value);
 
                 OnPropertyChanged(nameof(RmsRText));
-                OnPropertyChanged(nameof(rmsRColor));
-                OnPropertyChanged(nameof(rmsColor));
+                OnPropertyChanged(nameof(RmsRColor));
+                OnPropertyChanged(nameof(RmsColor));
                 OnPropertyChanged(nameof(IsCalibrated));
+                OnPropertyChanged(nameof(RmsDisplayText));
             }
         }
 
@@ -97,6 +99,7 @@ namespace PHIL_GUI.Models
         private void Points_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
             OnPropertyChanged(nameof(Count));
+            OnPropertyChanged(nameof(CalPointsText));
         }
     }
 }

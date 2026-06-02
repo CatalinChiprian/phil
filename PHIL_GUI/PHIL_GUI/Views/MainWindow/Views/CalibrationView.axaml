@@ -279,7 +279,15 @@
                 <Grid RowDefinitions="Auto,Auto,*,Auto">
 		            <Border BorderThickness="0,0,0,1" Grid.Row="0">
                         <DockPanel Margin="15,10">
-						    <TextBlock DockPanel.Dock="Right" Classes="subtitle" FontSize="10" LetterSpacing="1.5" Text="{Binding Calibration.Count, StringFormat='{}{0} pts'}"/>
+                            <StackPanel Orientation="Horizontal" DockPanel.Dock="Right" Spacing="5">
+								<TextBlock Classes="subtitle" FontSize="10" LetterSpacing="1.5" Text="{Binding Calibration.Count, StringFormat='{}{0} pts'}"/>
+
+                                <Button Content="Clear"
+                                        Padding="3,5"
+                                        Classes="btn btn-emergency"
+                                        Command="{Binding ClearCalibrationCommand}"/>
+                            </StackPanel>
+ 						    
 
 						    <TextBlock DockPanel.Dock="Left" Classes="subtitle" FontSize="10" LetterSpacing="1.5" Text="CALIBRATION POINTS"/>
                         </DockPanel>

@@ -375,6 +375,7 @@ void printActions() {
 	for (uint8_t i = 0; i < MAX_ACTIONS_TOTAL; i++) {
 	  if (actions[i].enabled) printAction(actions[i]);
 	}
+    Serial.println(F("END_ACTIONS"));
 }
 
 void printWellAction(const WellAction& wellAction, uint8_t wellIndex) {
@@ -395,4 +396,13 @@ void printWellActions() {
 	for (uint8_t i = 0; i < MAX_WELLS; i++) {
 	  if (wellActions[i].count > 0) printWellAction(wellActions[i], i);
 	}
+    Serial.println(F("END_WELL_ACTIONS"));
+}
+
+void printMaxActions() {
+    Serial.print(F("MAX_ACTIONS_TOTAL:")); Serial.println(MAX_ACTIONS_TOTAL);
+}
+
+void printMaxActionsPerWell() {
+    Serial.print(F("MAX_ACTIONS_PER_WELL:")); Serial.println(MAX_ACTIONS_PER_WELL);
 }

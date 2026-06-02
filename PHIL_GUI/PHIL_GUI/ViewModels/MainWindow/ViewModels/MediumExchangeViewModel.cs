@@ -31,7 +31,6 @@ namespace PHIL_GUI.ViewModels
         public WellPlateItemOoC? WellPlateItemOoC => WellPlate as WellPlateItemOoC;
         public WellPlateItem96? WellPlateItem96 => WellPlate as WellPlateItem96;
 
-        private string lastSelectedTarget = string.Empty;
         public int DetailsPageWidth => WellPlate.SelectedCount > 0 ? DETAILS_PAGE_WIDTH : 0;
 
         private readonly DispatcherTimer timer;
@@ -70,6 +69,33 @@ namespace PHIL_GUI.ViewModels
             count == 1
                 ? $"{CurrentWellActions.Count} action{(CurrentWellActions.Count == 1 ? "" : "s")} attached"
                 : $"{CurrentWellActions.Count} shared action{(CurrentWellActions.Count == 1 ? "" : "s")}";
+        public bool IsCreateActionEnabled => ActionItems.Count < ActionScheduler.MaxTotalActions;
+        public string CreateActionTooltip => IsCreateActionEnabled
+            ? "Create a new action and attach it to the selected wells/channels."
+            : $"Maximum of {ActionScheduler.MaxTotalActions} total actions reached. Please delete an existing action before creating a new one.";
+
+        public bool CanAttachAction
+        {
+            get
+            {
+                if (!WellPlate.GetSelectedWellNames().Any())
+                    return false;
+
+                var selectedIndices = WellPlate.GetSelectedWellNames().ToIndices();
+
+                return selectedIndices.All(i =>
+                {
+                    if (!ActionScheduler.WellActions.TryGetValue(i, out var list))
+                        return true;
+
+                    return list.Count < ActionScheduler.MaxActionsPerWell;
+                });
+            }
+        }
+
+        public string AttachActionTooltip => CanAttachAction
+            ? "Attach the selected action to the selected wells/channels."
+            : $"Cannot attach action. One or more selected wells/channels have reached the maximum of {ActionScheduler.MaxActionsPerWell} actions.";
 
         public Well CurrentWell => RobotProtocolService.RobotState.CurrentWell;
         public AppSettings AppSettings => AppSettingsService.AppSettings;
@@ -144,7 +170,6 @@ namespace PHIL_GUI.ViewModels
         private void SelectTarget(string target)
         {
             WellPlate.Select(target);
-            lastSelectedTarget = target;
             RefreshWellActionsList();
 
             RefreshUI();
@@ -173,17 +198,19 @@ namespace PHIL_GUI.ViewModels
 
         private void RefreshWellActionsList()
         {
-            LoadCurrentWellActions(lastSelectedTarget);
+            LoadCurrentWellActions();
             LoadAvailableActions();
 
             OnPropertyChanged(nameof(WellActionsText));
         }
 
-        private void LoadCurrentWellActions(string target)
+        private void LoadCurrentWellActions()
         {
             IEnumerable<string> selectedWellNames = WellPlate.GetSelectedWellNames();
 
             List<int> selectedIndices = selectedWellNames.ToIndices().ToList();
+
+
 
             CurrentWellActions.Clear();
 
@@ -299,6 +326,8 @@ namespace PHIL_GUI.ViewModels
             OnPropertyChanged(nameof(WellActionsText));
             OnPropertyChanged(nameof(DetailsPageWidth));
             OnPropertyChanged(nameof(SelectedWellsCount));
+            OnPropertyChanged(nameof(IsCreateActionEnabled));
+            OnPropertyChanged(nameof(CreateActionTooltip));
         }
     }
 }

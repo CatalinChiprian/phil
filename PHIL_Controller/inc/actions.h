@@ -16,7 +16,7 @@ enum TimeUnit : uint8_t {
 };
 
 constexpr uint8_t MAX_WELLS = 96;
-constexpr uint8_t MAX_ACTIONS_PER_WELL = 16;
+constexpr uint8_t MAX_ACTIONS_PER_WELL = 28;
 constexpr uint16_t MAX_ACTIONS_TOTAL = 64;
 
 constexpr uint16_t INVALID = 0xFF;
@@ -60,3 +60,5 @@ void printAction(const Action& action);
 void printActions();
 void printWellAction(const WellAction& wellAction, uint8_t wellIndex);
 void printWellActions();
+void printMaxActions();
+void printMaxActionsPerWell();

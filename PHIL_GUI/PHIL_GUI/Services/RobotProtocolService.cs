@@ -49,6 +49,8 @@ namespace PHIL_GUI.Services
         const string CLEAR_ACTIONS_CMD = "CLEAR_ACTIONS";
         const string PRINT_ACTIONS_CMD = "PRINT_ACTIONS";
         const string PRINT_WELL_ACTIONS_CMD = "PRINT_WELL_ACTIONS";
+        const string PRINT_MAX_ACTIONS_CMD = "PRINT_MAX_ACTIONS";
+        const string PRINT_MAX_ACTIONS_PER_WELL_CMD = "PRINT_MAX_ACTIONS_PER_WELL";
         const string PRINT_TIME_CMD = "PRINT_TIME";
         const string SET_TIME_CMD = "SET_TIME";
         const string SET_PLATE_TYPE_CMD = "SET_PLATE_TYPE";
@@ -67,6 +69,16 @@ namespace PHIL_GUI.Services
         const string STEP_SIZE_PREFIX = "STEP_SIZE:";
         const string MICROSTEPS_PREFIX = "MICROSTEPS:";
         const string TIME_PREFIX = "TIME:";
+        const string MAX_ACTIONS_TOTAL_PREIX = "MAX_ACTIONS_TOTAL:";
+        const string MAX_ACTIONS_PER_WELL_PREIX = "MAX_ACTIONS_PER_WELL:";
+        const string END_CALIBRATION = "END_CAL";
+        const string END_ACTIONS = "END_ACTIONS";
+        const string END_WELL_ACTIONS = "END_WELL_ACTIONS";
+
+
+        private TaskCompletionSource<bool>? waiter;
+        private string? expectedCompletion;
+
 
         private bool ready;
 
@@ -211,6 +223,11 @@ namespace PHIL_GUI.Services
             SendCommand($"{DELETE_POINT_CMD} {wellName}");
         }
 
+        public void ClearCalibration()
+        {
+            SendCommand(CLEAR_CALIBRATION_CMD);
+        }
+
         public void Aspirate(int pumpNumber, int volume)
         {
             SendCommand($"{ASPIRATE_CMD} {pumpNumber} {volume}");
@@ -262,16 +279,28 @@ namespace PHIL_GUI.Services
             ready = true;
 
             await SendWithDelay(PRINT_WELL_CMD);
-            await SendWithDelay(PRINT_CALIBRATION_CMD);
+            await SendAndWait(PRINT_CALIBRATION_CMD, END_CALIBRATION);
             await SendWithDelay(PRINT_STEPS_CMD);
-            await SendWithDelay(PRINT_ACTIONS_CMD);
-            await SendWithDelay(PRINT_WELL_ACTIONS_CMD);
+            await SendAndWait(PRINT_ACTIONS_CMD, END_ACTIONS);
+            await SendAndWait(PRINT_WELL_ACTIONS_CMD, END_WELL_ACTIONS);
             await SendWithDelay(PRINT_TIME_CMD);
+            await SendWithDelay(PRINT_MAX_ACTIONS_CMD);
+            await SendWithDelay(PRINT_MAX_ACTIONS_PER_WELL_CMD);
         }
         async Task SendWithDelay(string cmd)
         {
             SendCommand(cmd);
             await Task.Delay(50);
+        }
+
+        async Task SendAndWait(string cmd, string completion)
+        {
+            expectedCompletion = completion;
+            waiter = new TaskCompletionSource<bool>();
+
+            SendCommand(cmd);
+
+            await waiter.Task;
         }
 
         private void OnMessageReceived(string message)
@@ -284,6 +313,14 @@ namespace PHIL_GUI.Services
             {
                 ParseMessage(message);
             }, DispatcherPriority.Background);
+
+
+            if (waiter == null || expectedCompletion == null) return;
+            if (!message.Contains(expectedCompletion)) return;
+
+            waiter.TrySetResult(true);
+            waiter = null;
+            expectedCompletion = null;
         }
 
         private void ParseMessage(string message)
@@ -302,6 +339,8 @@ namespace PHIL_GUI.Services
             else if (message.StartsWith(STEP_SIZE_PREFIX)) ParseStepSize(message);
             else if (message.StartsWith(MICROSTEPS_PREFIX)) ParseMicrosteps(message);
             else if (message.StartsWith(TIME_PREFIX)) ParseTime(message);
+            else if (message.StartsWith(MAX_ACTIONS_TOTAL_PREIX)) ParseMaxActions(message);
+            else if (message.StartsWith(MAX_ACTIONS_PER_WELL_PREIX)) ParseMaxWellActions(message);
         }
 
         private Dictionary<string, string> ParseKV(string msg, string prefix)
@@ -491,6 +530,20 @@ namespace PHIL_GUI.Services
             if (isValid) return;
 
             SetTime(DateTimeOffset.Now.ToLocalTime().ToUnixTimeSeconds());
+        }
+
+        private void ParseMaxActions(string msg)
+        {
+            string maxActionsStr = msg.Substring(MAX_ACTIONS_TOTAL_PREIX.Length).Trim();
+            int maxActions = int.Parse(maxActionsStr, CultureInfo.InvariantCulture);
+            robotState.ActionScheduler.MaxTotalActions = maxActions;
+        }
+
+        private void ParseMaxWellActions(string msg)
+        {
+            string maxActionsStr = msg.Substring(MAX_ACTIONS_PER_WELL_PREIX.Length).Trim();
+            int maxActions = int.Parse(maxActionsStr, CultureInfo.InvariantCulture);
+            robotState.ActionScheduler.MaxActionsPerWell = maxActions;
         }
 
         private void SetTime(long unixTime)
