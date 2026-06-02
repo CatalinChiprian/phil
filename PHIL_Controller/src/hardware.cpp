@@ -343,5 +343,5 @@ uint32_t getTime() {
 }
 
 void printTime() {
-    Serial.print(F("TIME=")); Serial.println(rtc.now().unixtime());
+    Serial.print(F("TIME:")); Serial.println(rtc.now().unixtime());
 }

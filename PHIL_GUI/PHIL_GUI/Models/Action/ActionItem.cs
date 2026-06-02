@@ -189,6 +189,17 @@ namespace PHIL_GUI.Models
             }
         }
 
+        private long lastRunEpoch;
+        public long LastRunEpoch
+        {
+            get => lastRunEpoch;
+            set
+            {
+                if (value == lastRunEpoch) return;
+                SetProperty(ref lastRunEpoch, value);
+            }
+        }
+
         private DateTimeOffset? startDate;
         public DateTimeOffset? StartDate
         {
@@ -275,6 +286,13 @@ namespace PHIL_GUI.Models
             }
         }
 
+        private TimeSpan timeUntilNextRun;
+        public TimeSpan TimeUntilNextRun
+        {
+            get => timeUntilNextRun;
+            set => SetProperty(ref timeUntilNextRun, value);
+        }
+
         public DateTime Today => DateTime.Now.ToLocalTime();
 
         private bool isVisible = true;
@@ -291,7 +309,7 @@ namespace PHIL_GUI.Models
 
         private string GetStartLabel()
         {
-            if (StartDate == null && StartTime == null) 
+            if (StartDate == null && StartTime == null)
                 return "From Now";
 
             var parts = new List<string>();
@@ -317,7 +335,7 @@ namespace PHIL_GUI.Models
             if (EndTime != null)
                 parts.Add(EndTime.Value.ToString(@"hh\:mm"));
 
-            return "Until " + string.Join (" ", parts);
+            return "Until " + string.Join(" ", parts);
         }
         public string Summary => $"{GetPumpSummary()} {Amount}µL";
         private string GetPumpSummary() => Type switch
@@ -329,6 +347,27 @@ namespace PHIL_GUI.Models
         };
 
         public string PeriodLabel => $"{GetStartLabel()} {GetEndLabel()}";
+
+        public string TimeUntilNextRunLabel =>
+            TimeUntilNextRun > TimeSpan.Zero
+            ? TimeUntilNextRun.ToString(@"hh\:mm\:ss")
+            : GetTimeTextLabel();
+
+        private string GetTimeTextLabel()
+        {
+            DateTimeOffset now = DateTimeOffset.Now;
+
+            DateTimeOffset? start = null;
+
+            if (StartDate.HasValue && StartTime.HasValue)
+            {
+                start = StartDate.Value.Date + StartTime.Value;
+            }
+
+            if (start == null) return "Finished";
+
+            return now < start ? "Pending" : "Finished";
+        }
 
         private bool suppressValidation;
 
@@ -368,6 +407,7 @@ namespace PHIL_GUI.Models
             TimeUnit = model.TimeUnit;
             StartEpoch = model.StartEpoch;
             EndEpoch = model.EndEpoch;
+            LastRunEpoch = model.LastRunEpoch;
             StartTime = null;
             StartDate = null;
             EndTime = null;
@@ -412,10 +452,12 @@ namespace PHIL_GUI.Models
             TimeUnit = other.TimeUnit;
             StartEpoch = other.StartEpoch;
             EndEpoch = other.EndEpoch;
+            LastRunEpoch = other.LastRunEpoch;
             StartDate = other.StartDate;
             StartTime = other.StartTime;
             EndDate = other.EndDate;
             EndTime = other.EndTime;
+
             IsVisible = other.IsVisible;
 
             suppressValidation = false;
@@ -434,5 +476,51 @@ namespace PHIL_GUI.Models
                 EndEpoch = new DateTimeOffset(endDateTime).ToUnixTimeSeconds();
             }
         }
+
+        public void UpdateCountdown()
+        {
+            int intervalSeconds = GetIntervalSeconds();
+
+            DateTimeOffset now = DateTimeOffset.Now;
+            DateTimeOffset nextRun;
+
+            if (Frequency < 0)
+            {
+                // ONE-TIME ACTION
+                nextRun = DateTimeOffset.FromUnixTimeSeconds(StartEpoch);
+            }
+            else
+            {
+                if (LastRunEpoch == 0)
+                {
+                    nextRun = DateTimeOffset.FromUnixTimeSeconds(StartEpoch);
+                }
+                else
+                {
+                    var lastRun = DateTimeOffset.FromUnixTimeSeconds(LastRunEpoch);
+                    nextRun = lastRun.AddSeconds(intervalSeconds);
+                }
+            }
+
+            TimeUntilNextRun = nextRun - now;
+
+            if (TimeUntilNextRun < TimeSpan.Zero) TimeUntilNextRun = TimeSpan.Zero;
+
+            OnPropertyChanged(nameof(TimeUntilNextRunLabel));
+        }
+
+        private int GetIntervalSeconds()
+        {
+            if (Frequency <= 0) return 0;
+
+            return TimeUnit switch
+            {
+                TimeUnit.Minute => Frequency * 60,
+                TimeUnit.Hour => Frequency * 60 * 60,
+                TimeUnit.Day => Frequency * 24 * 60 * 60,
+                _ => 0
+            };
+        }
+
     }
 }

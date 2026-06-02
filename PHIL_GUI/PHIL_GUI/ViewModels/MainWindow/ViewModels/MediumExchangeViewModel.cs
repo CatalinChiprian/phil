@@ -1,7 +1,9 @@
-﻿using CommunityToolkit.Mvvm.Input;
+﻿using Avalonia.Threading;
+using CommunityToolkit.Mvvm.Input;
 using PHIL_GUI.Helpers;
 using PHIL_GUI.Models;
 using PHIL_GUI.ViewModels.Base;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
@@ -31,6 +33,8 @@ namespace PHIL_GUI.ViewModels
 
         private string lastSelectedTarget = string.Empty;
         public int DetailsPageWidth => WellPlate.SelectedCount > 0 ? DETAILS_PAGE_WIDTH : 0;
+
+        private readonly DispatcherTimer timer;
 
         public string SelectedWellsCount => AppSettings.Is96Well
             ? GetWellCountText(WellPlate.SelectedCount)
@@ -74,6 +78,16 @@ namespace PHIL_GUI.ViewModels
 
         public MediumExchangeViewModel() 
         {
+
+            timer = new DispatcherTimer
+            {
+                Interval = TimeSpan.FromSeconds(1)
+            };
+
+            timer.Tick += (_, _) => UpdateCountdowns();
+            timer.Start();
+
+
             WellPlate = AppSettings.Is96Well ? new WellPlateItem96() : new WellPlateItemOoC();
             WellPlate.AllowMultipleSelection = true;
 
@@ -116,6 +130,14 @@ namespace PHIL_GUI.ViewModels
 
                     RefreshWellActionsList();
                 }
+            }
+        }
+
+        private void UpdateCountdowns()
+        {
+            foreach (ActionItem item in ActionItems)
+            {
+                item.UpdateCountdown();
             }
         }
 

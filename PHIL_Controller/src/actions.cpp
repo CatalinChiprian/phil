@@ -239,9 +239,9 @@ void clearAllActions() {
 
 uint32_t unitToSeconds(TimeUnit unit) {
     switch (unit) {
-        case MINUTE: return 60;           // Test only Minutes
-        case HOUR: return 3600;        // Hour
-        case DAY: return 86400;      // Day
+        case MINUTE: return 60; // Test only
+        case HOUR: return 60 * 60;
+        case DAY: return 24 * 60 * 60;
         default: return 0;
     }
 }
@@ -262,10 +262,12 @@ bool isActionLinkedToWell(const uint16_t &actionId, const uint8_t &wellIndex) {
 }
 
 void executeAction(Action &action) {
-    for (uint8_t well = 0; well < MAX_WELLS; well++) {
+    for (uint8_t well = 0; well < MAX_WELLS; well++) {  
         if (!isActionLinkedToWell(action.id, well)) continue;
 
-        Serial.print(F("Executing Action")); Serial.println(action.id);
+        Serial.print(F("EXECUTING_ACTION_ID:")); 
+        Serial.print(F("Id=")); Serial.print(action.id);
+        Serial.print(F(",LastRun=")); Serial.println(action.lastRunEpoch);
 
         char row;
         uint8_t col;
@@ -331,8 +333,8 @@ void processActions() {
             if (action.lastRunEpoch != 0) continue;
             if (now < action.startEpoch) continue;
 
-            executeAction(action);
             action.lastRunEpoch = now;
+            executeAction(action);
             saveAction(action, i);
             continue;
         }
@@ -348,8 +350,8 @@ void processActions() {
 
         if (now < nextRun) continue;
 
+        action.lastRunEpoch = nextRun;
         executeAction(action);
-        action.lastRunEpoch = now;
         saveAction(action, i);
     }
 }

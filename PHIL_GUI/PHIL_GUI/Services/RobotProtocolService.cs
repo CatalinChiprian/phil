@@ -8,6 +8,7 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Text.Json;
+using System.Threading.Tasks;
 
 namespace PHIL_GUI.Services
 {
@@ -59,6 +60,7 @@ namespace PHIL_GUI.Services
         const string ACTION_PREFIX = "ACTION:";
         const string WELL_ACTION_PREFIX = "WELL_ACTION:";
         const string ACTION_CREATED_PREFIX = "ACTION_CREATED:";
+        const string EXECUTING_ACTION_ID_PREFIX = "EXECUTING_ACTION_ID:";
         const string RMS_PREFIX = "RMS:";
         const string LIMIT_PRESSED_PREFIX = "LIMIT_PRESSED:";
         const string LIMIT_RELEASED_PREFIX = "LIMIT_RELEASED:";
@@ -102,6 +104,7 @@ namespace PHIL_GUI.Services
 
         private void SendCommand(string command)
         {
+            ReceivedData += $"Sent To Robot: {command}\n";
             serialPortService.SendMessage(command);
         }
 
@@ -254,16 +257,21 @@ namespace PHIL_GUI.Services
             SendCommand("s");
         }
 
-        private void OnSerialPortConnected()
+        private async void OnSerialPortConnected()
         {
             ready = true;
 
-            SendCommand(PRINT_WELL_CMD);
-            SendCommand(PRINT_CALIBRATION_CMD);
-            SendCommand(PRINT_STEPS_CMD);
-            SendCommand(PRINT_ACTIONS_CMD);
-            SendCommand(PRINT_WELL_ACTIONS_CMD);
-            SendCommand(PRINT_TIME_CMD);
+            await SendWithDelay(PRINT_WELL_CMD);
+            await SendWithDelay(PRINT_CALIBRATION_CMD);
+            await SendWithDelay(PRINT_STEPS_CMD);
+            await SendWithDelay(PRINT_ACTIONS_CMD);
+            await SendWithDelay(PRINT_WELL_ACTIONS_CMD);
+            await SendWithDelay(PRINT_TIME_CMD);
+        }
+        async Task SendWithDelay(string cmd)
+        {
+            SendCommand(cmd);
+            await Task.Delay(50);
         }
 
         private void OnMessageReceived(string message)
@@ -288,6 +296,7 @@ namespace PHIL_GUI.Services
             else if (message.StartsWith(ACTION_PREFIX)) ParseAction(message);
             else if (message.StartsWith(WELL_ACTION_PREFIX)) ParseWellAction(message);
             else if (message.StartsWith(ACTION_CREATED_PREFIX)) ParseActionCreated(message);
+            else if (message.StartsWith(EXECUTING_ACTION_ID_PREFIX)) ParseActionExecution(message);
             else if (message.StartsWith(LIMIT_PRESSED_PREFIX)) ParseLimit(message, LimitType.Pressed);
             else if (message.StartsWith(LIMIT_RELEASED_PREFIX)) ParseLimit(message, LimitType.Released);
             else if (message.StartsWith(STEP_SIZE_PREFIX)) ParseStepSize(message);
@@ -409,8 +418,9 @@ namespace PHIL_GUI.Services
             TimeUnit unit = (TimeUnit)int.Parse(kv["Unit"], CultureInfo.InvariantCulture);
             long startTime = long.Parse(kv["Start"], CultureInfo.InvariantCulture);
             long endTime = long.Parse(kv["End"], CultureInfo.InvariantCulture);
+            long lastRunTime = long.Parse(kv["LastRun"], CultureInfo.InvariantCulture);
 
-            ScheduleAction action = new ScheduleAction(id, type, pump1, pump2, amount, frequency, unit, startTime, endTime);
+            ScheduleAction action = new ScheduleAction(id, type, pump1, pump2, amount, frequency, unit, startTime, endTime, lastRunTime);
 
             RobotState.ActionScheduler.Actions.Add(action);
         }
@@ -435,6 +445,14 @@ namespace PHIL_GUI.Services
             int id = int.Parse(kv["Id"], CultureInfo.InvariantCulture);
 
             RobotState.ActionScheduler.UpdateAction(tempId, id);
+        }
+
+        private void ParseActionExecution(string msg)
+        {
+            var kv = ParseKV(msg, EXECUTING_ACTION_ID_PREFIX);
+            int id = int.Parse(kv["Id"], CultureInfo.InvariantCulture);
+            long lastRunEpoch = long.Parse(kv["LastRun"], CultureInfo.InvariantCulture);
+            RobotState.ActionScheduler.UpdateAction(id, lastRunEpoch);
         }
 
         private void ParseLimit(string msg, LimitType type)

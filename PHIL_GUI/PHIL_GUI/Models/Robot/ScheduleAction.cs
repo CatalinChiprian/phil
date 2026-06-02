@@ -126,7 +126,18 @@ namespace PHIL_GUI.Models
             }
         }
 
-        public ScheduleAction(int id, ActionType type, Pump pump1, Pump pump2, int amount, int frequency, TimeUnit unit, long startTime, long endTime)
+        private long lastRunEpoch;
+        public long LastRunEpoch
+        {
+            get => lastRunEpoch;
+            set
+            {
+                if (value == lastRunEpoch) return;
+                SetProperty(ref lastRunEpoch, value);
+            }
+        }
+
+        public ScheduleAction(int id, ActionType type, Pump pump1, Pump pump2, int amount, int frequency, TimeUnit unit, long startTime, long endTime, long lastRunTime)
         {
             Id = id;
             Type = type;
@@ -137,6 +148,7 @@ namespace PHIL_GUI.Models
             TimeUnit = unit;
             StartEpoch = startTime;
             EndEpoch = endTime;
+            LastRunEpoch = lastRunTime;
         }
 
         public ScheduleAction(ActionItem actionItem)

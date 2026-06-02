@@ -49,6 +49,7 @@
                                         <StackPanel Spacing="0">
                                             <TextBlock Classes="subtitle-secondary" Text="{Binding FrequencyLabel}" FontSize="10"/>
                                             <TextBlock Classes="subtitle-secondary" Text="{Binding PeriodLabel}" FontSize="10"/>
+                                            <TextBlock Classes="subtitle-secondary" Text="{Binding TimeUntilNextRunLabel}" FontSize="10"/>
                                         </StackPanel>
 
                                         <Grid ColumnDefinitions="*,*" ColumnSpacing="6" Margin="0,2,0,0">

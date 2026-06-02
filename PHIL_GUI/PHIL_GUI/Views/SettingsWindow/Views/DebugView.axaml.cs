@@ -39,7 +39,7 @@ public partial class DebugView : UserControl
             if (DataContext is not DebugViewModel vm) return;
 
 
-            await streamWriter.WriteLineAsync(vm.ReceivedData);
+            await streamWriter.WriteLineAsync(vm.RobotProtocolService.ReceivedData);
         }
     }
 
@@ -47,13 +47,13 @@ public partial class DebugView : UserControl
     {
         if (DataContext is not DebugViewModel vm) return;
 
-        if (string.IsNullOrEmpty(vm.ReceivedData)) return;
+        if (string.IsNullOrEmpty(vm.RobotProtocolService.ReceivedData)) return;
 
         TopLevel topLevel = TopLevel.GetTopLevel(this);
 
         if (topLevel is not null)
         {
-            await topLevel.Clipboard!.SetTextAsync(vm.ReceivedData);
+            await topLevel.Clipboard!.SetTextAsync(vm.RobotProtocolService.ReceivedData);
         }
     }
 }

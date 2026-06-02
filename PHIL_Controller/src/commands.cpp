@@ -216,7 +216,7 @@ void parseCommands() {
 			printTime();
 		}
 		else {
-			Serial.println(F("ERROR:UNKNOWN_COMMAND"));
+			Serial.print(F("ERROR:UNKNOWN_COMMAND: ")); Serial.println(cmd);
 		}
 	}
 }

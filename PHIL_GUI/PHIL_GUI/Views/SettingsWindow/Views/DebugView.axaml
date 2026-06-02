@@ -14,7 +14,7 @@
 
             <Grid>
                 <TextBox Classes="terminal"
-                         Text="{Binding ReceivedData}"
+                         Text="{Binding RobotProtocolService.ReceivedData}"
                          AcceptsReturn="True"
                          TextWrapping="Wrap"/>
 

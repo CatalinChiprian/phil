@@ -7,6 +7,8 @@ namespace PHIL_GUI.Models
 {
     public class ActionScheduler
     {
+        const int MAX_ALLOWED_SECONDS_DRIFT = 5;
+
         private int nextTempId = -1;
         public ObservableCollection<ScheduleAction> Actions { get; } = new ObservableCollection<ScheduleAction>();
         public Dictionary<int, ObservableCollection<ScheduleAction>> WellActions { get; } = new Dictionary<int, ObservableCollection<ScheduleAction>>();
@@ -37,6 +39,13 @@ namespace PHIL_GUI.Models
             if (action == null) return;
 
             action.Id = id;
+        }
+
+        public void UpdateAction(int actionId, long lastRunEpoch)
+        {
+            ScheduleAction action = Actions.FirstOrDefault(a => a.Id == actionId);
+            if (action == null) return;
+            action.LastRunEpoch = lastRunEpoch;
         }
         public void DeleteAction(int actionId)
         { 
@@ -98,11 +107,11 @@ namespace PHIL_GUI.Models
         {
             DateTimeOffset robotTime = DateTimeOffset.FromUnixTimeSeconds(robotUnixTime);
 
-            DateTimeOffset now = DateTimeOffset.Now;
+            DateTimeOffset now = DateTimeOffset.UtcNow;
 
             double diffSeconds = Math.Abs((now - robotTime).TotalSeconds);
 
-            return diffSeconds < 30;
+            return diffSeconds < MAX_ALLOWED_SECONDS_DRIFT;
         }
 
         public int GetNextTempId()
