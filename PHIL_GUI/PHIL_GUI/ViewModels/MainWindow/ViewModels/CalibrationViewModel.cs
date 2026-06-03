@@ -90,20 +90,21 @@ namespace PHIL_GUI.ViewModels
         {
             OnPropertyChanged(nameof(SolveEnabled));
 
-            if (e.Action == NotifyCollectionChangedAction.Add)
+
+            IEnumerable<CalibrationPoint> items = Enumerable.Empty<CalibrationPoint>();
+
+            if (e.Action == NotifyCollectionChangedAction.Add && e.NewItems != null)
             {
-                foreach (CalibrationPoint point in e.NewItems)
-                {
-                    UpdateWellClass(point, e.Action);
-                }
+                items = e.NewItems.Cast<CalibrationPoint>();
             }
-            
-            if (e.Action == NotifyCollectionChangedAction.Remove)
+            else if (e.Action == NotifyCollectionChangedAction.Remove && e.OldItems != null)
             {
-                foreach (CalibrationPoint point in e.OldItems)
-                {
-                    UpdateWellClass(point, e.Action);
-                }
+                items = e.OldItems.Cast<CalibrationPoint>();
+            }
+
+            foreach (CalibrationPoint point in items)
+            {
+                UpdateWellClass(point, e.Action);
             }
         }
 
@@ -199,6 +200,12 @@ namespace PHIL_GUI.ViewModels
         private void ClearCalibration()
         {
             RobotProtocolService.ClearCalibration();
+
+            foreach(CalibrationPoint point in Calibration.Points)
+            {
+                UpdateWellClass(point, NotifyCollectionChangedAction.Remove);
+            }
+
             Calibration.Points.Clear();
         }
 
