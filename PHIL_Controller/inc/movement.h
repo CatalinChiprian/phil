@@ -3,6 +3,8 @@
 #include <stdint.h>
 
 constexpr uint8_t WELL_HOME = 0xFF;
+const uint8_t WELL_UNKNOWN = 0xFE;
+const uint8_t WELL_CONTAINER = 0xFD;
 
 extern const int16_t ZMotorNormalPosition;
 

@@ -59,6 +59,7 @@ namespace PHIL_GUI.Services
         const string POS_PREFIX = "POS:";
         const string CAL_PT_PREFIX = "CAL_PT:";
         const string CAL_REC_PREFIX = "CAL_REC:";
+        const string CAL_DEL_PREFIX = "CAL_DEL:";
         const string ACTION_PREFIX = "ACTION:";
         const string WELL_ACTION_PREFIX = "WELL_ACTION:";
         const string ACTION_CREATED_PREFIX = "ACTION_CREATED:";
@@ -329,6 +330,7 @@ namespace PHIL_GUI.Services
         {
             if (message.StartsWith(WELL_PREFIX)) ParseWellArrival(message);
             else if (message.StartsWith(CAL_REC_PREFIX)) ParseCalRecorded(message);
+            else if (message.StartsWith(CAL_DEL_PREFIX)) ParseCalDeleted(message);
             else if (message.StartsWith(CAL_PT_PREFIX)) ParseCalPoint(message);
             else if (message.StartsWith(POS_PREFIX)) ParsePosition(message);
             else if (message.StartsWith(RMS_PREFIX)) ParseRms(message);
@@ -358,8 +360,13 @@ namespace PHIL_GUI.Services
         {
             var kv = ParseKV(msg, WELL_PREFIX);
 
-            robotState.CurrentWell.Type = WellType.Standard;
-            robotState.CurrentWell.Name = kv["Name"].ToUpper();
+            string name = kv["Name"].ToUpper();
+            if (name == "HOME") robotState.CurrentWell.Type = WellType.Home;
+            else if (name == "UNKNOWN") robotState.CurrentWell.Type = WellType.Unknown;
+            else if (name == "CONTAINER") robotState.CurrentWell.Type = WellType.Container;
+            else robotState.CurrentWell.Type = WellType.Standard;
+
+            robotState.CurrentWell.Name = name;
             robotState.CurrentWell.X = double.Parse(kv["X"], CultureInfo.InvariantCulture);
             robotState.CurrentWell.Y = double.Parse(kv["Y"], CultureInfo.InvariantCulture);
             robotState.CurrentWell.AngleL = kv["L"];
@@ -438,6 +445,17 @@ namespace PHIL_GUI.Services
                     robotState.Calibration.Points.Add(point);
                 }
             };
+        }
+
+        private void ParseCalDeleted(string msg)
+        {
+            var kv = ParseKV(msg, CAL_DEL_PREFIX);
+            string name = kv["Name"].ToUpper();
+
+            CalibrationPoint existingPoint = robotState.Calibration.Points.FirstOrDefault(p => p.Name == name);
+            if (existingPoint == null) return;
+
+            robotState.Calibration.Points.Remove(existingPoint);
         }
 
         private void ParseRms(string msg)

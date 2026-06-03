@@ -94,7 +94,15 @@ namespace PHIL_GUI.ViewModels
             {
                 foreach (CalibrationPoint point in e.NewItems)
                 {
-                    UpdateWellClass(point);
+                    UpdateWellClass(point, e.Action);
+                }
+            }
+            
+            if (e.Action == NotifyCollectionChangedAction.Remove)
+            {
+                foreach (CalibrationPoint point in e.OldItems)
+                {
+                    UpdateWellClass(point, e.Action);
                 }
             }
         }
@@ -191,6 +199,7 @@ namespace PHIL_GUI.ViewModels
         private void ClearCalibration()
         {
             RobotProtocolService.ClearCalibration();
+            Calibration.Points.Clear();
         }
 
         private void Cancel()
@@ -203,13 +212,14 @@ namespace PHIL_GUI.ViewModels
             OnPropertyChanged(nameof(RecordEnabled));
         }
 
-        private void UpdateWellClass(CalibrationPoint point)
+        private void UpdateWellClass(CalibrationPoint point, NotifyCollectionChangedAction action)
         {
             WellItem wellItem = WellPlate.GetWell(point.Name);
 
             if (wellItem == null) return;
 
-            wellItem.Calibration = point;
+            if (action == NotifyCollectionChangedAction.Add) wellItem.Calibration = point;
+            else if (action == NotifyCollectionChangedAction.Remove) wellItem.Calibration = null;
 
             if (wellItem.IsSelected) SelectedCalibrationPoint = point;
         }

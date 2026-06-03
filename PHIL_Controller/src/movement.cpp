@@ -28,6 +28,8 @@ void moveBackward() {
     stepperR.run();
   }
 
+  wellIndex = WELL_UNKNOWN;
+  saveCurrentWell(wellIndex);
   savePositions();
 }
 
@@ -44,6 +46,8 @@ void moveForward() {
     stepperR.run();
   }
 
+  wellIndex = WELL_UNKNOWN;
+  saveCurrentWell(wellIndex);
   savePositions();
 }
 
@@ -74,6 +78,8 @@ void moveLeft() {
     stepperR.run();
   }
 
+  wellIndex = WELL_UNKNOWN;
+  saveCurrentWell(wellIndex);
   savePositions();
 }
 
@@ -103,7 +109,9 @@ void moveRight() {
     stepperL.run();
     stepperR.run();
   }
-
+  
+  wellIndex = WELL_UNKNOWN;
+  saveCurrentWell(wellIndex);
   savePositions();
 }
 
@@ -185,7 +193,8 @@ void goToOrigin() {
       stepperL.run();
     }
 
-    saveCurrentWell(WELL_HOME);
+    wellIndex = WELL_HOME;
+    saveCurrentWell(wellIndex);
     savePositions();
 }
 
@@ -482,6 +491,8 @@ void goToWasteContainer() {
 	  stepperL.run();
 	}
 
+  wellIndex = WELL_CONTAINER;
+  saveCurrentWell(wellIndex);
 	savePositions();
 }
 
@@ -515,6 +526,8 @@ void printCurrentWell() {
   Serial.print(F("WELL:"));
   Serial.print(F("Name="));
   if (wellIndex == WELL_HOME) Serial.print(F("HOME"));
+  else if (wellIndex == WELL_UNKNOWN) Serial.print(F("UNKNOWN"));
+  else if (wellIndex == WELL_CONTAINER) Serial.print(F("CONTAINER"));
   else { Serial.print(row); Serial.print(col); }
   Serial.print(F(",X=")); Serial.print(x);
   Serial.print(F(",Y=")); Serial.print(y);

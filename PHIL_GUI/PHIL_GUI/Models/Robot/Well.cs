@@ -6,7 +6,8 @@ namespace PHIL_GUI.Models
     {
         Home,
         Standard,
-        Unknown
+        Unknown,
+        Container
     }
     public class Well : ObservableObject
     {

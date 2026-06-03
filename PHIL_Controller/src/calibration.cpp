@@ -75,7 +75,9 @@ int8_t calibrateHome() {
 
     stepperR.setCurrentPosition(0);
 
-    saveCurrentWell(WELL_HOME);
+    wellIndex = WELL_HOME;
+    saveCurrentWell(wellIndex);
+    savePositions();
 
     disableAllMotors();
 
@@ -241,8 +243,9 @@ void deleteCalibrationPoint(char row, uint8_t col) {
 	}
 	calCount--;
 
-	Serial.print(F("CAL_DELETED:")); Serial.print(row); Serial.print(col);
-	Serial.print(F(",remaining=")); Serial.println(calCount);
+	Serial.print(F("CAL_DEL:")); 
+    Serial.print(F("Name=")); Serial.print(row); Serial.print(col);
+	Serial.print(F(",Remaining=")); Serial.println(calCount);
 }
 
 float clampZero(float v, float eps = 5e-4f) {
