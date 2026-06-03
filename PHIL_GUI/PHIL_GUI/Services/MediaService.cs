@@ -19,8 +19,16 @@ namespace PHIL_GUI.Services
                 return;
             }
 
-            int width = 640;
-            int height = 480;
+            using var firstFrame = capture.QueryFrame();
+
+            if (firstFrame == null || firstFrame.IsEmpty)
+            {
+                Console.WriteLine("Failed to get first frame");
+                return;
+            }
+
+            int width = firstFrame.Width;
+            int height = firstFrame.Height;
 
             string desktop = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
             string folder = Path.Combine(desktop, "Recordings");
@@ -29,12 +37,18 @@ namespace PHIL_GUI.Services
 
             using var writer = new VideoWriter(
                 file,
-                VideoWriter.Fourcc('M', 'J', 'P', 'G'),
+                VideoWriter.Fourcc('X', 'V', 'I', 'D'),
                 25,
                 new System.Drawing.Size(width, height),
                 true);
 
             DateTime start = DateTime.Now;
+
+
+            using (var img = firstFrame.ToImage<Bgr, byte>())
+            {
+                writer.Write(img.Mat);
+            }
 
             while ((DateTime.Now - start).TotalSeconds < 10)
             {
@@ -42,7 +56,8 @@ namespace PHIL_GUI.Services
 
                 if (frame != null)
                 {
-                    writer.Write(frame);
+                    using var img = frame.ToImage<Bgr, byte>();
+                    writer.Write(img.Mat);
                 }
 
                 await Task.Delay(40);

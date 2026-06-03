@@ -213,30 +213,6 @@ void deleteAction(uint16_t id) {
     Serial.println(action->id);
 }
 
-void clearAllActions() {
-    Action empty;
-    memset(&empty, 0, sizeof(Action));
-    empty.id = 0;
-    empty.enabled = 0;
-
-    for (uint8_t i = 0; i < MAX_ACTIONS_TOTAL; i++) {
-        actions[i] = empty;
-        EEPROM.put(EEPROM_ACTIONS_ADDR + i * sizeof(Action), empty);
-    }
-
-    for (uint8_t w = 0; w < MAX_WELLS; w++) {
-        wellActions[w].count = 0;
-    }
-
-    actionCount = 0;
-    nextActionId = 1;
-
-    saveActionsState();
-    saveWellActions();
-
-    Serial.println(F("Actions Cleared"));
-}
-
 uint32_t unitToSeconds(TimeUnit unit) {
     switch (unit) {
         case MINUTE: return 60; // Test only
@@ -305,6 +281,12 @@ void executeAction(Action &action) {
     }
 }
 
+void handleAction(Action &action, uint16_t index, uint32_t now) {
+    action.lastRunEpoch = now;
+    executeAction(action);
+    saveAction(action, index);
+}
+
 bool isActionCompatible(const Action& action) {
     bool is96 = (getCurrentWellplate() == WELL96);
 
@@ -333,9 +315,7 @@ void processActions() {
             if (action.lastRunEpoch != 0) continue;
             if (now < action.startEpoch) continue;
 
-            action.lastRunEpoch = now;
-            executeAction(action);
-            saveAction(action, i);
+            handleAction(action, i, now);
             continue;
         }
 
@@ -344,19 +324,15 @@ void processActions() {
         uint32_t period = action.frequency * unitToSeconds(action.unit);
         if (period == 0) continue;
 
-        uint32_t nextRun = action.lastRunEpoch + period;
+        int32_t baseTime = (action.lastRunEpoch == 0)
+        ? (action.startEpoch == 0 ? now : action.startEpoch)
+        : action.lastRunEpoch;
 
-        if (action.lastRunEpoch == 0)
-        {
-            if (action.startEpoch == 0) nextRun = now;
-            else nextRun = action.startEpoch;
-        }
+        uint32_t nextRun = baseTime + (action.lastRunEpoch == 0 ? 0 : period);
 
         if (now < nextRun) continue;
 
-        action.lastRunEpoch = now;
-        executeAction(action);
-        saveAction(action, i);
+        handleAction(action, i, now);
     }
 }
 

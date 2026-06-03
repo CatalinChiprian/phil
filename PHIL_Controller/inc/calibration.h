@@ -19,7 +19,6 @@ constexpr float WELL_DY = 9.0;
 int8_t calibrateHome();
 void recordCalibrationPoint(char row, uint8_t col);
 bool solveMapping();
-void clearCalibration();
 void deleteCalibrationPoint(char row, uint8_t col);
 
 inline float dot10(const float a[TERMS], const float b[TERMS]) {

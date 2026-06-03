@@ -14,13 +14,14 @@ constexpr uint16_t EEPROM_POS_MAGIC_ADDR = 16;
 constexpr uint16_t EEPROM_PLATE_TYPE_MAGIC_ADDR = 18;
 constexpr uint16_t EEPROM_PLATE_TYPE_ADDR = 19;
 
-constexpr uint16_t EEPROM_CAL_BASE = 64;
+constexpr uint16_t EEPROM_CAL_MAGIC_ADDR = 64;
 constexpr uint16_t EEPROM_WELL_BASE = 800;
 
 constexpr uint16_t EEPROM_ACTIONS_MAGIC_ADDR = 896;
 constexpr uint16_t EEPROM_NEXT_ACTION_ID_ADDR = 900;
 constexpr uint16_t EEPROM_ACTION_COUNT_ADDR = 902;
 constexpr uint16_t EEPROM_ACTIONS_ADDR = 904;
+constexpr uint16_t EEPROM_WELL_ACTIONS_MAGIC_ADDR = 1800;
 constexpr uint16_t EEPROM_WELL_ACTIONS_ADDR = 2000;
 
 void initPersistentState();
@@ -40,3 +41,5 @@ void loadActions();
 void loadWellActions();
 void saveActionsState();
 void loadActionsState();
+void clearAllActions();
+void clearCalibration();

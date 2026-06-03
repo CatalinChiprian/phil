@@ -16,11 +16,12 @@ enum TimeUnit : uint8_t {
 };
 
 constexpr uint8_t MAX_WELLS = 96;
-constexpr uint8_t MAX_ACTIONS_PER_WELL = 28;
+constexpr uint8_t MAX_ACTIONS_PER_WELL = 16;
 constexpr uint16_t MAX_ACTIONS_TOTAL = 64;
 
 constexpr uint16_t INVALID = 0xFF;
 
+#pragma pack(push, 1)
 struct Action {
     uint16_t id;
     ActionType type;
@@ -34,11 +35,14 @@ struct Action {
     uint32_t lastRunEpoch;
     uint8_t enabled;
 };
+#pragma pack(pop)
 
+#pragma pack(push, 1)
 struct WellAction {
     uint8_t actionIds[MAX_ACTIONS_PER_WELL];
     uint8_t count;
 };
+#pragma pack(pop)
 
 extern Action actions[MAX_ACTIONS_TOTAL];
 extern WellAction wellActions[MAX_WELLS];
@@ -51,7 +55,6 @@ void updateAction(uint16_t id, ActionType type, int8_t pump1, int8_t pump2, uint
 void deleteAction(uint16_t id);
 void linkAction(uint16_t id, char* hex);
 void unlinkAction(uint16_t id, char* hex);
-void clearAllActions();
 void processActions();
 void changePlateType();
 

@@ -70,7 +70,7 @@ bool loadWellPlateType() {
 }
 
 void saveCalibration() {
-    int addr = EEPROM_CAL_BASE;
+    int addr = EEPROM_CAL_MAGIC_ADDR;
     uint8_t magic = MAGIC;
     EEPROM.put(addr, magic);  addr += sizeof(magic);
 
@@ -88,7 +88,7 @@ void saveCalibration() {
 }
 
 void loadCalibration() {
-    int addr = EEPROM_CAL_BASE;
+    int addr = EEPROM_CAL_MAGIC_ADDR;
     uint8_t magic;
     EEPROM.get(addr, magic);  addr += sizeof(magic);
     if (magic != MAGIC) {
@@ -97,7 +97,7 @@ void loadCalibration() {
     }
 
     EEPROM.get(addr, calCount);  addr += sizeof(uint8_t);
-    if (calCount < 0 || calCount > MAX_CAL) {
+    if (calCount > MAX_CAL) {
         Serial.println(F("Corrupt point count in EEPROM"));
         calCount = 0;
         return false;
@@ -129,6 +129,7 @@ void saveWellAction(WellAction& wa, uint8_t wellIndex) {
 }
 
 void saveWellActions() {
+    EEPROM.put(EEPROM_WELL_ACTIONS_MAGIC_ADDR, MAGIC);
     int addr = EEPROM_WELL_ACTIONS_ADDR;
     for (uint8_t i = 0; i < MAX_WELLS; i++) {
         EEPROM.put(addr, wellActions[i]);
@@ -146,12 +147,7 @@ void initializeEmptyActions() {
         actions[i].enabled = 0;
     }
 
-    for (uint8_t w = 0; w < MAX_WELLS; w++) {
-        wellActions[w].count = 0;
-    }
-
     saveActionsState();
-    saveWellActions();
 }
 
 void loadActionsSafe() {
@@ -177,9 +173,26 @@ void loadActions() {
 }
 
 void loadWellActions() {
+    uint8_t ok;
+    EEPROM.get(EEPROM_WELL_ACTIONS_MAGIC_ADDR, ok);
+
+    if (ok != MAGIC) {
+        Serial.println(F("No valid WellActions"));
+
+        for (uint8_t i = 0; i < MAX_WELLS; i++) {
+            wellActions[i].count = 0;
+        }
+        return;
+    }
+
     int addr = EEPROM_WELL_ACTIONS_ADDR;
     for (uint8_t i = 0; i < MAX_WELLS; i++) {
         EEPROM.get(addr, wellActions[i]);
+        
+        if (wellActions[i].count > MAX_ACTIONS_PER_WELL) {
+            wellActions[i].count = 0;
+        }
+
         if (wellActions[i].count > 0) printWellAction(wellActions[i], i);
         addr += sizeof(WellAction);
     }
@@ -202,4 +215,42 @@ void loadActionsState() {
     if (actionCount > MAX_ACTIONS_TOTAL) {
         actionCount = 0;
     }
+}
+
+void clearAllActions() {
+    Action empty;
+    memset(&empty, 0, sizeof(Action));
+    empty.id = 0;
+    empty.enabled = 0;
+
+    for (uint8_t i = 0; i < MAX_ACTIONS_TOTAL; i++) {
+        actions[i] = empty;
+        EEPROM.put(EEPROM_ACTIONS_ADDR + i * sizeof(Action), empty);
+    }
+
+    for (uint8_t w = 0; w < MAX_WELLS; w++) {
+        wellActions[w].count = 0;
+    }
+
+    actionCount = 0;
+    nextActionId = 1;
+
+    saveActionsState();
+    saveWellActions();
+
+    Serial.println(F("Actions Cleared"));
+}
+
+void clearCalibration() {
+	EEPROM.put(EEPROM_CAL_MAGIC_ADDR, 0x00);
+	mapReady = false;
+
+	for (uint8_t i = 0; i < TERMS; i++)
+    {
+        ML[i] = 0;
+        MR[i] = 0;
+    }
+
+	calCount = 0;
+	Serial.println(F("Calibration cleared"));
 }

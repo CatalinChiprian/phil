@@ -208,20 +208,6 @@ bool solveMapping() {
     return true;
 }
 
-void clearCalibration() {
-	EEPROM.put(EEPROM_CAL_BASE, 0x00);
-	mapReady = false;
-
-	for (uint8_t i = 0; i < TERMS; i++)
-    {
-        ML[i] = 0;
-        MR[i] = 0;
-    }
-
-	calCount = 0;
-	Serial.println(F("Calibration cleared"));
-}
-
 void deleteCalibrationPoint(char row, uint8_t col) {
     uint8_t targetIndex = RowColToWellIndex(row, col);
 	
