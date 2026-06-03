@@ -43,6 +43,7 @@ namespace PHIL_GUI.Services
         private void ApplySettings(AppSettings loaded)
         {
             AppSettings.SelectedPlateType = loaded.SelectedPlateType;
+            AppSettings.AreActionRecorded = loaded.AreActionRecorded;
             AppSettings.AppKeyBindings.Override(loaded.AppKeyBindings);
         }
     }

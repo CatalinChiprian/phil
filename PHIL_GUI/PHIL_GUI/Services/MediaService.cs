@@ -1,6 +1,6 @@
 ﻿using Emgu.CV;
-using Emgu.CV.CvEnum;
 using Emgu.CV.Structure;
+using PHIL_GUI.Models;
 using System;
 using System.IO;
 using System.Threading.Tasks;
@@ -9,8 +9,15 @@ namespace PHIL_GUI.Services
 {
     public class MediaService
     {
+        private readonly IRecordContext recordContext;
+        public MediaService(IRecordContext recordContext)
+        {
+            this.recordContext = recordContext;
+        }
         public async Task RecordVideo(int actionId)
         {
+            if (!recordContext.AreActionRecorded) return;
+
             using var capture = new VideoCapture(0);
 
             if (!capture.IsOpened)

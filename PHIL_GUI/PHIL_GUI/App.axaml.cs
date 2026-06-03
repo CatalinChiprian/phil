@@ -29,6 +29,9 @@ public partial class App : Application
         services.AddSingleton<IPlateContext>(sp =>
             sp.GetRequiredService<AppSettingsService>().AppSettings
         );
+        services.AddSingleton<IRecordContext>(sp =>
+            sp.GetRequiredService<AppSettingsService>().AppSettings
+        );
 
         Services = services.BuildServiceProvider();
 

@@ -8,7 +8,7 @@ namespace PHIL_GUI.Models
         OrganOnChip,
         Well96
     };
-    public class AppSettings : ObservableObject, IPlateContext
+    public class AppSettings : ObservableObject, IPlateContext, IRecordContext
     {
         private PlateType selectedPlateType;
         public PlateType SelectedPlateType
@@ -22,6 +22,13 @@ namespace PHIL_GUI.Models
         }
 
         public bool Is96Well => SelectedPlateType == PlateType.Well96;
+
+        private bool areActionRecorded;
+        public bool AreActionRecorded
+        {
+            get => areActionRecorded;
+            set => SetProperty(ref areActionRecorded, value);
+        }
 
         public AppKeyBindings AppKeyBindings { get; } = new AppKeyBindings();
 

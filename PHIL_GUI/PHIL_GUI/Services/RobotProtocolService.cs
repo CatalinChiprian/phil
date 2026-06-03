@@ -83,7 +83,7 @@ namespace PHIL_GUI.Services
 
         private bool ready;
 
-        private readonly MediaService mediaService = new MediaService();
+        private readonly MediaService mediaService;
         public MediaService MediaService => mediaService;
         private readonly SerialPortService serialPortService = new SerialPortService();
         public SerialPortService SerialPortService => serialPortService;
@@ -100,8 +100,10 @@ namespace PHIL_GUI.Services
             private set => SetProperty(ref receivedData, value);
         }
 
-        public RobotProtocolService()
+        public RobotProtocolService(IRecordContext recordContext)
         {
+            mediaService = new MediaService(recordContext);
+
             logTimer.Tick += LogTimer_Tick;
             logTimer.Start();
 
