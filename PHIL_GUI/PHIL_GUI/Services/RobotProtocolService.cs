@@ -77,9 +77,10 @@ namespace PHIL_GUI.Services
         const string END_WELL_ACTIONS = "END_WELL_ACTIONS";
 
 
+        public event Action OnAppInitialized;
+
         private TaskCompletionSource<bool>? waiter;
         private string? expectedCompletion;
-
 
         private bool ready;
 
@@ -291,6 +292,8 @@ namespace PHIL_GUI.Services
             await SendWithDelay(PRINT_TIME_CMD);
             await SendWithDelay(PRINT_MAX_ACTIONS_CMD);
             await SendWithDelay(PRINT_MAX_ACTIONS_PER_WELL_CMD);
+
+            OnAppInitialized?.Invoke();
         }
         async Task SendWithDelay(string cmd)
         {
