@@ -215,7 +215,7 @@ void deleteAction(uint16_t id) {
 
 uint32_t unitToSeconds(TimeUnit unit) {
     switch (unit) {
-        case MINUTE: return 60; // Test only
+        case MINUTE: return 60;
         case HOUR: return 60 * 60;
         case DAY: return 24 * 60 * 60;
         default: return 0;
