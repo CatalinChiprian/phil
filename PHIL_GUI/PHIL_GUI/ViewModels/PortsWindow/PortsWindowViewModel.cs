@@ -37,7 +37,6 @@ namespace PHIL_GUI.ViewModels
         public PortsWindowViewModel()
         {
             AvailablePorts.CollectionChanged += AvailablePorts_CollectionChanged;
-            RobotProtocolService.OnAppInitialized += RobotProtocolService_OnAppInitialized;
 
             GetPortsCommand = new RelayCommand(GetAvailablePorts);
             ConnectCommand = new RelayCommand(ConnectToSelectedPort);
@@ -47,11 +46,6 @@ namespace PHIL_GUI.ViewModels
         {
             OnPropertyChanged(nameof(PortsHeight));
             OnPropertyChanged(nameof(WindowHeight));
-        }
-
-        private void RobotProtocolService_OnAppInitialized()
-        {
-            Connected?.Invoke();
         }
 
         private void GetAvailablePorts()
@@ -64,6 +58,7 @@ namespace PHIL_GUI.ViewModels
         private void ConnectToSelectedPort()
         {
             RobotProtocolService.SerialPortService.Connect(SelectedPort);
+            Connected?.Invoke();
         }
     }
 }

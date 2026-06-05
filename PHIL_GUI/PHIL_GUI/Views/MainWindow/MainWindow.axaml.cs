@@ -14,13 +14,21 @@ public partial class MainWindow : Window
     {
         InitializeComponent();
 
+        this.IsEnabled = false;
+
         MainWindowViewModel mainVm = new MainWindowViewModel();
         mainVm.AppKeyBindings.PropertyChanged += AppKeyBindings_PropertyChanged;
+        mainVm.RobotProtocolService.OnAppInitialized += RobotProtocolService_OnAppInitialized;
 
         mainVm.Disconnected += OnDisconnected;
         Closed += (s, e) => mainVm.Disconnected -= OnDisconnected;
 
         DataContext = mainVm;
+    }
+
+    private void RobotProtocolService_OnAppInitialized()
+    {
+        this.IsEnabled = true;
     }
 
     private void AppKeyBindings_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
