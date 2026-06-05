@@ -255,28 +255,33 @@ void executeAction(Action &action) {
 
 
         switch (action.type) {
-        case ASPIRATE:
-            aspirate(action.pump1, action.amount_uL, wellName);
-            break;
-        case DISPENSE:
-            dispense(action.pump1, action.amount_uL, wellName);
-            break;
-        case EXCHANGE:
-        {
-            char nxtRow = row + 1;
-            uint8_t nxtCol = col + 1;
-            char outWellName[4];
-            outWellName[0] = nxtRow;
-            itoa(nxtCol, &outWellName[1], 10);
+            case ASPIRATE:
+                aspirate(action.pump1, action.amount_uL, wellName);
+                break;
+            case DISPENSE:
+                dispense(action.pump1, action.amount_uL, wellName);
+                break;
+            case EXCHANGE:
+            {
+                char nxtRow = row + 1;
+                uint8_t nxtCol = col + 1;
+                char outWellName[4];
+                outWellName[0] = nxtRow;
+                itoa(nxtCol, &outWellName[1], 10);
 
-            if (isInvalidWell(nxtRow, nxtCol)) return;
-            
-            if (action.pump2 >= 0) aspirate(action.pump2, action.amount_uL, outWellName);
-            if (action.pump1 >= 0) dispense(action.pump1, action.amount_uL, wellName);
-            if (action.pump2 >= 0) aspirate(action.pump2, action.amount_uL, outWellName);
-            if (action.pump1 >= 0) dispense(action.pump1, action.amount_uL, wellName);
-            break;
-        }
+                if (isInvalidWell(nxtRow, nxtCol)) return;
+                
+                if (action.pump2 >= 0 && action.pump1 >= 0) {
+                    aspirate(action.pump2, action.amount_uL, wellName);
+                    dispense(action.pump1, action.amount_uL, outWellName);
+                    aspirate(action.pump2, action.amount_uL, outWellName);
+                    dispense(action.pump1, action.amount_uL, wellName);
+                }
+                else if (action.pump2 >= 0) aspirate(action.pump2, action.amount_uL, outWellName);
+                else if (action.pump1 >= 0) dispense(action.pump1, action.amount_uL, wellName);
+
+                break;
+            }
         }
     }
 }
