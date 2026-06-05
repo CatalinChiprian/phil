@@ -479,12 +479,50 @@ void updatePositionState() {
   }
 }
 
+void moveToHardcodedCenter() {
+  enableLMotor();
+  enableRMotor();
+
+  stepperL.moveTo(33.375 * currentMicrosteps); 
+  stepperR.moveTo(-36.375 * currentMicrosteps);
+
+  while(stepperR.distanceToGo() != 0 || stepperL.distanceToGo() != 0) {
+	  stepperR.run();
+	  stepperL.run();
+	}
+
+  wellIndex = WELL_UNKNOWN;
+  saveCurrentWell(wellIndex);
+	savePositions();
+}
+
 void goToWasteContainer() {
+  moveToHardcodedCenter();
+
 	enableLMotor();
 	enableRMotor();
 
-	stepperL.moveTo(55 * currentMicrosteps); 
-	stepperR.moveTo(-5.5 * currentMicrosteps); 
+	stepperL.moveTo(-18.25 * currentMicrosteps); 
+	stepperR.moveTo(-44.25 * currentMicrosteps); 
+	
+	while(stepperR.distanceToGo() != 0 || stepperL.distanceToGo() != 0) {
+	  stepperR.run();
+	  stepperL.run();
+	}
+
+  wellIndex = WELL_CONTAINER;
+  saveCurrentWell(wellIndex);
+	savePositions();
+}
+
+void goToWashContainer() {
+  moveToHardcodedCenter();
+
+	enableLMotor();
+	enableRMotor();
+
+	stepperL.moveTo(43.75 * currentMicrosteps); 
+	stepperR.moveTo(18.75 * currentMicrosteps); 
 	
 	while(stepperR.distanceToGo() != 0 || stepperL.distanceToGo() != 0) {
 	  stepperR.run();

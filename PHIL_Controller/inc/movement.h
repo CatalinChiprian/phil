@@ -23,6 +23,7 @@ void goToHardcodedWells(char row, uint8_t column);
 void goToCalculatedWell(char row, uint8_t col);
 void updatePositionState();
 void goToWasteContainer();
+void goToWashContainer();
 void increaseStepSize();
 void decreaseStepSize();
 

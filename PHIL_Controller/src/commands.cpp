@@ -186,8 +186,11 @@ void parseCommands() {
 		else if (strcmp_P(cmd, CLEAR_ACTIONS_CMD) == 0) {
 			clearAllActions();
 		}
-		else if (strcmp_P(cmd, PARK_CMD) == 0) {
+		else if (strcmp_P(cmd, GO_WASTE_CMD) == 0) {
 			goToWasteContainer();
+		}
+		else if (strcmp_P(cmd, GO_WASH_CMD) == 0) {
+			goToWashContainer();
 		}
 		else if (strcmp_P(cmd, SET_TIME_CMD) == 0) {
 			uint32_t unixTime = strtoul(tokens[1], nullptr, 10);
