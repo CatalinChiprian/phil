@@ -1,4 +1,6 @@
-﻿using CommunityToolkit.Mvvm.Input;
+﻿using Avalonia.Controls;
+using Avalonia.Input;
+using CommunityToolkit.Mvvm.Input;
 using PHIL_GUI.Models;
 using PHIL_GUI.ViewModels.Base;
 using System;
@@ -27,6 +29,10 @@ namespace PHIL_GUI.ViewModels
             set => SetProperty(ref volume, value);
         }
 
+        public Func<bool> IsTextInputFocused { get; set; } = () => false;
+
+        private bool CanExecutePump() => !IsTextInputFocused();
+
         public AppKeyBindings AppKeyBindings => AppSettingsService.AppSettings.AppKeyBindings;
 
         public PumpsWindowViewModel()
@@ -35,8 +41,8 @@ namespace PHIL_GUI.ViewModels
             PumpOptions = Enum.GetValues<Pump>().Cast<Pump>().SkipLast(1);
             SelectedPump = PumpOptions.First();
 
-            AspirateCommand = new RelayCommand(Aspirate);
-            DispenseCommand = new RelayCommand(Dispense);
+            AspirateCommand = new RelayCommand(Aspirate, CanExecutePump);
+            DispenseCommand = new RelayCommand(Dispense, CanExecutePump);
             PrimeCommand = new RelayCommand(Prime);
             StopCommand = new RelayCommand(RobotProtocolService.Stop);
         }

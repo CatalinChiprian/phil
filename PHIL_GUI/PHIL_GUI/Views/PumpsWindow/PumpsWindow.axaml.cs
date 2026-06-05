@@ -1,6 +1,7 @@
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
+using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using PHIL_GUI.ViewModels;
 using System;
@@ -14,9 +15,16 @@ public partial class PumpsWindow : Window
     {
         InitializeComponent();
         PumpsWindowViewModel pumpsVm = new PumpsWindowViewModel();
-        DataContext = pumpsVm;
+
+        pumpsVm.IsTextInputFocused = () =>
+        {
+            var focused = this.FocusManager?.GetFocusedElement();
+            return focused is TextBox or NumericUpDown;
+        };
 
         pumpsVm.AppKeyBindings.PropertyChanged += AppKeyBindings_PropertyChanged;
+
+        DataContext = pumpsVm;
     }
 
     private void AppKeyBindings_PropertyChanged(object? sender, PropertyChangedEventArgs e)
