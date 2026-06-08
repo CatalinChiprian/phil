@@ -278,7 +278,7 @@
                         </Panel>
                     </Viewbox>
 
-    <!--                <Border Background="{StaticResource Wall}"
+                    <Border Background="{StaticResource Wall}"
                             IsVisible="{Binding Calibration.IsCalibrated, Converter={x:Static BoolConverters.Not}}"
                             ZIndex="10">
                         <Border Background="{StaticResource Surface2}"
@@ -300,7 +300,7 @@
                                             TextAlignment="Center"/>
                             </StackPanel>
                         </Border>
-                    </Border>-->
+                    </Border>
                 </Grid>
             </Border>
 
