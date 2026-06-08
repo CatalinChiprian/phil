@@ -10,6 +10,19 @@ WellAction wellActions[MAX_WELLS];
 uint8_t actionCount = 0;
 uint16_t nextActionId = 1;
 
+/**
+ * hexNibble(c)
+ * 
+ * Converts a single hexadecimal character into its numeric value (0–15).
+ * 
+ * Supports:
+ * - '0'–'9'
+ * - 'A'–'F'
+ * - 'a'–'f'
+ * 
+ * @param c Hexadecimal character
+ * @return value (0–15), or INVALID if not valid
+ */
 uint8_t hexNibble(char c) {
     if (c >= '0' && c <= '9') return c - '0';
     if (c >= 'A' && c <= 'F') return c - 'A' + 10;
@@ -17,6 +30,24 @@ uint8_t hexNibble(char c) {
     return INVALID;
 }
 
+/**
+ * parseWellBitmask(hex, mask)
+ * 
+ * Converts a 24-character hexadecimal string into a 96-bit mask.
+ * Each bit represents whether an action is linked to a well.
+ * 
+ * Mapping:
+ * - 96 wells → 96 bits → 12 bytes
+ * - Each byte represents 8 wells
+ * 
+ * Example:
+ * - hex string "FF0000..." → first 8 wells selected
+ * 
+ * @param hex  Input string (48 hex characters = 96 bits)
+ * @param mask Output byte array (12 bytes)
+ * 
+ * @return true if valid, false if malformed
+ */
 bool parseWellBitmask(const char* hex, uint8_t mask[12]) {
     if (strlen(hex) != 24) return false;
 
@@ -32,23 +63,52 @@ bool parseWellBitmask(const char* hex, uint8_t mask[12]) {
     return true;
 }
 
+/**
+ * findActionById(id)
+ * 
+ * Searches for an enabled action with a given ID.
+ * 
+ * @return pointer to action if found, nullptr otherwise
+ */
 Action* findActionById(uint16_t id) {
-for (uint8_t i = 0; i < MAX_ACTIONS_TOTAL; i++) {
-    if (actions[i].id == id && actions[i].enabled) {
-    return &actions[i];
+    for (uint8_t i = 0; i < MAX_ACTIONS_TOTAL; i++) {
+        if (actions[i].id == id && actions[i].enabled) {
+            return &actions[i];
+        }
     }
+
+    return nullptr;
 }
 
-return nullptr;
-}
-
+/**
+ * findFreeActionSlot()
+ * 
+ * Finds an unused slot in the actions array.
+ * 
+ * @return index of free slot, or INVALID if full
+ */
 uint8_t findFreeActionSlot() {
-for (uint16_t i = 0; i < MAX_ACTIONS_TOTAL; i++) {
-    if (!actions[i].enabled) return i;
-}
-return INVALID;
+    for (uint16_t i = 0; i < MAX_ACTIONS_TOTAL; i++) {
+        if (!actions[i].enabled) return i;
+    }
+    return INVALID;
 }
 
+/**
+ * linkActionToWell(actionId, wellIndex)
+ * 
+ * Associates an action with a specific well.
+ * 
+ * Behavior:
+ * - Adds action ID to well's action list
+ * - Prevents duplicates
+ * - Saves mapping to persistent storage
+ * 
+ * Constraints:
+ * - Limited by MAX_ACTIONS_PER_WELL
+ * 
+ * @return true if successful
+ */
 bool linkActionToWell(uint16_t actionId, uint8_t wellIndex) {
     WellAction &wa = wellActions[wellIndex];
 
@@ -72,6 +132,18 @@ bool linkActionToWell(uint16_t actionId, uint8_t wellIndex) {
     return true;
 }
 
+/**
+ * unlinkActionFromWell(actionId, wellIndex)
+ * 
+ * Removes an action from a specific well.
+ * 
+ * Behavior:
+ * - Searches for action ID
+ * - Removes it and compacts the list
+ * - Updates persistent storage
+ * 
+ * @return true if action was found and removed
+ */
 bool unlinkActionFromWell(uint16_t actionId, uint8_t wellIndex) {
     WellAction &wa = wellActions[wellIndex];
 
@@ -98,6 +170,14 @@ bool unlinkActionFromWell(uint16_t actionId, uint8_t wellIndex) {
     return false;
 }
 
+/**
+ * linkActionByMask(actionId, mask)
+ * 
+ * Links an action to multiple wells based on a bitmask.
+ * 
+ * Iterates through all wells and checks if corresponding
+ * bit is set in mask, linking the action where needed.
+ */
 void linkActionByMask(uint16_t actionId, const uint8_t mask[12]) {
     for (uint8_t well = 0; well < MAX_WELLS; well++) {
         uint8_t byteIdx = well / 8;
@@ -109,6 +189,16 @@ void linkActionByMask(uint16_t actionId, const uint8_t mask[12]) {
     }
 }
 
+/**
+ * linkAction(id, hex)
+ * 
+ * Public interface for linking an action to wells.
+ * 
+ * Steps:
+ * 1. Validate action exists
+ * 2. Parse hexadecimal bitmask input
+ * 3. Link action to all wells defined in mask
+ */
 void linkAction(uint16_t id, char* hex) {
 	if (!findActionById(id)) return;
 
@@ -118,6 +208,14 @@ void linkAction(uint16_t id, char* hex) {
 	linkActionByMask(id, mask);
 }
 
+/**
+ * unlinkActionByMask(actionId, mask)
+ * 
+ * Removes an action from multiple wells using a bitmask.
+ * 
+ * Iterates through all wells and clears links where
+ * corresponding bits are set in the mask.
+ */
 void unlinkActionByMask(uint16_t actionId, const uint8_t mask[12]) {
     for (uint8_t well = 0; well < MAX_WELLS; well++) {
         uint8_t byteIdx = well / 8;
@@ -129,6 +227,16 @@ void unlinkActionByMask(uint16_t actionId, const uint8_t mask[12]) {
     }
 }
 
+/**
+ * unlinkAction(id, hex)
+ * 
+ * Public interface for removing action links from wells.
+ * 
+ * Steps:
+ * 1. Validate action exists
+ * 2. Parse hexadecimal bitmask
+ * 3. Unlink action from all selected wells
+ */
 void unlinkAction(uint16_t id, char* hex) {
     if (!findActionById(id)) return;
 
@@ -138,6 +246,22 @@ void unlinkAction(uint16_t id, char* hex) {
 	unlinkActionByMask(id, mask);
 }
 
+/**
+ * createAction(int16_t tempId, ActionType type, int8_t pump1, int8_t pump2, uint16_t amount, int8_t frequency, TimeUnit unit, uint32_t start, uint32_t end)
+ * 
+ * Creates a new action and assigns it a unique ID.
+ * 
+ * Steps:
+ * 1. Find free slot
+ * 2. Populate action fields
+ * 3. Store action in EEPROM
+ * 4. Increment global counters
+ * 
+ * tempId:
+ * - Temporary identifier used by GUI for synchronization
+ * 
+ * @return assigned action ID, or 0 if failed
+ */
 uint16_t createAction(int16_t tempId, ActionType type, int8_t pump1, int8_t pump2, uint16_t amount, int8_t frequency, TimeUnit unit, uint32_t start, uint32_t end) {
     if (actionCount >= MAX_ACTIONS_TOTAL) {
         Serial.println(F("ERROR:FAILED TO CREATE ACTION"));
@@ -173,6 +297,18 @@ uint16_t createAction(int16_t tempId, ActionType type, int8_t pump1, int8_t pump
     return action.id;
 }
 
+/**
+ * updateAction(id, ...)
+ * 
+ * Updates an existing action's parameters.
+ * 
+ * Behavior:
+ * - Finds action by ID
+ * - Overwrites all configurable fields
+ * - Saves updated action to persistent storage
+ * 
+ * If action does not exist, function exits silently.
+ */
 void updateAction(uint16_t id, ActionType type, int8_t pump1, int8_t pump2, uint16_t amount, int8_t frequency, TimeUnit unit, uint32_t start, uint32_t end) {
 
     Action* action = findActionById(id);
@@ -195,6 +331,19 @@ void updateAction(uint16_t id, ActionType type, int8_t pump1, int8_t pump2, uint
     Serial.println(action->id);
 }
 
+/**
+ * deleteAction(id)
+ * 
+ * Disables and removes an action from the system.
+ * 
+ * Steps:
+ * 1. Find action by ID
+ * 2. Mark as disabled
+ * 3. Persist updated state
+ * 4. Unlink action from all wells
+ * 
+ * This ensures no orphaned references remain.
+ */
 void deleteAction(uint16_t id) {
     Action* action = findActionById(id);
     if (!action) return;
@@ -213,6 +362,12 @@ void deleteAction(uint16_t id) {
     Serial.println(action->id);
 }
 
+/**
+ * unitToSeconds(unit)
+ * 
+ * Converts time units into seconds.
+ * Used for scheduling intervals.
+ */
 uint32_t unitToSeconds(TimeUnit unit) {
     switch (unit) {
         case MINUTE: return 60;
@@ -222,6 +377,13 @@ uint32_t unitToSeconds(TimeUnit unit) {
     }
 }
 
+/**
+ * isActionLinkedToWell(actionId, wellIndex)
+ * 
+ * Checks whether a specific action is assigned to a given well.
+ * 
+ * @return true if linked, false otherwise
+ */
 bool isActionLinkedToWell(const uint16_t &actionId, const uint8_t &wellIndex) {
     if (wellIndex >= MAX_WELLS) return false;
 
@@ -237,6 +399,27 @@ bool isActionLinkedToWell(const uint16_t &actionId, const uint8_t &wellIndex) {
     return false;
 }
 
+/**
+ * executeAction(action)
+ * 
+ * Executes an action across all wells it is linked to.
+ * 
+ * Process:
+ * 1. Iterate through all wells
+ * 2. Check if action is linked to well
+ * 3. Convert well index → well name (e.g. A1)
+ * 4. Execute operation based on action type:
+ *      - ASPIRATE
+ *      - DISPENSE
+ *      - EXCHANGE (multi-step)
+ * 
+ * Notes:
+ * - EXCHANGE operation performs multiple pump actions
+ * - Validation ensures well indices are valid
+ * 
+ * This is the core function that translates
+ * scheduled actions into physical robot operations.
+ */
 void executeAction(Action &action) {
     for (uint8_t well = 0; well < MAX_WELLS; well++) {  
         if (!isActionLinkedToWell(action.id, well)) continue;
@@ -286,12 +469,33 @@ void executeAction(Action &action) {
     }
 }
 
+/**
+ * handleAction(action, index, now)
+ * 
+ * Executes an action and updates its runtime state.
+ * 
+ * Steps:
+ * - Update last execution timestamp
+ * - Execute action
+ * - Persist updated state
+ */
 void handleAction(Action &action, uint16_t index, uint32_t now) {
     action.lastRunEpoch = now;
     executeAction(action);
     saveAction(action, index);
 }
 
+/**
+ * isActionCompatible(action)
+ * 
+ * Ensures that the action type matches the selected plate type.
+ * 
+ * Example:
+ * - EXCHANGE only allowed for OoC system
+ * - ASPIRATE/DISPENSE only for 96-well plates
+ * 
+ * @return true if compatible
+ */
 bool isActionCompatible(const Action& action) {
     bool is96 = (getCurrentWellplate() == WELL96);
 
@@ -301,6 +505,36 @@ bool isActionCompatible(const Action& action) {
     return true;
 }
 
+/**
+ * processActions()
+ * 
+ * Main scheduler for all automated actions.
+ * Called continuously in the main loop.
+ * 
+ * Logic:
+ * 1. Get current time
+ * 2. Iterate through all actions
+ * 3. Skip invalid or inactive actions
+ * 4. Check:
+ *    - Plate compatibility
+ *    - Start and end time
+ * 
+ * Two execution modes:
+ * 
+ * 1. ONE-TIME ACTION:
+ *    - frequency < 0
+ *    - Runs once at start time
+ * 
+ * 2. REPEATING ACTION:
+ *    - Runs periodically based on frequency and unit
+ *    - Uses lastRunEpoch to determine next execution time
+ * 
+ * Scheduling:
+ * - Uses Unix timestamps for precise timing
+ * - Prevents repeated execution within same interval
+ * 
+ * This function defines the automated behavior of the system.
+ */
 void processActions() {
     uint32_t now = getTime();
 
@@ -356,6 +590,12 @@ void printAction(const Action& action) {
     Serial.print(F(",Enabled=")); Serial.println(action.enabled);
 }
 
+/**
+ * printActions()
+ * 
+ * Prints all enabled actions for debugging and GUI display.
+ * Ends with "END_ACTIONS" marker.
+ */
 void printActions() {
 	for (uint8_t i = 0; i < MAX_ACTIONS_TOTAL; i++) {
 	  if (actions[i].enabled) printAction(actions[i]);
@@ -363,6 +603,14 @@ void printActions() {
     Serial.println(F("END_ACTIONS"));
 }
 
+/**
+ * printWellAction(wellAction, wellIndex)
+ * 
+ * Prints all actions linked to a specific well.
+ * 
+ * Output format:
+ * WELL_ACTION: Well=A1, Actions=[1,2,3]
+ */
 void printWellAction(const WellAction& wellAction, uint8_t wellIndex) {
     char row;
     uint8_t col;
@@ -377,6 +625,12 @@ void printWellAction(const WellAction& wellAction, uint8_t wellIndex) {
     Serial.println(']');
 }
 
+/**
+ * printWellActions()
+ * 
+ * Prints all wells that have at least one linked action.
+ * Ends with "END_WELL_ACTIONS" marker.
+ */
 void printWellActions() {
 	for (uint8_t i = 0; i < MAX_WELLS; i++) {
 	  if (wellActions[i].count > 0) printWellAction(wellActions[i], i);
@@ -384,10 +638,20 @@ void printWellActions() {
     Serial.println(F("END_WELL_ACTIONS"));
 }
 
+/**
+ * printMaxActions()
+ * 
+ * Prints the maximum number of actions supported by the system.
+ */
 void printMaxActions() {
     Serial.print(F("MAX_ACTIONS_TOTAL:")); Serial.println(MAX_ACTIONS_TOTAL);
 }
 
+/**
+ * printMaxActionsPerWell()
+ * 
+ * Prints the maximum number of actions allowed per well.
+ */
 void printMaxActionsPerWell() {
     Serial.print(F("MAX_ACTIONS_PER_WELL:")); Serial.println(MAX_ACTIONS_PER_WELL);
 }

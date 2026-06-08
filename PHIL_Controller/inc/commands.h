@@ -1,3 +1,14 @@
+/**
+ * commands.h
+ * 
+ * Defines all command strings used for communication between the GUI and firmware.
+ * Also declares functions responsible for parsing and handling these commands.
+ * 
+ * Each command corresponds to a specific operation such as movement,
+ * calibration, pump control, or action management.
+ * 
+ * Commands are stored in program memory (PROGMEM) to reduce RAM usage.
+ */
 #pragma once
 
 #include <Arduino.h>
@@ -43,5 +54,20 @@ const char SET_PLATE_TYPE_CMD[] PROGMEM = "SET_PLATE_TYPE";
 
 const uint8_t COMMAND_STRING_SZ = 11;
 
+
+/**
+ * parseCommands()
+ * 
+ * Reads incoming serial data from the GUI and executes
+ * the corresponding command based on the predefined command list.
+ */
 void parseCommands();
+
+/**
+ * isEmergencyStopRequest()
+ * 
+ * Checks whether an emergency stop command has been received.
+ * 
+ * @return true if emergency stop is requested, false otherwise
+ */
 bool isEmergencyStopRequest();

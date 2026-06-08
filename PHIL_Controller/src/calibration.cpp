@@ -13,6 +13,30 @@ float calL[MAX_CAL] = {0};
 float calR[MAX_CAL] = {0};
 bool mapReady = false;
 
+
+/**
+ * calibrateHome()
+ * 
+ * Performs origin calibration using both limit switches.
+ * 
+ * Procedure:
+ * 1. Move Z-axis to a safe position to avoid collision
+ * 2. Move right motor (R) until right limit switch is triggered
+ * 3. Back off slightly and set position as reference
+ * 4. Move left motor (L) until left limit switch is triggered
+ * 5. Set both motor positions to zero
+ * 6. Move to a predefined offset (center reference)
+ * 7. Store the origin position and persist state
+ * 
+ * Safety:
+ * - Continuously checks for emergency stop requests
+ * - Stops immediately if triggered
+ * 
+ * Result:
+ * Establishes a reliable origin (0,0) for all future movements
+ * 
+ * @return 1 on success, 0 if interrupted
+ */
 int8_t calibrateHome() {
     moveZMotors(ZMotorNormalPosition);
 
@@ -84,6 +108,30 @@ int8_t calibrateHome() {
     return 1;
 }
 
+/**
+ * recordCalibrationPoint(row, col)
+ * 
+ * Records a calibration point linking a well position to motor positions.
+ * 
+ * Steps:
+ * 1. Convert well (row, col) → well index
+ * 2. Convert index → physical (x, y) coordinates
+ * 3. Check for duplicates
+ * 4. Store:
+ *    - well index
+ *    - motor positions (converted to degrees)
+ * 
+ * Constraints:
+ * - Maximum number of calibration points is limited (MAX_CAL)
+ * - Duplicate wells are not allowed
+ * 
+ * Notes:
+ * - Raw motor steps are printed for debugging
+ * - Stored values are converted to degrees for mapping
+ * 
+ * Output:
+ * - Prints confirmation + updated calibration count
+ */
 void recordCalibrationPoint(char row, uint8_t col) {
     if (calCount >= MAX_CAL) {
         Serial.print(F("ERROR:CAL_FULL,Maximum ")); 
@@ -94,7 +142,7 @@ void recordCalibrationPoint(char row, uint8_t col) {
 
     float x = 0;
     float y = 0;
-    uint8_t wellIndex = RowColToWellIndex(row, col);
+    uint8_t wellIndex = rowColToWellIndex(row, col);
     wellIndexToXY(wellIndex, x, y);
 
     for (uint8_t i = 0; i < calCount; i++) {
@@ -120,6 +168,30 @@ void recordCalibrationPoint(char row, uint8_t col) {
     Serial.print(F("CAL_COUNT:")); Serial.println(++calCount);
 }
 
+/**
+ * solve10(A, b, x)
+ * 
+ * Solves a linear system of equations:
+ *     A * x = b
+ * 
+ * Uses Gaussian elimination with partial pivoting.
+ * 
+ * Purpose:
+ * - Used internally for solving the least-squares mapping system
+ * - Computes polynomial coefficients for calibration
+ * 
+ * Steps:
+ * 1. Build augmented matrix [A | b]
+ * 2. Perform row pivoting to improve numerical stability
+ * 3. Normalize rows and eliminate variables
+ * 4. Perform back substitution
+ * 
+ * Safety:
+ * - Detects singular matrices (non-invertible)
+ * - Returns false if solution cannot be computed
+ * 
+ * @return true if solution found, false otherwise
+ */
 bool solve10(float A[TERMS][TERMS], float b[TERMS], float x[TERMS]) {
     float M[TERMS][TERMS+1];
     for (uint8_t i = 0; i < TERMS; i++){
@@ -153,6 +225,33 @@ bool solve10(float A[TERMS][TERMS], float b[TERMS], float x[TERMS]) {
     return true;
 }
 
+/**
+ * solveMapping()
+ * 
+ * Computes the polynomial mapping from well coordinates (x, y)
+ * to motor positions (L, R).
+ * 
+ * Method:
+ * - Uses least-squares fitting via normal equations:
+ *       (A^T A) c = (A^T y)
+ * - Polynomial model with TERMS (10) basis functions:
+ *       [1, x, y, x², xy, y², x³, x²y, xy², y³]
+ * 
+ * Steps:
+ * 1. Validate sufficient calibration points
+ * 2. Build normal equation matrices (ATA, ATy)
+ * 3. Solve for coefficients ML (left) and MR (right)
+ * 4. Store results and mark mapping as ready
+ * 
+ * Output:
+ * - Prints mapping status and calibration summary
+ * 
+ * Errors:
+ * - Insufficient points → rejected
+ * - Singular matrix → suggests better spatial calibration
+ * 
+ * @return true if mapping successfully computed
+ */
 bool solveMapping() {
     if (calCount < TERMS) {
         Serial.print(F("ERROR:SOLVE_INSUFFICIENT,Need at least "));
@@ -208,8 +307,25 @@ bool solveMapping() {
     return true;
 }
 
+/**
+ * deleteCalibrationPoint(row, col)
+ * 
+ * Removes a calibration point corresponding to a specific well.
+ * 
+ * Steps:
+ * 1. Find calibration entry matching well
+ * 2. Shift all following entries (array compaction)
+ * 3. Decrease calibration count
+ * 
+ * Notes:
+ * - If point does not exist, function exits silently
+ * - Maintains continuous array structure
+ * 
+ * Output:
+ * - Prints deletion confirmation and remaining count
+ */
 void deleteCalibrationPoint(char row, uint8_t col) {
-    uint8_t targetIndex = RowColToWellIndex(row, col);
+    uint8_t targetIndex = rowColToWellIndex(row, col);
 	
 	int8_t foundIdx = -1;
 
@@ -234,10 +350,48 @@ void deleteCalibrationPoint(char row, uint8_t col) {
 	Serial.print(F(",Remaining=")); Serial.println(calCount);
 }
 
+/**
+ * clampZero(v, eps)
+ * 
+ * Clamps very small values to zero.
+ * 
+ * Purpose:
+ * - Improve readability of printed floating-point errors
+ * - Avoid showing very small numerical noise (e.g. 1e-6)
+ * 
+ * @param v   Value to clamp
+ * @param eps Threshold below which value is treated as zero
+ * 
+ * @return 0 if |v| < eps, otherwise v
+ */
 float clampZero(float v, float eps = 5e-4f) {
     return fabs(v) < eps ? 0.0f : v;
 }
 
+/**
+ * printCalibrationPoints()
+ * 
+ * Outputs all calibration points and mapping error metrics.
+ * 
+ * For each calibration point:
+ * - Prints well name, coordinates (x, y)
+ * - If mapping is ready:
+ *     - Computes predicted motor values
+ *     - Calculates error (actual vs predicted)
+ * 
+ * Metrics:
+ * - RMS error (Left/Right): average calibration accuracy
+ * - Max error (Left/Right): worst-case deviation
+ * 
+ * Purpose:
+ * - Used by GUI to display calibration quality
+ * - Helps user assess calibration accuracy
+ * 
+ * Output format:
+ * - CAL_PT → individual points
+ * - RMS → overall error metrics
+ * - END_CAL → termination marker
+ */
 void printCalibrationPoints() {
     Serial.print(F("CAL_COUNT:")); Serial.println(calCount);
     float maxErrL = 0, maxErrR = 0, rmsL = 0, rmsR = 0;

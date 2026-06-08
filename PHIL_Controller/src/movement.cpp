@@ -15,6 +15,18 @@ uint8_t wellIndex = 0;
 static long lastR;
 static long lastL;
 
+/**
+ * moveBackward()
+ * 
+ * Moves robot backward along Y-axis by a step defined
+ * by current step size (times_x10).
+ * 
+ * Behavior:
+ * - Moves L and R motors in opposite directions
+ * - Blocks until motion is complete
+ * - Resets well position to UNKNOWN
+ * - Saves updated position to EEPROM
+ */
 void moveBackward() {
   enableLMotor();
   enableRMotor();
@@ -33,6 +45,13 @@ void moveBackward() {
   savePositions();
 }
 
+/**
+ * moveForward()
+ * 
+ * Moves robot forward along Y-axis.
+ * 
+ * Behavior mirrors moveBackward(), but with inverted direction.
+ */
 void moveForward() {
   enableLMotor();
   enableRMotor();
@@ -51,6 +70,17 @@ void moveForward() {
   savePositions();
 }
 
+/**
+ * moveLeft()
+ * 
+ * Moves robot left along X-axis.
+ * 
+ * Safety:
+ * - Monitors left limit switch
+ * - Stops both motors if limit is triggered
+ * 
+ * Ensures movement does not exceed mechanical boundary.
+ */
 void moveLeft() {
   enableLMotor();
   enableRMotor();
@@ -83,6 +113,15 @@ void moveLeft() {
   savePositions();
 }
 
+/**
+ * moveRight()
+ * 
+ * Moves robot right along X-axis.
+ * 
+ * Safety:
+ * - Monitors right limit switch
+ * - Stops movement if triggered
+ */
 void moveRight() {
   enableLMotor();
   enableRMotor();
@@ -115,6 +154,17 @@ void moveRight() {
   savePositions();
 }
 
+/**
+ * moveUp()
+ * 
+ * Raises the Z-axis (pipette).
+ * 
+ * Safety:
+ * - Stops when either Z limit switch is triggered
+ * - Resets Z motor position to zero when limit is reached
+ * 
+ * Used to prevent upward overtravel.
+ */
 void moveUp() {
   enableZMotors();
 
@@ -151,6 +201,14 @@ void moveUp() {
   savePositions();
 }
 
+/**
+ * moveDown()
+ * 
+ * Lowers the Z-axis.
+ * 
+ * Simple downward movement without limit checks
+ * (assumes safe operating range).
+ */
 void moveDown() {
   enableZMotors();
 
@@ -166,7 +224,16 @@ void moveDown() {
   savePositions();
   }
 
-  void moveZMotors(int16_t position) {
+/**
+ * moveZMotors(position)
+ * 
+ * Moves Z motors to an absolute position.
+ * 
+ * Used for:
+ * - Safe movement before XY motion
+ * - Returning to predefined safe heights
+ */
+void moveZMotors(int16_t position) {
   enableZMotors();
 
   long pos = position;
@@ -179,6 +246,19 @@ void moveDown() {
   }
 }
 
+/**
+ * goToOrigin()
+ * 
+ * Moves robot to the calibrated origin (home position).
+ * 
+ * Steps:
+ * 1. Raise Z-axis to safe height
+ * 2. Move L and R motors to position 0
+ * 
+ * Updates:
+ * - wellIndex → HOME
+ * - EEPROM state
+ */
 void goToOrigin() {
 
     moveZMotors(ZMotorNormalPosition);
@@ -198,6 +278,22 @@ void goToOrigin() {
     savePositions();
 }
 
+/**
+ * moveToWell(moveL, moveR, wellName)
+ * 
+ * Moves robot to a specific well using direct motor angles.
+ * 
+ * Parameters:
+ * - moveL / moveR → target motor angles
+ * - wellName → well identifier (e.g., "A1")
+ * 
+ * Behavior:
+ * - Moves motors to absolute positions
+ * - Updates wellIndex
+ * - Saves position and prints result
+ * 
+ * Used internally by hardcoded well mapping.
+ */
 void moveToWell(long moveL, long moveR, char* wellName) {
     enableLMotor();
     enableRMotor();
@@ -213,13 +309,25 @@ void moveToWell(long moveL, long moveR, char* wellName) {
     char row; uint8_t col;
     wellStrToRowCol(wellName, row, col);
 
-    wellIndex = RowColToWellIndex(row, col);
+    wellIndex = rowColToWellIndex(row, col);
 
     saveCurrentWell(wellIndex);
     savePositions();
     printCurrentWell();
 }
 
+/**
+ * goToHardcodedWells(row, column)
+ * 
+ * Moves robot to predefined well positions using manually
+ * calibrated coordinates.
+ * 
+ * Notes:
+ * - Only supports specific wells
+ * - Used for testing or before calibration is available
+ * 
+ * Each well is mapped to fixed motor positions.
+ */
 void goToHardcodedWells(char row, uint8_t column) {  
     moveZMotors(ZMotorNormalPosition);
 
@@ -431,6 +539,24 @@ void goToHardcodedWells(char row, uint8_t column) {
     }
 }
 
+/**
+ * goToCalculatedWell(row, col)
+ * 
+ * Moves robot to a well using calibration mapping.
+ * 
+ * Steps:
+ * 1. Validate mapping is ready
+ * 2. Convert well → (x, y) coordinates
+ * 3. Convert (x, y) → motor angles
+ * 4. Convert angles → stepper steps
+ * 5. Execute movement
+ * 
+ * Updates:
+ * - wellIndex
+ * - EEPROM state
+ * 
+ * This is the main calibrated movement function.
+ */
 void goToCalculatedWell(char row, uint8_t col) {
     if (!mapReady) {
       Serial.println(F("ERROR:MAP_NOT_READY,Run z solve before moving to wells"));
@@ -461,13 +587,24 @@ void goToCalculatedWell(char row, uint8_t col) {
         stepperR.run();
     }
 
-    wellIndex = RowColToWellIndex(row, col);
+    wellIndex = rowColToWellIndex(row, col);
 
     saveCurrentWell(wellIndex);
     savePositions();
     printCurrentWell();
 }
 
+/**
+ * updatePositionState()
+ * 
+ * Monitors motor positions and reports changes.
+ * 
+ * Behavior:
+ * - Compares current positions to last known positions
+ * - Prints updated position only when values change
+ * 
+ * Reduces unnecessary serial output.
+ */
 void updatePositionState() {
   long currentL = stepperL.currentPosition();
   long currentR = stepperR.currentPosition();
@@ -479,6 +616,13 @@ void updatePositionState() {
   }
 }
 
+/**
+ * moveToHardcodedCenter()
+ * 
+ * Moves robot to a predefined central position.
+ * 
+ * Used as intermediate step before moving to containers.
+ */
 void moveToHardcodedCenter() {
   enableLMotor();
   enableRMotor();
@@ -496,6 +640,17 @@ void moveToHardcodedCenter() {
 	savePositions();
 }
 
+/**
+ * goToWasteContainer()
+ * 
+ * Moves robot to waste container location.
+ * 
+ * Steps:
+ * 1. Move to center position
+ * 2. Move to container coordinates
+ * 
+ * Updates wellIndex to CONTAINER.
+ */
 void goToWasteContainer() {
   moveToHardcodedCenter();
 
@@ -515,6 +670,13 @@ void goToWasteContainer() {
 	savePositions();
 }
 
+/**
+ * goToWashContainer()
+ * 
+ * Moves robot to wash container position.
+ * 
+ * Similar to waste container logic, with different coordinates.
+ */
 void goToWashContainer() {
   moveToHardcodedCenter();
 
@@ -534,14 +696,36 @@ void goToWashContainer() {
 	savePositions();
 }
 
+/**
+ * increaseStepSize()
+ * 
+ * Increases manual movement step size.
+ */
 void increaseStepSize() {
   times_x10 += 1;
 }
 
+/**
+ * decreaseStepSize()
+ * 
+ * Decreases manual movement step size.
+ */
 void decreaseStepSize() {
   times_x10 -= 1;
 }
 
+/**
+ * printCurrentWell()
+ * 
+ * Outputs detailed information about current robot position:
+ * - Well name (or HOME / UNKNOWN / CONTAINER)
+ * - XY coordinates
+ * - Motor angles
+ * 
+ * Used for:
+ * - GUI updates
+ * - Debugging movement accuracy
+ */
 void printCurrentWell() {
   char row;
   uint8_t col;
@@ -573,6 +757,11 @@ void printCurrentWell() {
   Serial.print(F(",R=")); Serial.println(Rdeg);
 }
 
+/**
+ * printPosition(L, R, Z1, Z2)
+ * 
+ * Prints current motor step positions for all axes.
+ */
 void printPosition(int16_t L, int16_t R, int16_t Z1, int16_t Z2) {
   Serial.print(F("POS:L=")); Serial.print(L);
   Serial.print(F(",R=")); Serial.print(R);
@@ -580,6 +769,11 @@ void printPosition(int16_t L, int16_t R, int16_t Z1, int16_t Z2) {
   Serial.print(F(",Z2=")); Serial.println(Z2);
 }
 
+/**
+ * printStepSize()
+ * 
+ * Prints current manual movement step size.
+ */
 void printStepSize() {
   Serial.print(F("STEP_SIZE:"));
   Serial.print(times_x10 / 10);
@@ -587,6 +781,11 @@ void printStepSize() {
   Serial.println(times_x10 % 10);
 }
 
+/**
+ * printMicroSteps()
+ * 
+ * Prints current microstepping configuration.
+ */
 void printMicroSteps() {
   Serial.print(F("MICROSTEPS:1/")); Serial.println(currentMicrosteps);
 }

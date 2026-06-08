@@ -1,8 +1,12 @@
 #include "../inc/hardware.h"
 
-
+// Enable pins for all motor drivers (L, R, Z1, Z2, P1, P2)
 static const uint8_t ena[]  = { 44, 47, 50, 53, 13, 10 };
+
+// Step pins for all motors
 static const uint8_t step[] = { 43, 46, 49, 52, 12, 9 };
+
+// Direction pins for all motors
 static const uint8_t dir[] = { 42, 45, 48, 51, 11, 8 };
 
 static const uint8_t M1 = 25;
@@ -12,6 +16,15 @@ static const uint8_t M3 = 27;
 static const uint8_t P1 = 22;
 static const uint8_t P2 = 23;
 static const uint8_t P3 = 24;
+
+
+/**
+ * Microstepping configuration
+ * 
+ * Sttngs defines logic levels for different microstep modes.
+ * microIndex selects the active mode.
+ * currentMicrosteps is used to scale speed and accuracy.
+ */
 
 static const char Sttngs[][3] = {
     {LOW,  LOW, LOW},    // Full step
@@ -53,7 +66,24 @@ const uint8_t faultL = 39;
 uint16_t lastMotorActivityTime = 0;
 static const uint16_t MOTOR_TIMEOUT = 5000;
 
-
+/**
+ * initHardware()
+ * 
+ * Initializes all hardware components at startup.
+ * 
+ * Steps:
+ * 1. Initialize I2C communication (Wire)
+ * 2. Initialize RTC module
+ *    - If RTC lost power → set to compile time
+ * 3. Configure limit switches and fault pins
+ * 4. Configure microstepping pins
+ * 5. Initialize motor speeds and acceleration
+ * 6. Disable all motors (safe startup state)
+ * 
+ * Notes:
+ * - Pump motors are configured with fixed microstepping
+ * - Movement motors use configurable microstepping
+ */
 void initHardware() {
     Wire.begin();
 
@@ -105,11 +135,24 @@ void initHardware() {
     disableAllMotors();
 }
 
+/**
+ * areMotorsCurrentlyEnabled()
+ * 
+ * Returns whether any motor in the system is currently enabled.
+ * 
+ * Used to prevent redundant enable/disable operations.
+ */
 bool areMotorsCurrentlyEnabled() {
     return ZMotorsCurrentlyEnabled || LMotorCurrentlyEnabled || RMotorCurrentlyEnabled ||
             P1MotorCurrentlyEnabled || P2MotorCurrentlyEnabled;
 }
 
+/**
+ * setSlowMovementSpeed()
+ * 
+ * Sets low speed and acceleration for precise movements,
+ * typically used during calibration.
+ */
 void setSlowMovementSpeed() {
     stepperL.setMaxSpeed(200 * currentMicrosteps);
     stepperR.setMaxSpeed(200 * currentMicrosteps);
@@ -117,6 +160,11 @@ void setSlowMovementSpeed() {
     stepperR.setAcceleration(100 * currentMicrosteps);
 }
 
+/**
+ * setNormalMovementSpeed()
+ * 
+ * Sets standard movement speed for normal operation.
+ */
 void setNormalMovementSpeed() {
     stepperL.setMaxSpeed(1000 * currentMicrosteps);
     stepperR.setMaxSpeed(1000 * currentMicrosteps);
@@ -124,6 +172,11 @@ void setNormalMovementSpeed() {
     stepperR.setAcceleration(500 * currentMicrosteps);
 }
 
+/**
+ * setSlowPumpSpeed()
+ * 
+ * Sets reduced pump speed for controlled liquid handling.
+ */
 void setSlowPumpSpeed() {
     stepperP1.setMaxSpeed(200);
     stepperP2.setMaxSpeed(200);
@@ -131,6 +184,11 @@ void setSlowPumpSpeed() {
     stepperP2.setAcceleration(100);
 }
 
+/**
+ * setNormalPumpSpeed()
+ * 
+ * Sets standard pump speed for normal operations.
+ */
 void setNormalPumpSpeed() {
     stepperP1.setMaxSpeed(1000);
     stepperP2.setMaxSpeed(1000);
@@ -138,6 +196,17 @@ void setNormalPumpSpeed() {
     stepperP2.setAcceleration(500);
 }
 
+/**
+ * enableAllMotors()
+ * 
+ * Enables all motors in the system.
+ * 
+ * Behavior:
+ * - Checks if any motor is already enabled
+ * - If not, enables all motor groups
+ * 
+ * Prevents redundant enabling operations.
+ */
 void enableAllMotors() {
     if (areMotorsCurrentlyEnabled()) return;
     enableZMotors();
@@ -147,6 +216,12 @@ void enableAllMotors() {
     enableP2Motor();
 }
 
+/**
+ * enableZMotors()
+ * 
+ * Enables both Z-axis motors by activating their driver pins.
+ * Also updates internal state and activity timer.
+ */
 void enableZMotors() {
     digitalWrite(ena[0], LOW);
     digitalWrite(ena[3], LOW);
@@ -154,6 +229,15 @@ void enableZMotors() {
     ZMotorsCurrentlyEnabled = true;     
     lastMotorActivityTime = millis(); 
 }
+
+/**
+ * Individual motor enable functions
+ * 
+ * Each function:
+ * - Activates motor driver (LOW signal)
+ * - Updates internal state flag
+ * - Resets motor activity timer
+ */
 
 void enableP1Motor() {
     digitalWrite(ena[4], LOW);
@@ -183,6 +267,11 @@ void enableRMotor() {
     lastMotorActivityTime = millis(); 
 }
 
+/**
+ * disableZMotors()
+ * 
+ * Disables both Z-axis motors and updates state flags.
+ */
 void disableZMotors() {
     digitalWrite(ena[0], HIGH);
     digitalWrite(ena[3], HIGH);
@@ -190,6 +279,15 @@ void disableZMotors() {
     ZMotorsCurrentlyEnabled = false;
     lastMotorActivityTime = millis(); 
 }
+
+/**
+ * Individual motor disable functions
+ * 
+ * Each function:
+ * - Deactivates motor driver (HIGH signal)
+ * - Updates internal state flag
+ * - Resets activity timer
+ */
 
 void disableP1Motor() {
     digitalWrite(ena[4], HIGH);
@@ -219,7 +317,15 @@ void disableRMotor() {
     lastMotorActivityTime = millis(); 
 }
 
-
+/**
+ * disableAllMotors()
+ * 
+ * Disables all motors in the system.
+ * 
+ * Used:
+ * - After movement completion
+ * - During safety events
+ */
 void disableAllMotors() {
     disableLMotor();
     disableRMotor();
@@ -228,7 +334,20 @@ void disableAllMotors() {
     disableP2Motor();
     }
 
-    void autoDisableMotors() {
+/**
+ * autoDisableMotors()
+ * 
+ * Automatically disables motors after a period of inactivity.
+ * 
+ * Behavior:
+ * - Checks if any motor is currently moving
+ * - If idle and timeout exceeded → disable all motors
+ * 
+ * Purpose:
+ * - Reduce power consumption
+ * - Prevent motor overheating
+ */
+void autoDisableMotors() {
     // Check if any motor is moving
     bool isMoving = (stepperL.distanceToGo() != 0 || 
                     stepperR.distanceToGo() != 0 || 
@@ -244,6 +363,19 @@ void disableAllMotors() {
     }
 }
 
+/**
+ * emergencyStop()
+ * 
+ * Immediately stops all motor movement and disables all motors.
+ * 
+ * Also:
+ * - Resets activity timer
+ * - Sends warning message over Serial
+ * 
+ * Used for:
+ * - User-triggered stop
+ * - Critical fault conditions
+ */
 void emergencyStop() {
     stepperL.stop();
     stepperR.stop();
@@ -256,6 +388,18 @@ void emergencyStop() {
     Serial.println(F("WARNING:EMERGENCY_STOP,Motors disabled by user"));
 }
 
+/**
+ * checkFaults()
+ * 
+ * Monitors motor driver fault pins.
+ * 
+ * Behavior:
+ * - Detects nFAULT signals from drivers
+ * - Prints error once (latched)
+ * - Triggers emergency stop
+ * 
+ * Ensures safe shutdown in case of hardware failure.
+ */
 void checkFaults() {
     static bool faultLatched = false;
 
@@ -270,6 +414,22 @@ void checkFaults() {
     }
 }
 
+/**
+ * checkSwitches()
+ * 
+ * Monitors all limit switches in the system.
+ * 
+ * For each axis:
+ * - Detects press/release transitions
+ * - Sends status updates over Serial
+ * - Stops or stabilizes corresponding motors
+ * 
+ * Behavior:
+ * - Z-axis: maintains current position when triggered
+ * - L/R: stops movement when limit reached
+ * 
+ * Uses edge detection to avoid repeated messages.
+ */
 void checkSwitches() {
     static bool z1WasPressed = false;
     if(digitalRead(limitSwitchZ1) == LOW) {
@@ -334,14 +494,29 @@ void checkSwitches() {
     }
 }
 
+/**
+ * adjustTime(unixTime)
+ * 
+ * Sets RTC time using a Unix timestamp.
+ */
 void adjustTime(uint32_t unixTime) {
     rtc.adjust(DateTime(unixTime));
 }
 
+/**
+ * getTime()
+ * 
+ * Returns current system time as Unix timestamp.
+ */
 uint32_t getTime() {
     return rtc.now().unixtime();
 }
 
+/**
+ * printTime()
+ * 
+ * Prints current system time for debugging or GUI synchronization.
+ */
 void printTime() {
     Serial.print(F("TIME:")); Serial.println(rtc.now().unixtime());
 }
