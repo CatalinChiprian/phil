@@ -3,9 +3,16 @@ using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace PHIL_GUI.Models
 {
+    /// <summary>
+    /// Manages all keyboard key bindings for robot control and operations.
+    /// Provides configurable shortcuts for movement, calibration, and pump controls.
+    /// </summary>
     public class AppKeyBindings : ObservableObject
     {
         private string goHomeStr = "H";
+        /// <summary>
+        /// Gets or sets the key binding string for the Go Home command.
+        /// </summary>
         public string GoHomeStr
         {
             get => goHomeStr;
@@ -19,9 +26,15 @@ namespace PHIL_GUI.Models
             }
         }
 
+        /// <summary>
+        /// Gets the key gesture for the Go Home command.
+        /// </summary>
         public KeyGesture GoHomeKey => KeyGesture.Parse(GoHomeStr);
 
         private string calibrateHomeStr = "C";
+        /// <summary>
+        /// Gets or sets the key binding string for the Calibrate Home command.
+        /// </summary>
         public string CalibrateHomeStr
         {
             get => calibrateHomeStr;
@@ -34,9 +47,15 @@ namespace PHIL_GUI.Models
                 OnPropertyChanged(nameof(CalibrateHomeKey));
             }
         }
+        /// <summary>
+        /// Gets the key gesture for the Calibrate Home command.
+        /// </summary>
         public KeyGesture CalibrateHomeKey => KeyGesture.Parse(CalibrateHomeStr);
 
         private string moveUpStr = "Up";
+        /// <summary>
+        /// Gets or sets the key binding string for moving the robot up (Z-axis).
+        /// </summary>
         public string MoveUpStr
         {
             get => moveUpStr;
@@ -49,9 +68,15 @@ namespace PHIL_GUI.Models
                 OnPropertyChanged(nameof(MoveUpKey));
             }
         }
+        /// <summary>
+        /// Gets the key gesture for moving the robot up.
+        /// </summary>
         public KeyGesture MoveUpKey => KeyGesture.Parse(MoveUpStr);
 
         private string moveDownStr = "Down";
+        /// <summary>
+        /// Gets or sets the key binding string for moving the robot down (Z-axis).
+        /// </summary>
         public string MoveDownStr
         {
             get => moveDownStr;
@@ -64,9 +89,15 @@ namespace PHIL_GUI.Models
                 OnPropertyChanged(nameof(MoveDownKey));
             }
         }
+        /// <summary>
+        /// Gets the key gesture for moving the robot down.
+        /// </summary>
         public KeyGesture MoveDownKey => KeyGesture.Parse(MoveDownStr);
 
         private string moveLeftStr = "A";
+        /// <summary>
+        /// Gets or sets the key binding string for moving the robot left.
+        /// </summary>
         public string MoveLeftStr
         {
             get => moveLeftStr;
@@ -79,9 +110,15 @@ namespace PHIL_GUI.Models
                 OnPropertyChanged(nameof(MoveLeftKey));
             }
         }
+        /// <summary>
+        /// Gets the key gesture for moving the robot left.
+        /// </summary>
         public KeyGesture MoveLeftKey => KeyGesture.Parse(MoveLeftStr);
 
         private string moveRightStr = "D";
+        /// <summary>
+        /// Gets or sets the key binding string for moving the robot right.
+        /// </summary>
         public string MoveRightStr
         {
             get => moveRightStr;
@@ -94,9 +131,15 @@ namespace PHIL_GUI.Models
                 OnPropertyChanged(nameof(MoveRightKey));
             }
         }
+        /// <summary>
+        /// Gets the key gesture for moving the robot right.
+        /// </summary>
         public KeyGesture MoveRightKey => KeyGesture.Parse(MoveRightStr);
 
         private string moveForwardStr = "W";
+        /// <summary>
+        /// Gets or sets the key binding string for moving the robot forward.
+        /// </summary>
         public string MoveForwardStr
         {
             get => moveForwardStr;
@@ -109,9 +152,15 @@ namespace PHIL_GUI.Models
                 OnPropertyChanged(nameof(MoveForwardKey));
             }
         }
+        /// <summary>
+        /// Gets the key gesture for moving the robot forward.
+        /// </summary>
         public KeyGesture MoveForwardKey => KeyGesture.Parse(MoveForwardStr);
 
         private string moveBackwardStr = "S";
+        /// <summary>
+        /// Gets or sets the key binding string for moving the robot backward.
+        /// </summary>
         public string MoveBackwardStr
         {
             get => moveBackwardStr;
@@ -124,9 +173,15 @@ namespace PHIL_GUI.Models
                 OnPropertyChanged(nameof(MoveBackwardKey));
             }
         }
+        /// <summary>
+        /// Gets the key gesture for moving the robot backward.
+        /// </summary>
         public KeyGesture MoveBackwardKey => KeyGesture.Parse(MoveBackwardStr);
 
         private string recordPositionStr = "Z";
+        /// <summary>
+        /// Gets or sets the key binding string for recording the current position.
+        /// </summary>
         public string RecordPositionStr
         {
             get => recordPositionStr;
@@ -139,9 +194,15 @@ namespace PHIL_GUI.Models
                 OnPropertyChanged(nameof(RecordPositionKey));
             }
         }
+        /// <summary>
+        /// Gets the key gesture for recording the current position.
+        /// </summary>
         public KeyGesture RecordPositionKey => KeyGesture.Parse(RecordPositionStr);
 
         private string solveMapStr = "M";
+        /// <summary>
+        /// Gets or sets the key binding string for solving/calculating the calibration map.
+        /// </summary>
         public string SolveMapStr
         {
             get => solveMapStr;
@@ -154,9 +215,15 @@ namespace PHIL_GUI.Models
                 OnPropertyChanged(nameof(SolveMapKey));
             }
         }
+        /// <summary>
+        /// Gets the key gesture for solving the calibration map.
+        /// </summary>
         public KeyGesture SolveMapKey => KeyGesture.Parse(SolveMapStr);
 
         private string increaseStepStr = "+";
+        /// <summary>
+        /// Gets or sets the key binding string for increasing the movement step size.
+        /// </summary>
         public string IncreaseStepStr
         {
             get => increaseStepStr;
@@ -169,9 +236,15 @@ namespace PHIL_GUI.Models
                 OnPropertyChanged(nameof(IncreaseStepKey));
             }
         }
+        /// <summary>
+        /// Gets the key gesture for increasing the step size.
+        /// </summary>
         public KeyGesture IncreaseStepKey => KeyGesture.Parse(IncreaseStepStr);
 
         private string decreaseStepStr = "-";
+        /// <summary>
+        /// Gets or sets the key binding string for decreasing the movement step size.
+        /// </summary>
         public string DecreaseStepStr
         {
             get => decreaseStepStr;
@@ -184,9 +257,15 @@ namespace PHIL_GUI.Models
                 OnPropertyChanged(nameof(DecreaseStepKey));
             }
         }
+        /// <summary>
+        /// Gets the key gesture for decreasing the step size.
+        /// </summary>
         public KeyGesture DecreaseStepKey => KeyGesture.Parse(DecreaseStepStr);
 
         private string pump1InStr = "D1";
+        /// <summary>
+        /// Gets or sets the key binding string for Pump 1 aspirate (in) operation.
+        /// </summary>
         public string Pump1InStr
         {
             get => pump1InStr;
@@ -199,9 +278,15 @@ namespace PHIL_GUI.Models
                 OnPropertyChanged(nameof(Pump1InKey));
             }
         }
+        /// <summary>
+        /// Gets the key gesture for Pump 1 aspirate operation.
+        /// </summary>
         public KeyGesture Pump1InKey => KeyGesture.Parse(Pump1InStr);
 
         private string pump1OutStr = "Shift+D1";
+        /// <summary>
+        /// Gets or sets the key binding string for Pump 1 dispense (out) operation.
+        /// </summary>
         public string Pump1OutStr
         {
             get => pump1OutStr;
@@ -214,9 +299,15 @@ namespace PHIL_GUI.Models
                 OnPropertyChanged(nameof(Pump1OutKey));
             }
         }
+        /// <summary>
+        /// Gets the key gesture for Pump 1 dispense operation.
+        /// </summary>
         public KeyGesture Pump1OutKey => KeyGesture.Parse(Pump1OutStr);
 
         private string pump2InStr = "D2";
+        /// <summary>
+        /// Gets or sets the key binding string for Pump 2 aspirate (in) operation.
+        /// </summary>
         public string Pump2InStr
         {
             get => pump2InStr;
@@ -229,9 +320,15 @@ namespace PHIL_GUI.Models
                 OnPropertyChanged(nameof(Pump2InKey));
             }
         }
+        /// <summary>
+        /// Gets the key gesture for Pump 2 aspirate operation.
+        /// </summary>
         public KeyGesture Pump2InKey => KeyGesture.Parse(Pump2InStr);
 
         private string pump2OutStr = "Shift+D2";
+        /// <summary>
+        /// Gets or sets the key binding string for Pump 2 dispense (out) operation.
+        /// </summary>
         public string Pump2OutStr
         {
             get => pump2OutStr;
@@ -244,9 +341,15 @@ namespace PHIL_GUI.Models
                 OnPropertyChanged(nameof(Pump2OutKey));
             }
         }
+        /// <summary>
+        /// Gets the key gesture for Pump 2 dispense operation.
+        /// </summary>
         public KeyGesture Pump2OutKey => KeyGesture.Parse(Pump2OutStr);
 
         private string pump3InStr = "D3";
+        /// <summary>
+        /// Gets or sets the key binding string for Pump 3 aspirate (in) operation.
+        /// </summary>
         public string Pump3InStr
         {
             get => pump3InStr;
@@ -259,9 +362,15 @@ namespace PHIL_GUI.Models
                 OnPropertyChanged(nameof(Pump3InKey));
             }
         }
+        /// <summary>
+        /// Gets the key gesture for Pump 3 aspirate operation.
+        /// </summary>
         public KeyGesture Pump3InKey => KeyGesture.Parse(Pump3InStr);
 
         private string pump3OutStr = "Shift+D3";
+        /// <summary>
+        /// Gets or sets the key binding string for Pump 3 dispense (out) operation.
+        /// </summary>
         public string Pump3OutStr
         {
             get => pump3OutStr;
@@ -274,9 +383,15 @@ namespace PHIL_GUI.Models
                 OnPropertyChanged(nameof(Pump3OutKey));
             }
         }
+        /// <summary>
+        /// Gets the key gesture for Pump 3 dispense operation.
+        /// </summary>
         public KeyGesture Pump3OutKey => KeyGesture.Parse(Pump3OutStr);
 
         private string pump4InStr = "D4";
+        /// <summary>
+        /// Gets or sets the key binding string for Pump 4 aspirate (in) operation.
+        /// </summary>
         public string Pump4InStr
         {
             get => pump4InStr;
@@ -289,9 +404,15 @@ namespace PHIL_GUI.Models
                 OnPropertyChanged(nameof(Pump4InKey));
             }
         }
+        /// <summary>
+        /// Gets the key gesture for Pump 4 aspirate operation.
+        /// </summary>
         public KeyGesture Pump4InKey => KeyGesture.Parse(Pump4InStr);
 
         private string pump4OutStr = "Shift+D4";
+        /// <summary>
+        /// Gets or sets the key binding string for Pump 4 dispense (out) operation.
+        /// </summary>
         public string Pump4OutStr
         {
             get => pump4OutStr;
@@ -304,15 +425,29 @@ namespace PHIL_GUI.Models
                 OnPropertyChanged(nameof(Pump4OutKey));
             }
         }
+        /// <summary>
+        /// Gets the key gesture for Pump 4 dispense operation.
+        /// </summary>
         public KeyGesture Pump4OutKey => KeyGesture.Parse(Pump4OutStr);
 
+        /// <summary>
+        /// Initializes a new instance of the AppKeyBindings class with default key bindings.
+        /// </summary>
         public AppKeyBindings() { }
 
+        /// <summary>
+        /// Initializes a new instance of the AppKeyBindings class by copying from another instance.
+        /// </summary>
+        /// <param name="other">The AppKeyBindings instance to copy from.</param>
         public AppKeyBindings(AppKeyBindings other)
         {
             Override(other);
         }
 
+        /// <summary>
+        /// Copies all key binding settings from another AppKeyBindings instance.
+        /// </summary>
+        /// <param name="other">The AppKeyBindings instance to copy from.</param>
         public void Override(AppKeyBindings other)
         {
             GoHomeStr = other.GoHomeStr;

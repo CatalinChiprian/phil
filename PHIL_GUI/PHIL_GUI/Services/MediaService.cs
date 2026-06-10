@@ -7,13 +7,27 @@ using System.Threading.Tasks;
 
 namespace PHIL_GUI.Services
 {
+    /// <summary>
+    /// Service for recording video from a webcam during robotic actions.
+    /// Videos are saved to a Recordings folder on the desktop.
+    /// </summary>
     public class MediaService
     {
         private readonly IRecordContext recordContext;
+        /// <summary>
+        /// Initializes a new instance of the MediaService class.
+        /// </summary>
+        /// <param name="recordContext">Context providing the recording state.</param>
         public MediaService(IRecordContext recordContext)
         {
             this.recordContext = recordContext;
         }
+        /// <summary>
+        /// Records a 10-second video from the default camera (index 0) if recording is enabled.
+        /// The video is saved as an AVI file with the action ID and timestamp in the filename.
+        /// </summary>
+        /// <param name="actionId">The ID of the action being recorded.</param>
+        /// <returns>A task representing the asynchronous recording operation.</returns>
         public async Task RecordVideo(int actionId)
         {
             if (!recordContext.AreActionRecorded) return;

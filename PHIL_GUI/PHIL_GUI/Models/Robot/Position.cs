@@ -2,9 +2,16 @@
 
 namespace PHIL_GUI.Models
 {
+    /// <summary>
+    /// Represents the current position of the robot's motors.
+    /// Tracks left, right, and two Z-axis positions.
+    /// </summary>
     public class Position : ObservableObject
     {
         private string l;
+        /// <summary>
+        /// Gets or sets the left motor position as a string value.
+        /// </summary>
         public string L
         {
             get => l; 
@@ -12,6 +19,9 @@ namespace PHIL_GUI.Models
         }
 
         private string r;
+        /// <summary>
+        /// Gets or sets the right motor position as a string value.
+        /// </summary>
         public string R
         {
             get => r; 
@@ -19,6 +29,9 @@ namespace PHIL_GUI.Models
         }
 
         private string z1;
+        /// <summary>
+        /// Gets or sets the first Z-axis motor position as a string value.
+        /// </summary>
         public string Z1
         {
             get => z1;
@@ -26,12 +39,18 @@ namespace PHIL_GUI.Models
         }
 
         private string z2;
+        /// <summary>
+        /// Gets or sets the second Z-axis motor position as a string value.
+        /// </summary>
         public string Z2
         {
             get => z2;
             set => SetProperty(ref z2, value);
         }
 
+        /// <summary>
+        /// Initializes a new instance of the Position class with all positions set to "0".
+        /// </summary>
         public Position()
         {
             L = "0";

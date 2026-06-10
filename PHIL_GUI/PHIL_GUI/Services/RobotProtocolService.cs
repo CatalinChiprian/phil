@@ -12,11 +12,20 @@ using System.Threading.Tasks;
 
 namespace PHIL_GUI.Services
 {
+    /// <summary>
+    /// Defines the limit switch states.
+    /// </summary>
     enum LimitType
     {
+        /// <summary>Limit switch is released (not pressed).</summary>
         Released,
+        /// <summary>Limit switch is pressed (active).</summary>
         Pressed
     }
+    /// <summary>
+    /// Service for handling communication protocol with the PHIL robot hardware.
+    /// Manages command sending, response parsing, state synchronization, and action execution.
+    /// </summary>
     public class RobotProtocolService : ObservableObject
     {
         const string MOVE_BACKWARD_CMD = "MOVE_BACKWARD";
@@ -77,6 +86,9 @@ namespace PHIL_GUI.Services
         const string END_WELL_ACTIONS = "END_WELL_ACTIONS";
 
 
+        /// <summary>
+        /// Event raised when the application has completed initialization with the robot.
+        /// </summary>
         public event Action OnAppInitialized;
 
         private TaskCompletionSource<bool>? waiter;
@@ -85,22 +97,38 @@ namespace PHIL_GUI.Services
         private bool ready;
 
         private readonly MediaService mediaService;
+        /// <summary>
+        /// Gets the media service for recording videos.
+        /// </summary>
         public MediaService MediaService => mediaService;
         private readonly SerialPortService serialPortService = new SerialPortService();
+        /// <summary>
+        /// Gets the serial port service for hardware communication.
+        /// </summary>
         public SerialPortService SerialPortService => serialPortService;
         private readonly RobotState robotState = new RobotState();
+        /// <summary>
+        /// Gets the current robot state including position, calibration, and actions.
+        /// </summary>
         public RobotState RobotState => robotState;
 
         private readonly StringBuilder logBuffer = new();
         private readonly DispatcherTimer logTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(100) };
 
         private string receivedData = "";
+        /// <summary>
+        /// Gets the log of received data from the robot for debugging purposes.
+        /// </summary>
         public string ReceivedData
         {
             get => receivedData;
             private set => SetProperty(ref receivedData, value);
         }
 
+        /// <summary>
+        /// Initializes a new instance of the RobotProtocolService class.
+        /// </summary>
+        /// <param name="recordContext">Context for accessing recording settings.</param>
         public RobotProtocolService(IRecordContext recordContext)
         {
             mediaService = new MediaService(recordContext);
@@ -112,6 +140,9 @@ namespace PHIL_GUI.Services
             serialPortService.OnConnected += OnSerialPortConnected;
         }
 
+        /// <summary>
+        /// Handles the periodic timer tick event to flush the log buffer to ReceivedData.
+        /// </summary>
         private void LogTimer_Tick(object? sender, EventArgs e)
         {
             if (logBuffer.Length <= 0) return;
@@ -120,30 +151,51 @@ namespace PHIL_GUI.Services
             logBuffer.Clear();
         }
 
+        /// <summary>
+        /// Sends a command to the robot via the serial port and logs it to ReceivedData.
+        /// </summary>
+        /// <param name="command">The command string to send.</param>
         private void SendCommand(string command)
         {
             ReceivedData += $"Sent To Robot: {command}\n";
             serialPortService.SendMessage(command);
         }
 
+        /// <summary>
+        /// Creates a new action on the robot and in the local action scheduler.
+        /// </summary>
+        /// <param name="action">The action to create.</param>
         public void CreateAction(ActionItem action)
         {
             SendCommand($"{CREATE_ACTION_CMD} {(int)action.TempId} {(int)action.Type} {(int)action.Pump1} {(int)action.Pump2} {action.Amount} {action.Frequency} {(int)action.TimeUnit} {action.StartEpoch} {action.EndEpoch}");
             RobotState.ActionScheduler.CreateAction(action);
         }
 
+        /// <summary>
+        /// Updates an existing action on the robot and in the local action scheduler.
+        /// </summary>
+        /// <param name="action">The action with updated values.</param>
         public void UpdateAction(ActionItem action)
         {
             SendCommand($"{UPDATE_ACTION_CMD} {action.Id} {(int)action.Type} {(int)action.Pump1} {(int)action.Pump2} {action.Amount} {action.Frequency} {(int)action.TimeUnit} {action.StartEpoch} {action.EndEpoch}");
             RobotState.ActionScheduler.UpdateAction(action);
         }
 
+        /// <summary>
+        /// Deletes an action from the robot and the local action scheduler.
+        /// </summary>
+        /// <param name="actionId">The ID of the action to delete.</param>
         public void DeleteAction(int actionId)
         {
             SendCommand($"{DEL_ACTION_CMD} {actionId}");
             RobotState.ActionScheduler.DeleteAction(actionId);
         }
 
+        /// <summary>
+        /// Attaches an action to multiple wells by their indices.
+        /// </summary>
+        /// <param name="action">The action to attach.</param>
+        /// <param name="selectedWellIndices">The well indices to attach the action to.</param>
         public void AttachAction(ScheduleAction action, IEnumerable<int> selectedWellIndices)
         {
             byte[] bitmask = selectedWellIndices.WellIndicesToBitmask();
@@ -151,6 +203,11 @@ namespace PHIL_GUI.Services
             SendCommand($"{LINK_ACTION_WELL_CMD} {action.Id} {hex}");
             RobotState.ActionScheduler.AttachAction(action, selectedWellIndices);
         }
+        /// <summary>
+        /// Detaches an action from multiple wells by their indices.
+        /// </summary>
+        /// <param name="action">The action to detach.</param>
+        /// <param name="selectedWellIndices">The well indices to detach the action from.</param>
         public void DetachAction(ScheduleAction action, IEnumerable<int> selectedWellIndices)
         {
             byte[] bitmask = selectedWellIndices.WellIndicesToBitmask();
@@ -159,106 +216,179 @@ namespace PHIL_GUI.Services
             RobotState.ActionScheduler.DetachAction(action, selectedWellIndices);
         }
 
+        /// <summary>
+        /// Clears the received data log.
+        /// </summary>
         public void ClearReceivedData()
         {
             ReceivedData = "";
         }
 
+        /// <summary>
+        /// Sets the well plate type on the robot (OrganOnChip or Well96).
+        /// </summary>
+        /// <param name="plateType">The plate type to set.</param>
         public void SetWellPlateType(PlateType plateType)
         {
             SendCommand($"{SET_PLATE_TYPE_CMD} {plateType}");
         }
-        
+
+        /// <summary>
+        /// Sends an emergency stop command to the robot.
+        /// </summary>
         public void Stop()
         {
             SendCommand("s");
         }
 
+        /// <summary>
+        /// Moves the robot up (Z-axis positive direction).
+        /// </summary>
         public void MoveUp()
         {
             SendCommand(MOVE_UP_CMD);
         }
 
+        /// <summary>
+        /// Moves the robot down (Z-axis negative direction).
+        /// </summary>
         public void MoveDown()
         {
             SendCommand(MOVE_DOWN_CMD);
         }
 
+        /// <summary>
+        /// Moves the robot forward (Y-axis positive direction).
+        /// </summary>
         public void MoveForward()
         {
             SendCommand(MOVE_FORWARD_CMD);
         }
 
+        /// <summary>
+        /// Moves the robot backward (Y-axis negative direction).
+        /// </summary>
         public void MoveBackward()
         {
             SendCommand(MOVE_BACKWARD_CMD);
         }
 
+        /// <summary>
+        /// Moves the robot left (X-axis negative direction).
+        /// </summary>
         public void MoveLeft()
         {
             SendCommand(MOVE_LEFT_CMD);
         }
 
+        /// <summary>
+        /// Moves the robot right (X-axis positive direction).
+        /// </summary>
         public void MoveRight()
         {
             SendCommand(MOVE_RIGHT_CMD);
         }
 
+        /// <summary>
+        /// Decreases the movement step size.
+        /// </summary>
         public void DecreaseStepSize()
         {
             SendCommand(DEC_STEP_CMD);
         }
 
+        /// <summary>
+        /// Increases the movement step size.
+        /// </summary>
         public void IncreaseStepSize()
         {
             SendCommand(INC_STEP_CMD);
         }
 
+        /// <summary>
+        /// Records a calibration point at the current robot position for the specified well.
+        /// </summary>
+        /// <param name="wellName">The well name (e.g., "A1").</param>
         public void RecordCalibrationPoint(string wellName)
         {
             SendCommand($"{RECORD_POINT_CMD} {wellName}");
         }
 
+        /// <summary>
+        /// Solves the calibration map using the recorded calibration points.
+        /// </summary>
         public void SolveMap()
         {
             SendCommand(SOLVE_MAP_CMD);
         }
 
+        /// <summary>
+        /// Deletes a specific calibration point.
+        /// </summary>
+        /// <param name="wellName">The well name of the calibration point to delete.</param>
         public void DeleteCalibrationPoint(string wellName)
         {
             SendCommand($"{DELETE_POINT_CMD} {wellName}");
         }
 
+        /// <summary>
+        /// Clears all calibration points from the robot.
+        /// </summary>
         public void ClearCalibration()
         {
             SendCommand(CLEAR_CALIBRATION_CMD);
         }
 
+        /// <summary>
+        /// Aspirates (draws in) liquid using the specified pump.
+        /// </summary>
+        /// <param name="pumpNumber">The pump number (1-4).</param>
+        /// <param name="volume">The volume in microliters to aspirate.</param>
         public void Aspirate(int pumpNumber, int volume)
         {
             SendCommand($"{ASPIRATE_CMD} {pumpNumber} {volume}");
         }
 
+        /// <summary>
+        /// Dispenses (expels) liquid using the specified pump.
+        /// </summary>
+        /// <param name="pumpNumber">The pump number (1-4).</param>
+        /// <param name="volume">The volume in microliters to dispense.</param>
         public void Dispense(int pumpNumber, int volume)
         {
             SendCommand($"{DISPENSE_CMD} {pumpNumber} {volume}");
         }
 
+        /// <summary>
+        /// Primes the specified pump by dispensing the maximum volume.
+        /// </summary>
+        /// <param name="pumpNumber">The pump number (1-4) to prime.</param>
         public void Prime(int pumpNumber)
         {
             SendCommand($"{DISPENSE_CMD} {pumpNumber} {int.MaxValue}");
         }
 
+        /// <summary>
+        /// Moves the robot to a well using hardcoded coordinates.
+        /// </summary>
+        /// <param name="wellName">The well name (e.g., "A1").</param>
         public void MoveToHardcodedWell(string wellName)
         {
             SendCommand($"{MOVE_HARD_WELL_CMD} {wellName}");
         }
 
+        /// <summary>
+        /// Moves the robot to a well using calculated coordinates from calibration.
+        /// </summary>
+        /// <param name="wellName">The well name (e.g., "A1").</param>
         public void MoveToCalculatedWell(string wellName)
         {
             SendCommand($"{MOVE_CALC_WELL_CMD} {wellName}");
         }
 
+        /// <summary>
+        /// Moves the robot to the origin position.
+        /// </summary>
         public void GoHome()
         {
             robotState.CurrentWell.Type = WellType.Home;
@@ -266,6 +396,9 @@ namespace PHIL_GUI.Services
             SendCommand(GO_HOME_CMD);
         }
 
+        /// <summary>
+        /// Calibrates the home position from the current robot location.
+        /// </summary>
         public void CalibrateHome()
         {
             robotState.CurrentWell.Type = WellType.Home;
@@ -273,6 +406,9 @@ namespace PHIL_GUI.Services
             SendCommand(CALIBRATE_HOME_CMD);
         }
 
+        /// <summary>
+        /// Triggers an emergency stop, halting all robot movement immediately.
+        /// </summary>
         public void EmergencyStop()
         {
             robotState.CurrentWell.Type = WellType.Unknown;
@@ -280,6 +416,9 @@ namespace PHIL_GUI.Services
             SendCommand("s");
         }
 
+        /// <summary>
+        /// Handles the serial port connection event and initializes robot state by requesting all current data.
+        /// </summary>
         private async void OnSerialPortConnected()
         {
             ready = true;
@@ -295,12 +434,21 @@ namespace PHIL_GUI.Services
 
             OnAppInitialized?.Invoke();
         }
+        /// <summary>
+        /// Sends a command with a delay to prevent overwhelming the serial communication.
+        /// </summary>
+        /// <param name="cmd">The command to send.</param>
         async Task SendWithDelay(string cmd)
         {
             SendCommand(cmd);
             await Task.Delay(50);
         }
 
+        /// <summary>
+        /// Sends a command and waits for a specific completion message before continuing.
+        /// </summary>
+        /// <param name="cmd">The command to send.</param>
+        /// <param name="completion">The expected completion message.</param>
         async Task SendAndWait(string cmd, string completion)
         {
             expectedCompletion = completion;
@@ -311,6 +459,10 @@ namespace PHIL_GUI.Services
             await waiter.Task;
         }
 
+        /// <summary>
+        /// Handles received messages from the serial port, logging them and parsing their content.
+        /// </summary>
+        /// <param name="message">The received message.</param>
         private void OnMessageReceived(string message)
         {
             if (!ready) return;
@@ -331,6 +483,10 @@ namespace PHIL_GUI.Services
             expectedCompletion = null;
         }
 
+        /// <summary>
+        /// Parses a received message and routes it to the appropriate handler based on its prefix.
+        /// </summary>
+        /// <param name="message">The message to parse.</param>
         private void ParseMessage(string message)
         {
             if (message.StartsWith(WELL_PREFIX)) ParseWellArrival(message);
@@ -352,15 +508,25 @@ namespace PHIL_GUI.Services
             else if (message.StartsWith(MAX_ACTIONS_PER_WELL_PREIX)) ParseMaxWellActions(message);
         }
 
+        /// <summary>
+        /// Parses a key-value formatted message into a dictionary.
+        /// </summary>
+        /// <param name="msg">The message to parse.</param>
+        /// <param name="prefix">The prefix to remove before parsing.</param>
+        /// <returns>Dictionary of key-value pairs.</returns>
         private Dictionary<string, string> ParseKV(string msg, string prefix)
         {
             return msg.Substring(prefix.Length)
                       .Split(',')
                       .Select(p => p.Split('='))
                       .Where(p => p.Length == 2)
-                      .ToDictionary(p => p[0], p => p[1]);
-        }
+                                     .ToDictionary(p => p[0], p => p[1]);
+                      }
 
+        /// <summary>
+        /// Parses a well arrival message and updates the robot's current well state.
+        /// </summary>
+        /// <param name="msg">The well arrival message.</param>
         private void ParseWellArrival(string msg)
         {
             var kv = ParseKV(msg, WELL_PREFIX);
@@ -380,6 +546,10 @@ namespace PHIL_GUI.Services
             robotState.Settings.State = MoveState.Idle;
         }
 
+        /// <summary>
+        /// Parses a position update message and updates the robot's current position.
+        /// </summary>
+        /// <param name="msg">The position message.</param>
         private void ParsePosition(string msg)
         {
             var kv = ParseKV(msg, POS_PREFIX);
@@ -395,6 +565,10 @@ namespace PHIL_GUI.Services
             robotState.Settings.State = MoveState.Idle;
         }
 
+        /// <summary>
+        /// Parses a calibration point message and updates or adds the calibration point in robot state.
+        /// </summary>
+        /// <param name="msg">The calibration point message.</param>
         private void ParseCalPoint(string msg)
         {
             var kv = ParseKV(msg, CAL_PT_PREFIX);
@@ -428,6 +602,10 @@ namespace PHIL_GUI.Services
             }
         }
 
+        /// <summary>
+        /// Parses a calibration point recorded message and updates or adds the point to robot state.
+        /// </summary>
+        /// <param name="msg">The calibration recorded message.</param>
         private void ParseCalRecorded(string msg)
         {
             var kv = ParseKV(msg, CAL_REC_PREFIX);
@@ -452,6 +630,10 @@ namespace PHIL_GUI.Services
             };
         }
 
+        /// <summary>
+        /// Parses a calibration point deleted message and removes the point from robot state.
+        /// </summary>
+        /// <param name="msg">The calibration deleted message.</param>
         private void ParseCalDeleted(string msg)
         {
             var kv = ParseKV(msg, CAL_DEL_PREFIX);
@@ -463,6 +645,10 @@ namespace PHIL_GUI.Services
             robotState.Calibration.Points.Remove(existingPoint);
         }
 
+        /// <summary>
+        /// Parses a root-mean-square (RMS) error message and updates calibration accuracy metrics.
+        /// </summary>
+        /// <param name="msg">The RMS message.</param>
         private void ParseRms(string msg)
         {
             var d = ParseKV(msg, RMS_PREFIX);
@@ -470,6 +656,10 @@ namespace PHIL_GUI.Services
             robotState.Calibration.RmsR = double.Parse(d["R"], CultureInfo.InvariantCulture);
         }
 
+        /// <summary>
+        /// Parses a scheduled action message and adds the action to the action scheduler.
+        /// </summary>
+        /// <param name="msg">The action message.</param>
         private void ParseAction(string msg)
         {
             var kv = ParseKV(msg, ACTION_PREFIX);
@@ -489,6 +679,10 @@ namespace PHIL_GUI.Services
             RobotState.ActionScheduler.Actions.Add(action);
         }
 
+        /// <summary>
+        /// Parses a well-action mapping message and associates actions with specific wells.
+        /// </summary>
+        /// <param name="msg">The well-action message.</param>
         private void ParseWellAction(string msg)
         {
             var kv = ParseKV(msg, WELL_ACTION_PREFIX);
@@ -502,6 +696,10 @@ namespace PHIL_GUI.Services
             RobotState.ActionScheduler.AddWellActions(actionIds, wellIndex);
         }
 
+        /// <summary>
+        /// Parses an action created confirmation message and updates the action ID mapping.
+        /// </summary>
+        /// <param name="msg">The action created message.</param>
         private void ParseActionCreated(string msg)
         {
             var kv = ParseKV(msg, ACTION_CREATED_PREFIX);
@@ -511,18 +709,25 @@ namespace PHIL_GUI.Services
             RobotState.ActionScheduler.UpdateAction(tempId, id);
         }
 
-        private void ParseActionExecution(string msg)
+        /// <summary>
+        /// Parses an action execution message, updates the last run time, and triggers video recording.
+        /// </summary>
+        /// <param name="msg">The action execution message.</param>
+        private async void ParseActionExecution(string msg)
         {
             var kv = ParseKV(msg, EXECUTING_ACTION_ID_PREFIX);
             int id = int.Parse(kv["Id"], CultureInfo.InvariantCulture);
             long lastRunEpoch = long.Parse(kv["LastRun"], CultureInfo.InvariantCulture);
             RobotState.ActionScheduler.UpdateAction(id, lastRunEpoch);
 
-            // Temp Testing
-
-            _ = MediaService.RecordVideo(id);
+            await MediaService.RecordVideo(id);
         }
 
+        /// <summary>
+        /// Parses a limit switch state message and updates the corresponding limit switch state.
+        /// </summary>
+        /// <param name="msg">The limit message.</param>
+        /// <param name="type">The limit state type (pressed or released).</param>
         private void ParseLimit(string msg, LimitType type)
         {
             string prefix = type == LimitType.Pressed ? LIMIT_PRESSED_PREFIX : LIMIT_RELEASED_PREFIX;
@@ -537,18 +742,30 @@ namespace PHIL_GUI.Services
             else if (axis == "R") robotState.Limit.R = state;
         }
 
+        /// <summary>
+        /// Parses a step size message and updates the robot settings.
+        /// </summary>
+        /// <param name="msg">The step size message.</param>
         private void ParseStepSize(string msg)
         {
             string stepSize = msg.Substring(STEP_SIZE_PREFIX.Length).Trim();
             robotState.Settings.StepSize = double.Parse(stepSize, CultureInfo.InvariantCulture);
         }
 
+        /// <summary>
+        /// Parses a microsteps configuration message and updates the robot settings.
+        /// </summary>
+        /// <param name="msg">The microsteps message.</param>
         private void ParseMicrosteps(string msg)
         {
             string microSteps = msg.Substring(MICROSTEPS_PREFIX.Length).Trim();
             robotState.Settings.Microsteps = microSteps;
         }
 
+        /// <summary>
+        /// Parses a robot time message and synchronizes the robot clock if necessary.
+        /// </summary>
+        /// <param name="msg">The time message.</param>
         private void ParseTime(string msg)
         {
             string unixTimeStr = msg.Substring(TIME_PREFIX.Length).Trim();
@@ -561,6 +778,10 @@ namespace PHIL_GUI.Services
             SetTime(DateTimeOffset.Now.ToLocalTime().ToUnixTimeSeconds());
         }
 
+        /// <summary>
+        /// Parses the maximum total actions capacity message and updates the action scheduler limits.
+        /// </summary>
+        /// <param name="msg">The max actions message.</param>
         private void ParseMaxActions(string msg)
         {
             string maxActionsStr = msg.Substring(MAX_ACTIONS_TOTAL_PREIX.Length).Trim();
@@ -568,6 +789,10 @@ namespace PHIL_GUI.Services
             robotState.ActionScheduler.MaxTotalActions = maxActions;
         }
 
+        /// <summary>
+        /// Parses the maximum actions per well capacity message and updates the action scheduler limits.
+        /// </summary>
+        /// <param name="msg">The max well actions message.</param>
         private void ParseMaxWellActions(string msg)
         {
             string maxActionsStr = msg.Substring(MAX_ACTIONS_PER_WELL_PREIX.Length).Trim();
@@ -575,6 +800,10 @@ namespace PHIL_GUI.Services
             robotState.ActionScheduler.MaxActionsPerWell = maxActions;
         }
 
+        /// <summary>
+        /// Sends a command to set the robot's internal clock to the specified Unix timestamp.
+        /// </summary>
+        /// <param name="unixTime">The Unix timestamp in seconds.</param>
         private void SetTime(long unixTime)
         {
             SendCommand($"{SET_TIME_CMD} {unixTime}");

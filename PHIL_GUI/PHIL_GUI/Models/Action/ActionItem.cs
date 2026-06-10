@@ -6,10 +6,20 @@ using System.Collections.Generic;
 
 namespace PHIL_GUI.Models
 {
+    /// <summary>
+    /// Represents a scheduled action item for robotic liquid handling operations.
+    /// Supports aspirate, dispense, and exchange operations with configurable scheduling and UI binding.
+    /// </summary>
     public class ActionItem : ObservableObject, IAction
     {
+        /// <summary>
+        /// Gets or sets the underlying schedule action model.
+        /// </summary>
         public ScheduleAction Model { get; set; }
         private int id;
+        /// <summary>
+        /// Gets or sets the unique identifier for this action.
+        /// </summary>
         public int Id
         {
             get => id;
@@ -19,9 +29,16 @@ namespace PHIL_GUI.Models
                 SetProperty(ref id, value);
             }
         }
+        /// <summary>
+        /// Gets or sets the temporary identifier used before the action is persisted.
+        /// </summary>
         public int TempId { get; set; }
 
         private ActionType type;
+        /// <summary>
+        /// Gets or sets the type of action (Aspirate, Dispense, or Exchange).
+        /// Changes trigger updates to related UI properties.
+        /// </summary>
         public ActionType Type
         {
             get => type;
@@ -37,6 +54,9 @@ namespace PHIL_GUI.Models
                 OnPropertyChanged(nameof(Summary));
             }
         }
+        /// <summary>
+        /// Gets a short label for the action type (ASP, DISP, or EXCH).
+        /// </summary>
         public string ActionTypeLabel
         {
             get
@@ -63,6 +83,9 @@ namespace PHIL_GUI.Models
                 };
             }
         }
+        /// <summary>
+        /// Gets the background color brush for the action type label based on the action type.
+        /// </summary>
         public IBrush ActionTypeBackgroundColor => Application.Current.Resources[actionTypeLabelBackgroundColor] as IBrush;
 
         private string actionTypeLabelBorderColor
@@ -78,6 +101,9 @@ namespace PHIL_GUI.Models
                 };
             }
         }
+        /// <summary>
+        /// Gets the border color brush for the action type label based on the action type.
+        /// </summary>
         public IBrush ActionTypeBorderColor => Application.Current.Resources[actionTypeLabelBorderColor] as IBrush;
 
         private string actionTypeTextColor {
@@ -92,9 +118,16 @@ namespace PHIL_GUI.Models
                 };
             }
         }
+        /// <summary>
+        /// Gets the text color brush for the action type label based on the action type.
+        /// </summary>
         public IBrush ActionTypeTextColor => Application.Current.Resources[actionTypeTextColor] as IBrush;
 
         private Pump pump1;
+        /// <summary>
+        /// Gets or sets the primary pump for the action.
+        /// For Exchange actions, this is the source pump.
+        /// </summary>
         public Pump Pump1
         {
             get => pump1;
@@ -105,9 +138,16 @@ namespace PHIL_GUI.Models
                 OnPropertyChanged(nameof(Summary));
             }
         }
+        /// <summary>
+        /// Gets the display label for Pump1.
+        /// </summary>
         public string Pump1Label => GetPumpName(pump1);
 
         private Pump pump2;
+        /// <summary>
+        /// Gets or sets the secondary pump for Exchange actions.
+        /// This is the destination pump for Exchange operations.
+        /// </summary>
         public Pump Pump2
         {
             get => pump2;
@@ -118,10 +158,16 @@ namespace PHIL_GUI.Models
                 OnPropertyChanged(nameof(Summary));
             }
         }
+        /// <summary>
+        /// Gets the display label for Pump2. Only shown for Exchange actions.
+        /// </summary>
         public string Pump2Label => Type == ActionType.Exchange ? GetPumpName(pump2) : "";
         private string GetPumpName(Pump pump) => pump == Pump.None ? "" : $"{pump.ToString()}";
 
         private int amount;
+        /// <summary>
+        /// Gets or sets the liquid volume amount in microliters (µL).
+        /// </summary>
         public int Amount
         {
             get => amount;
@@ -134,6 +180,9 @@ namespace PHIL_GUI.Models
         }
 
         private int frequency;
+        /// <summary>
+        /// Gets or sets how often the action repeats. Set to -1 for one-time actions.
+        /// </summary>
         public int Frequency
         {
             get => frequency;
@@ -145,9 +194,15 @@ namespace PHIL_GUI.Models
             }
         }
 
+        /// <summary>
+        /// Gets the display label for the frequency (e.g., "Every 5 Minutes").
+        /// </summary>
         public string FrequencyLabel => Frequency != -1 ? $"Every {Frequency} {GetTimeUnitLabel()}" : "";
 
         private TimeUnit timeUnit;
+        /// <summary>
+        /// Gets or sets the time unit for the frequency (Minute, Hour, or Day).
+        /// </summary>
         public TimeUnit TimeUnit
         {
             get => timeUnit;
@@ -168,6 +223,9 @@ namespace PHIL_GUI.Models
             }) + (Frequency == 1 ? "" : "s");
 
         private long startEpoch;
+        /// <summary>
+        /// Gets or sets the start time as Unix epoch seconds.
+        /// </summary>
         public long StartEpoch
         {
             get => startEpoch;
@@ -179,6 +237,9 @@ namespace PHIL_GUI.Models
         }
 
         private long endEpoch;
+        /// <summary>
+        /// Gets or sets the end time as Unix epoch seconds.
+        /// </summary>
         public long EndEpoch
         {
             get => endEpoch;
@@ -190,6 +251,9 @@ namespace PHIL_GUI.Models
         }
 
         private long lastRunEpoch;
+        /// <summary>
+        /// Gets or sets the last execution time as Unix epoch seconds.
+        /// </summary>
         public long LastRunEpoch
         {
             get => lastRunEpoch;
@@ -201,6 +265,10 @@ namespace PHIL_GUI.Models
         }
 
         private DateTimeOffset? startDate;
+        /// <summary>
+        /// Gets or sets the start date for the action.
+        /// Includes validation to prevent dates in the past and auto-adjusts related properties.
+        /// </summary>
         public DateTimeOffset? StartDate
         {
             get => startDate;
@@ -223,6 +291,10 @@ namespace PHIL_GUI.Models
         }
 
         private TimeSpan? startTime;
+        /// <summary>
+        /// Gets or sets the start time of day for the action.
+        /// Includes validation to prevent times in the past for today's date.
+        /// </summary>
         public TimeSpan? StartTime
         {
             get => startTime;
@@ -246,6 +318,10 @@ namespace PHIL_GUI.Models
         }
 
         private DateTimeOffset? endDate;
+        /// <summary>
+        /// Gets or sets the end date for the action.
+        /// Includes validation to ensure it's not before the start date.
+        /// </summary>
         public DateTimeOffset? EndDate
         {
             get => endDate;
@@ -265,6 +341,10 @@ namespace PHIL_GUI.Models
         }
 
         private TimeSpan? endTime;
+        /// <summary>
+        /// Gets or sets the end time of day for the action.
+        /// Includes validation to ensure it's not before the start time on the same date.
+        /// </summary>
         public TimeSpan? EndTime
         {
             get => endTime;
@@ -287,15 +367,24 @@ namespace PHIL_GUI.Models
         }
 
         private TimeSpan timeUntilNextRun;
+        /// <summary>
+        /// Gets or sets the time remaining until the next execution of this action.
+        /// </summary>
         public TimeSpan TimeUntilNextRun
         {
             get => timeUntilNextRun;
             set => SetProperty(ref timeUntilNextRun, value);
         }
 
+        /// <summary>
+        /// Gets the current local date/time.
+        /// </summary>
         public DateTime Today => DateTime.Now.ToLocalTime();
 
         private bool isVisible = true;
+        /// <summary>
+        /// Gets or sets whether this action item is visible in the UI.
+        /// </summary>
         public bool IsVisible
         {
             get => isVisible;
@@ -337,6 +426,9 @@ namespace PHIL_GUI.Models
 
             return "Until " + string.Join(" ", parts);
         }
+        /// <summary>
+        /// Gets a summary of the action including pumps and volume (e.g., "P1→P2 100µL").
+        /// </summary>
         public string Summary => $"{GetPumpSummary()} {Amount}µL";
         private string GetPumpSummary() => Type switch
         {
@@ -346,8 +438,14 @@ namespace PHIL_GUI.Models
             _ => ""
         };
 
+        /// <summary>
+        /// Gets a display label showing the time period for the action (e.g., "From Now Until Forever").
+        /// </summary>
         public string PeriodLabel => $"{GetStartLabel()} {GetEndLabel()}";
 
+        /// <summary>
+        /// Gets a display label showing the countdown or status (e.g., "01:30:45", "Pending", "Finished").
+        /// </summary>
         public string TimeUntilNextRunLabel =>
             TimeUntilNextRun > TimeSpan.Zero
             ? TimeUntilNextRun.ToString(@"hh\:mm\:ss")
@@ -371,6 +469,16 @@ namespace PHIL_GUI.Models
 
         private bool suppressValidation;
 
+        /// <summary>
+        /// Initializes a new instance of the ActionItem class with specified parameters.
+        /// </summary>
+        /// <param name="tempId">Temporary identifier before persistence.</param>
+        /// <param name="type">Type of action.</param>
+        /// <param name="pump1">Primary pump.</param>
+        /// <param name="pump2">Secondary pump (for Exchange actions).</param>
+        /// <param name="amount">Volume in microliters.</param>
+        /// <param name="frequency">How often the action repeats.</param>
+        /// <param name="unit">Time unit for frequency.</param>
         public ActionItem(int tempId, ActionType type, Pump pump1, Pump pump2, int amount, int frequency, TimeUnit unit)
         {
             TempId = tempId;
@@ -382,6 +490,11 @@ namespace PHIL_GUI.Models
             TimeUnit = unit;
         }
 
+        /// <summary>
+        /// Initializes a new instance of the ActionItem class from a ScheduleAction model.
+        /// Subscribes to model property changes for synchronization.
+        /// </summary>
+        /// <param name="model">The schedule action model to wrap.</param>
         public ActionItem(ScheduleAction model)
         {
             Model = model;
@@ -394,6 +507,11 @@ namespace PHIL_GUI.Models
             Override(Model);
         }
 
+        /// <summary>
+        /// Overrides this ActionItem's properties with values from a ScheduleAction model.
+        /// Converts epoch times to local date/time values and suppresses validation during the update.
+        /// </summary>
+        /// <param name="model">The ScheduleAction model to copy from.</param>
         public void Override(ScheduleAction model)
         {
             suppressValidation = true;
@@ -433,6 +551,10 @@ namespace PHIL_GUI.Models
             suppressValidation = false;
         }
 
+        /// <summary>
+        /// Initializes a new instance of the ActionItem class by copying another ActionItem.
+        /// </summary>
+        /// <param name="other">The ActionItem to copy from.</param>
         public ActionItem(ActionItem other)
         {
             Override(other);
@@ -463,6 +585,10 @@ namespace PHIL_GUI.Models
             suppressValidation = false;
         }
 
+        /// <summary>
+        /// Converts the StartDate/StartTime and EndDate/EndTime properties to Unix epoch seconds.
+        /// Updates StartEpoch and EndEpoch properties.
+        /// </summary>
         public void ConvertToEpoch()
         {
             if (StartDate != null && StartTime != null)
@@ -477,6 +603,10 @@ namespace PHIL_GUI.Models
             }
         }
 
+        /// <summary>
+        /// Updates the TimeUntilNextRun property based on the current time and the action's schedule.
+        /// Calculates the next execution time for recurring actions based on the last run time.
+        /// </summary>
         public void UpdateCountdown()
         {
             int intervalSeconds = GetIntervalSeconds();
