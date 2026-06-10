@@ -1,0 +1,7 @@
+
+# DocFX generated files
+_site/
+api/
+obj/
+.docfx/
+*.log

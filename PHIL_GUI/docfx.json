@@ -1,0 +1,40 @@
+{
+  "$schema": "https://raw.githubusercontent.com/dotnet/docfx/main/schemas/docfx.schema.json",
+  "metadata": [{
+    "src": [{
+      "files": ["**/*.csproj"],
+      "src": "PHIL_GUI"
+    }],
+    "dest": "api"
+  }],
+  "build": {
+    "content": [
+      { 
+        "files": ["**.md", "toc.yml"],
+        "src": "docs"
+      },
+      { "files": ["api/**.yml", "api/index.md"] }
+    ],
+    "resource": [
+      {
+        "files": [
+          "images/**",
+          "**/*.pdf",
+          "styles/**"
+        ],
+        "src": "docs"
+      }
+    ],
+    "output": "_site",
+    "template": [
+      "default",
+      "modern"
+    ],
+    "globalMetadata": {
+      "_appName": "PHIL",
+      "_appTitle": "PHIL",
+      "_enableSearch": true,
+      "pdf": true
+    }
+  }
+}

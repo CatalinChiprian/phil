@@ -47,6 +47,33 @@ Notes & recommendations
 - Use UI view-model wrappers (eg: ActionItem) when you need transactional edits or validation.
 - When introducing new KeyBindings in AppKeyBindings make sure to add the KeyBindings in the specific Window axaml.The Window axaml.cs must subscribe to PropertyChanged event of AppKJeyBindings and update KeyBindings everytime.
 
+Documentation
+-------------
+
+### Generating Documentation with DocFX
+
+This project uses [DocFX](https://dotnet.github.io/docfx/) to generate comprehensive documentation from XML comments and Markdown files.
+
+#### Prerequisites
+
+Install DocFX globally:
+```bash
+dotnet tool install -g docfx
+```
+
+#### Quick Start
+
+**Build documentation:**
+```bash
+docfx docfx.json
+```
+
+**Build and serve locally:**
+```bash
+docfx docfx.json --serve
+```
+Then open `http://localhost:8080` in your browser.
+
 Contributing
 ------------
 - Fork the repo, create a feature branch, and submit a PR. Follow existing code style and include tests for new logic where feasible.

@@ -4,3 +4,10 @@
 /PHIL_GUI/PHIL_GUI/obj
 /PHIL_GUI/RelayCommands/bin
 /PHIL_GUI/RelayCommands/obj
+
+# DocFX generated files
+/PHIL_GUI/_site/
+/PHIL_GUI/api/
+/PHIL_GUI/obj/
+/PHIL_GUI/.docfx/
+*.log

@@ -1,12 +1,9 @@
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
-using Avalonia.Markup.Xaml;
-using Microsoft.Extensions.DependencyInjection;
 using PHIL_GUI.ViewModels;
-using PHIL_GUI.Views;
 
-namespace PHIL_GUI;
+namespace PHIL_GUI.Views;
 
 /// <summary>
 /// Window for selecting and connecting to a serial port.
