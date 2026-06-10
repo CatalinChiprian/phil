@@ -7,11 +7,13 @@
              x:Class="PHIL_GUI.Views.DebugView"
              x:DataType="vm:DebugViewModel">
     <StackPanel Margin="10,20" Spacing="15">
+        <!--Record actions toggle-->
         <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
             <TextBlock Text="Record Actions" FontWeight="SemiBold" FontSize="16"/>
             <ToggleSwitch IsChecked="{Binding AreActionRecorded}"/>
         </StackPanel>
 
+        <!--Serial monitor with log display and controls-->
         <StackPanel Spacing="8">
             <TextBlock Text="Serial Monitor" 
                        FontWeight="SemiBold" 

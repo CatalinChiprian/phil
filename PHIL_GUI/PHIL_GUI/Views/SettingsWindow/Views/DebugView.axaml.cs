@@ -5,13 +5,22 @@ using System.IO;
 
 namespace PHIL_GUI.Views;
 
+/// <summary>
+/// View for the Debug settings page (communication logs and recording settings).
+/// </summary>
 public partial class DebugView : UserControl
 {
+    /// <summary>
+    /// Initializes the debug view.
+    /// </summary>
     public DebugView()
     {
         InitializeComponent();
     }
 
+    /// <summary>
+    /// Opens a file save dialog and saves the serial communication log to a text file.
+    /// </summary>
     private async void SaveLogButton_Click(object sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
         TopLevel topLevel = TopLevel.GetTopLevel(this);
@@ -43,6 +52,9 @@ public partial class DebugView : UserControl
         }
     }
 
+    /// <summary>
+    /// Copies the serial communication log to the clipboard.
+    /// </summary>
     public async void CopyButton_Click(object sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
         if (DataContext is not DebugViewModel vm) return;

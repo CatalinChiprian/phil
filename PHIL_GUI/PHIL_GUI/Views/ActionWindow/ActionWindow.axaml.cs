@@ -6,8 +6,16 @@ using PHIL_GUI.ViewModels;
 
 namespace PHIL_GUI.Views;
 
+/// <summary>
+/// Window for creating and editing scheduled actions.
+/// </summary>
 public partial class ActionWindow : Window
 {
+    /// <summary>
+    /// Initializes the action window with a specific mode and optional existing action.
+    /// </summary>
+    /// <param name="mode">Creation or update mode.</param>
+    /// <param name="action">Existing action to edit, or null for new action.</param>
     public ActionWindow(ActionWindowMode mode, ActionItem action)
     {
         InitializeComponent();
@@ -22,6 +30,9 @@ public partial class ActionWindow : Window
     }
 
 
+    /// <summary>
+    /// Initializes the action window in default mode (used by designer).
+    /// </summary>
     public ActionWindow()
     {
         InitializeComponent();
@@ -29,6 +40,9 @@ public partial class ActionWindow : Window
     }
 
 
+    /// <summary>
+    /// Handles save and cancel button clicks.
+    /// </summary>
     private void BottomBarButton_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
         if (DataContext is not ActionWindowViewModel vm) return;

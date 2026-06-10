@@ -1,9 +1,10 @@
-using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Markup.Xaml;
 
 namespace PHIL_GUI.Views;
 
+/// <summary>
+/// View for the Plate settings page (96-well vs organ-on-chip selection).
+/// </summary>
 public partial class PlateView : UserControl
 {
     public PlateView()

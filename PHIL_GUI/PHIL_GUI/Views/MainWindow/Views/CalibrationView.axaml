@@ -22,6 +22,7 @@
     </UserControl.KeyBindings>
 
     <DockPanel>
+        <!--Toolbar: Movement controls, step size, pumps, and record buttons-->
         <Border Classes="toolbar" DockPanel.Dock="Top">
 		    <Grid ColumnDefinitions="*,Auto" Margin="20,10">
 			    <StackPanel Grid.Column="0"
@@ -164,11 +165,12 @@
                     </StackPanel>
                 </StackPanel>
             </Grid>
-        </Border>
+		</Border>
 
-        <Grid ColumnDefinitions="*, Auto">
+		<Grid ColumnDefinitions="*, Auto">
 
-		    <Border Grid.Column="0" Background="{StaticResource Bg}" Padding="30,20">
+			<!--Organ-on-Chip plate display area-->
+			<Border Grid.Column="0" Background="{StaticResource Bg}" Padding="30,20">
                 <Viewbox Stretch="Uniform">
                     <Panel>
                         <!-- Organ-on-Chip Plate -->
@@ -275,6 +277,7 @@
                 </Viewbox>
             </Border>
 
+            <!--Right sidebar: Calibration points list and details-->
             <Border Grid.Column="1" Classes="sidebar" BorderThickness="1,0,0,0" Width="350">
                 <Grid RowDefinitions="Auto,Auto,*,Auto">
 		            <Border BorderThickness="0,0,0,1" Grid.Row="0">
@@ -292,7 +295,8 @@
 						    <TextBlock DockPanel.Dock="Left" Classes="subtitle" FontSize="10" LetterSpacing="1.5" Text="CALIBRATION POINTS"/>
                         </DockPanel>
                     </Border>
-                
+
+                    <!--Error color legend-->
                     <Border BorderThickness="0,0,0,1" Grid.Row="1" Background="{StaticResource Surface2}">
 					    <StackPanel Orientation="Horizontal" Margin="15,5" Spacing="12">
 						    <StackPanel Orientation="Horizontal" Spacing="5">
@@ -317,6 +321,7 @@
                             </StackPanel>
                         </StackPanel>
                     </Border>
+                    <!--Calibration points data grid-->
                     <DataGrid Name="CalibrationGrid" Grid.Row="2"
                                 GridLinesVisibility="Horizontal"
                                 ItemsSource="{Binding Calibration.Points}"
@@ -375,6 +380,7 @@
                         </DataGrid.Columns>
                     </DataGrid>
 
+                    <!--Selected point details panel-->
                     <Border Grid.Row="3" Background="{StaticResource Surface2}" BorderThickness="1,1,0,0"
                             IsVisible="{Binding IsWellMenuVisibile}">
                         <StackPanel Margin="14, 16" Spacing="10">

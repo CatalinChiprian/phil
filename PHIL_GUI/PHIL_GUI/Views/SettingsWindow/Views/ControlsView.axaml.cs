@@ -6,10 +6,22 @@ using System.Collections.Generic;
 
 namespace PHIL_GUI.Views;
 
+/// <summary>
+/// View for the Controls settings page (keyboard shortcut configuration).
+/// </summary>
 public partial class ControlsView : UserControl
 {
+    /// <summary>
+    /// Previous key binding string before editing.
+    /// </summary>
     string? prevStr;
+    /// <summary>
+    /// Currently active button being configured.
+    /// </summary>
     Button? activeButton;
+    /// <summary>
+    /// Initializes the controls view and subscribes to key events.
+    /// </summary>
     public ControlsView()
     {
         InitializeComponent();
@@ -17,6 +29,9 @@ public partial class ControlsView : UserControl
         KeyDown += OnKeyDown;
     }
 
+    /// <summary>
+    /// Captures keyboard input and assigns it to the active keybinding button.
+    /// </summary>
     private void OnKeyDown(object? sender, KeyEventArgs e)
     {
         if (activeButton == null) return;
@@ -57,6 +72,9 @@ public partial class ControlsView : UserControl
         activeButton = null;
     }
 
+    /// <summary>
+    /// Activates a keybinding button for editing.
+    /// </summary>
     private void Button_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
         if (activeButton != null)

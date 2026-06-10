@@ -1,16 +1,18 @@
-using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
-using Avalonia.Interactivity;
-using Avalonia.Markup.Xaml;
 using PHIL_GUI.ViewModels;
-using System;
 using System.ComponentModel;
 
 namespace PHIL_GUI.Views;
 
+/// <summary>
+/// Window for manual pump control (aspirate, dispense, prime).
+/// </summary>
 public partial class PumpsWindow : Window
 {
+    /// <summary>
+    /// Initializes the pumps window and configures keyboard shortcuts.
+    /// </summary>
     public PumpsWindow()
     {
         InitializeComponent();
@@ -27,16 +29,25 @@ public partial class PumpsWindow : Window
         DataContext = pumpsVm;
     }
 
+    /// <summary>
+    /// Refreshes key bindings when app settings change.
+    /// </summary>
     private void AppKeyBindings_PropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
         RefreshKeyBindings();
     }
 
+    /// <summary>
+    /// Closes the pumps window.
+    /// </summary>
     private void BottomBarButton_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
         Close();
     }
 
+    /// <summary>
+    /// Rebuilds all key bindings for pump controls from the current settings.
+    /// </summary>
     private void RefreshKeyBindings()
     {
         if (DataContext is not PumpsWindowViewModel vm) return;

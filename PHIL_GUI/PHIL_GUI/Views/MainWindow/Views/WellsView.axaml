@@ -8,6 +8,7 @@
              x:DataType="vm:WellsViewModel">
 
     <DockPanel>
+        <!--Bottom bar: Calibration metrics-->
         <Border DockPanel.Dock="Bottom" Classes="bottombar">
 			<StackPanel Orientation="Horizontal">
 				<StackPanel Orientation="Horizontal" Spacing="20">
@@ -34,14 +35,16 @@
             </StackPanel>
         </Border>
 
-        <Border DockPanel.Dock="Top" Background="{StaticResource Accent-Dim}" 
+        <!--Top notification banner-->
+        <Border DockPanel.Dock="Top" Background="{StaticResource Accent-Dim}"
                 Padding="30,10" BorderThickness="0,0,0,1" BorderBrush="{StaticResource Accent-Mid}">
             <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
 				<Ellipse Width="6" Height="6" Fill="{StaticResource Accent}" VerticalAlignment="Center"/>
                 <TextBlock Text="{Binding TopNotificationText}" VerticalAlignment="Center"/>
             </StackPanel>
-        </Border>
+		</Border>
 
+		<!--Well plate display area-->
 		<Border Background="{StaticResource Bg}" Padding="60,40">
             <Grid>
                 <Viewbox Stretch="Uniform">
@@ -213,6 +216,7 @@
                     </Panel>
                 </Viewbox>
 
+                <!--Calibration required overlay-->
                 <Border Background="{StaticResource Wall}"
                         IsVisible="{Binding Calibration.IsCalibrated, Converter={x:Static BoolConverters.Not}}"
                         ZIndex="10">

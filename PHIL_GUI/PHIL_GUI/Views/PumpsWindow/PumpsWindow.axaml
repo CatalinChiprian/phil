@@ -27,6 +27,7 @@
     </Window.KeyBindings>
 
     <DockPanel>
+        <!--Bottom bar: Close button-->
         <Border DockPanel.Dock="Bottom"
                 Classes="toolbar"
                 Padding="26,10"
@@ -38,6 +39,7 @@
                 Click="BottomBarButton_Click"/>
         </Border>
 
+        <!--Info banner-->
         <Grid DockPanel.Dock="Top" Margin="20" ColumnDefinitions="Auto,*">
             <Border Grid.Column="0" Width="2" Background="{StaticResource Accent}" Margin="0,0,15,0"/>
             <TextBlock Grid.Column="1"
@@ -47,6 +49,7 @@
                        VerticalAlignment="Center"/>
         </Grid>
 
+        <!--Pump selection and controls-->
         <StackPanel Orientation="Vertical" Spacing="8" Margin="20, 0">
     
             <StackPanel Orientation="Horizontal" Spacing="8">
@@ -60,6 +63,7 @@
                 <TextBlock Text="µL" Foreground="{StaticResource Muted}" VerticalAlignment="Center"/>
             </StackPanel>
 
+            <!--Action buttons: Aspirate, dispense, prime, stop-->
             <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto">
                 <Button Grid.Row="0" Grid.Column="0" Content="↑ Aspirate" Classes="btn btn-primary"
                         Margin="0,0,0,6" Width="110" Command="{Binding AspirateCommand}"/>

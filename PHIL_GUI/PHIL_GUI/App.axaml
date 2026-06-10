@@ -10,7 +10,9 @@
     </Application.DataTemplates>
 
 
+    <!--Application-wide resources and styles-->
     <Application.Resources>
+        <!--Color palette-->
         <ResourceDictionary>
             <SolidColorBrush x:Key="Wall">#AA000000</SolidColorBrush>
             <SolidColorBrush x:Key="Bg">#f4f6f4</SolidColorBrush>
@@ -43,7 +45,8 @@
             <Color x:Key="SystemAccentColorDark2">#006a34</Color>
         </ResourceDictionary>
     </Application.Resources>
-  
+
+    <!--Application-wide styles-->
     <Application.Styles>
         <FluentTheme />
         <StyleInclude Source="avares://Avalonia.Controls.DataGrid/Themes/Fluent.xaml"/>

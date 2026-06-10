@@ -9,8 +9,10 @@
              x:DataType="vm:ControlsViewModel">
 
     <ScrollViewer>
+        <!--Keyboard shortcut bindings organized by category-->
         <StackPanel Margin="10,20" Spacing="12">
 
+            <!--Homing controls-->
             <StackPanel>
                 <TextBlock Text="HOMING" LetterSpacing="1.2" FontWeight="SemiBold" FontSize="13"/>
 
@@ -35,9 +37,10 @@
                             Content="{Binding AppKeyBindings.CalibrateHomeStr, Converter={x:Static conv:KeyDisplayConverter.Instance}}"
                             Classes="btn btn-bind" Click="Button_Click"/>
                 </Grid>
-            </StackPanel>
+			</StackPanel>
 
-            <StackPanel>
+			<!--Movement controls-->
+			<StackPanel>
 				<TextBlock Text="MOVEMENT" LetterSpacing="1.2" FontWeight="SemiBold" FontSize="13"/>
 
                 <Grid ColumnDefinitions="*,Auto" Margin="8,4">
@@ -105,10 +108,11 @@
                             Content="{Binding AppKeyBindings.MoveBackwardStr, Converter={x:Static conv:KeyDisplayConverter.Instance}}" 
                             Classes="btn btn-bind" Click="Button_Click"/>
                 </Grid>
-            </StackPanel>
+			</StackPanel>
 
-            <StackPanel>
-			    <TextBlock Text="CALIBRATION" LetterSpacing="1.2" FontWeight="SemiBold" FontSize="13"/>
+			<!--Calibration controls-->
+			<StackPanel>
+				<TextBlock Text="CALIBRATION" LetterSpacing="1.2" FontWeight="SemiBold" FontSize="13"/>
 
                 <Grid ColumnDefinitions="*,Auto" Margin="8,4">
                     <StackPanel>
@@ -131,9 +135,10 @@
                             Content="{Binding AppKeyBindings.SolveMapStr, Converter={x:Static conv:KeyDisplayConverter.Instance}}" 
                             Classes="btn btn-bind" Click="Button_Click"/>
                 </Grid>
-            </StackPanel>
+			</StackPanel>
 
-            <StackPanel>
+			<!--Step size controls-->
+			<StackPanel>
 				<TextBlock Text="STEP SIZE" LetterSpacing="1.2" FontWeight="SemiBold" FontSize="13"/>
 
                 <Grid ColumnDefinitions="*,Auto" Margin="8,4">
@@ -157,9 +162,10 @@
                             Content="{Binding AppKeyBindings.DecreaseStepStr, Converter={x:Static conv:KeyDisplayConverter.Instance}}" 
                             Classes="btn btn-bind" Click="Button_Click"/>
                 </Grid>
-            </StackPanel>
+			</StackPanel>
 
-            <StackPanel>
+			<!--Pump controls-->
+			<StackPanel>
 				<TextBlock Text="PUMPS" LetterSpacing="1.2" FontWeight="SemiBold" FontSize="13"/>
                 
                 <StackPanel Margin="0,8">

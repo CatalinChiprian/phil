@@ -2,23 +2,34 @@ using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Data.Core.Plugins;
 using Avalonia.Markup.Xaml;
-using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using PHIL_GUI.Services;
-using PHIL_GUI.ViewModels;
 using PHIL_GUI.Models;
+using PHIL_GUI.Services;
+using System;
+using System.Linq;
 
 namespace PHIL_GUI;
 
+/// <summary>
+/// Main application class managing dependency injection and application lifecycle.
+/// </summary>
 public partial class App : Application
 {
+    /// <summary>
+    /// Gets the dependency injection service provider for the application.
+    /// </summary>
     public static IServiceProvider Services { get; private set; }
+    /// <summary>
+    /// Loads XAML resources during application initialization.
+    /// </summary>
     public override void Initialize()
     {
         AvaloniaXamlLoader.Load(this);
     }
 
+    /// <summary>
+    /// Configures dependency injection and initializes the application lifecycle.
+    /// </summary>
     public override void OnFrameworkInitializationCompleted()
     {
         ServiceCollection services = new ServiceCollection();
@@ -55,6 +66,9 @@ public partial class App : Application
         base.OnFrameworkInitializationCompleted();
     }
 
+    /// <summary>
+    /// Disables Avalonia's built-in data annotation validation to avoid conflicts with CommunityToolkit.
+    /// </summary>
     private void DisableAvaloniaDataAnnotationValidation()
     {
         // Get an array of plugins to remove

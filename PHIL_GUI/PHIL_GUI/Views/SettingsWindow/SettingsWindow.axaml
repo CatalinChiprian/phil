@@ -16,6 +16,7 @@
         Title="Settings - PHIL">
     <DockPanel>
 
+        <!--Bottom bar: Cancel and save buttons-->
         <Border DockPanel.Dock="Bottom"
                 Classes="toolbar"
                 Padding="16,10"
@@ -29,14 +30,16 @@
             </StackPanel>
         </Border>
 
+        <!--Left sidebar: General and developer settings navigation-->
         <Border DockPanel.Dock="Left"
                 Classes="sidebar"
                 Padding="15,20"
                 Width="200">
 			<StackPanel Orientation="Vertical"
-                        Spacing="15" >
-                <StackPanel Orientation="Vertical">
-                    <TextBlock Classes="subtitle" Text="GENERAL" LetterSpacing="2"/>
+						Spacing="15" >
+				<!--General settings pages-->
+				<StackPanel Orientation="Vertical">
+					<TextBlock Classes="subtitle" Text="GENERAL" LetterSpacing="2"/>
                     <ListBox Classes="nav"
                              ItemsSource="{Binding GeneralPages}"
                              SelectedItem="{Binding SelectedPage}">
@@ -55,6 +58,7 @@
                     </ListBox>
                 </StackPanel>
 
+                <!--Developer settings pages-->
                 <StackPanel Orientation="Vertical">
                     <TextBlock Classes="subtitle" Text="DEVELOPER" LetterSpacing="2"/>
                     <ListBox Classes="nav"
@@ -76,6 +80,7 @@
             </StackPanel>
         </Border>
 
+        <!--Main content area: Displays selected settings page-->
         <ContentControl Content="{Binding CurrentPage}"
                         IsVisible="{Binding CurrentPage, Converter={x:Static ObjectConverters.IsNotNull}}">
             <ContentControl.DataTemplates>

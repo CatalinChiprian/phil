@@ -13,16 +13,16 @@
         Title="PHIL_GUI"
         Focusable="True">
 
-    <Window.KeyBindings>
+	<Window.KeyBindings>
 		<KeyBinding Gesture="{Binding AppKeyBindings.GoHomeKey}" Command="{Binding GoHomeCommand}"/>
-        <KeyBinding Gesture="{Binding AppKeyBindings.CalibrateHomeKey}" Command="{Binding CalibrateHomeCommand}"/>
-        <KeyBinding Gesture="{Binding AppKeyBindings.MoveUpKey}" Command="{Binding MoveUpCommand}"/>
-        <KeyBinding Gesture="{Binding AppKeyBindings.MoveDownKey}" Command="{Binding MoveDownCommand}"/>
-    </Window.KeyBindings>
-    
-    <!-- Main content area that switches between pages -->
-    <DockPanel>
-        <Border DockPanel.Dock="Top" Classes="topbar">
+		<KeyBinding Gesture="{Binding AppKeyBindings.CalibrateHomeKey}" Command="{Binding CalibrateHomeCommand}"/>
+		<KeyBinding Gesture="{Binding AppKeyBindings.MoveUpKey}" Command="{Binding MoveUpCommand}"/>
+		<KeyBinding Gesture="{Binding AppKeyBindings.MoveDownKey}" Command="{Binding MoveDownCommand}"/>
+	</Window.KeyBindings>
+
+	<DockPanel>
+		<!--Top Bar: Connection status and settings-->
+		<Border DockPanel.Dock="Top" Classes="topbar">
             <Grid Margin="20,10"
                   VerticalAlignment="Stretch">
 				<Grid.ColumnDefinitions>
@@ -129,14 +129,16 @@
                               3.23463C14.6448 2.74458 14.2554 2.35523 13.7654 2.15224Z"/>
                     </Button>
                 </StackPanel>
-            </Grid>
-        </Border>
+			</Grid>
+		</Border>
 
-        <Border DockPanel.Dock="Left" Classes="sidebar" Padding="15,20" Width="200">
+		<!--Left Sidebar: Navigation, position info, and Z-axis controls-->
+		<Border DockPanel.Dock="Left" Classes="sidebar" Padding="15,20" Width="200">
 			<StackPanel Orientation="Vertical"
-                        Spacing="15" >
-                <StackPanel Orientation="Vertical">
-                    <TextBlock Classes="subtitle" Text="NAVIGATE" LetterSpacing="2"/>
+						Spacing="15" >
+				<!--Navigation menu-->
+				<StackPanel Orientation="Vertical">
+					<TextBlock Classes="subtitle" Text="NAVIGATE" LetterSpacing="2"/>
                     <ListBox Classes="nav"
                              ItemsSource="{Binding Pages}"
                              SelectedItem="{Binding SelectedPage}">
@@ -152,11 +154,12 @@
                             </DataTemplate>
                         </ListBox.ItemTemplate>
                     </ListBox>
-                </StackPanel>
+				</StackPanel>
 
-                <Border Height="1" Background="{StaticResource BorderColor}"/>
+				<Border Height="1" Background="{StaticResource BorderColor}"/>
 
-                <StackPanel Orientation="Vertical">
+				<!--Current well position display-->
+				<StackPanel Orientation="Vertical">
 					<TextBlock Classes="subtitle" Text="POSITION"  LetterSpacing="2"/>
                     <Border Margin="5,14" Padding="14" Background="{StaticResource Surface2}" 
                             BorderThickness="1" BorderBrush="{StaticResource BorderColor}" CornerRadius="8">
@@ -171,11 +174,12 @@
                             </StackPanel>
                         </StackPanel>
                     </Border>
-                </StackPanel>
-                
-                <Border Height="1" Background="{StaticResource BorderColor}"/>
+				</StackPanel>
 
-                <StackPanel Orientation="Vertical" Spacing="5">
+				<Border Height="1" Background="{StaticResource BorderColor}"/>
+
+				<!--Z-axis movement controls-->
+				<StackPanel Orientation="Vertical" Spacing="5">
 					<TextBlock Classes="subtitle" Text="Z AXIS"  LetterSpacing="2"/>
                     <StackPanel Orientation="Horizontal" Spacing="6">
                         <Button Classes="btn btn-primary" Content="↑ Up" Padding="24,6"
@@ -188,6 +192,7 @@
             </StackPanel>
         </Border>
 
+        <!--Toolbar: Home and emergency buttons-->
         <Border DockPanel.Dock="Top" Classes="toolbar">
             <DockPanel>
                 <StackPanel Orientation="Horizontal" DockPanel.Dock="Left" Spacing="8">
@@ -205,6 +210,7 @@
             </DockPanel>
         </Border>
 
+        <!--Main content area: Switches between page views-->
         <ContentControl Content="{Binding CurrentPage}"
                         IsVisible="{Binding CurrentPage, Converter={x:Static ObjectConverters.IsNotNull}}">
             <ContentControl.DataTemplates>

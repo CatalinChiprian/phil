@@ -8,8 +8,14 @@ using PHIL_GUI.Views;
 
 namespace PHIL_GUI;
 
+/// <summary>
+/// Window for selecting and connecting to a serial port.
+/// </summary>
 public partial class PortsWindow : Window
 {
+    /// <summary>
+    /// Initializes the ports window and subscribes to connection events.
+    /// </summary>
     public PortsWindow()
     {
         InitializeComponent();
@@ -21,6 +27,9 @@ public partial class PortsWindow : Window
         DataContext = portsViewModel;
     }
 
+    /// <summary>
+    /// Transitions to the main window after successful connection.
+    /// </summary>
     private void OnConnected()
     {
         MainWindow mainWindow = new MainWindow();

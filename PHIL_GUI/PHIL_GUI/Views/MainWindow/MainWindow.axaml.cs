@@ -2,14 +2,18 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Input;
-using Microsoft.Extensions.DependencyInjection;
-using PHIL_GUI.Models;
 using PHIL_GUI.ViewModels;
 
 namespace PHIL_GUI.Views;
 
+/// <summary>
+/// Main application window view.
+/// </summary>
 public partial class MainWindow : Window
 {
+    /// <summary>
+    /// Initializes the main window and sets up event handlers for ViewModel events.
+    /// </summary>
     public MainWindow()
     {
         InitializeComponent();
@@ -26,16 +30,25 @@ public partial class MainWindow : Window
         DataContext = mainVm;
     }
 
+    /// <summary>
+    /// Enables the main window after the robot protocol service initializes.
+    /// </summary>
     private void RobotProtocolService_OnAppInitialized()
     {
         this.IsEnabled = true;
     }
 
+    /// <summary>
+    /// Refreshes key bindings when app settings change.
+    /// </summary>
     private void AppKeyBindings_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
     {
         RefreshKeyBindings();
     }
 
+    /// <summary>
+    /// Handles disconnection by returning to the ports selection window.
+    /// </summary>
     private void OnDisconnected()
     {
         if (Application.Current?.ApplicationLifetime is not IClassicDesktopStyleApplicationLifetime desktop) return;
@@ -52,11 +65,17 @@ public partial class MainWindow : Window
         Close();
     }
 
+    /// <summary>
+    /// Opens the settings window as a modal dialog.
+    /// </summary>
     private async void SettingsButton_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
         await new SettingsWindow().ShowDialog(this);
     }
 
+    /// <summary>
+    /// Rebuilds all key bindings from the current ViewModel settings.
+    /// </summary>
     private void RefreshKeyBindings()
     {
         if (DataContext is not MainWindowViewModel vm) return;

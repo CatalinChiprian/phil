@@ -15,6 +15,7 @@
         Title="PHIL_GUI">
 
   <StackPanel Margin="20" Spacing="15">
+      <!--Header text-->
       <StackPanel Orientation="Vertical"
                   Spacing="5    "
                   VerticalAlignment="Center"
@@ -27,7 +28,8 @@
                      FontSize="10"
                      LetterSpacing="0.5"/>
       </StackPanel>
-                
+
+      <!--Available ports list-->
       <ListBox Classes="portList"
                ItemsSource="{Binding AvailablePorts}"
                SelectedItem="{Binding SelectedPort}"
@@ -40,7 +42,8 @@
            </ListBox.ItemTemplate>
       </ListBox>
 
-      <StackPanel Orientation="Horizontal" 
+      <!--Scan and connect buttons-->
+      <StackPanel Orientation="Horizontal"
                   HorizontalAlignment="Right"
                   Spacing="5">
 
