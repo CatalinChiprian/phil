@@ -56,7 +56,7 @@ int8_t calibrateHome() {
 
     stepperR.setSpeed(-10 * currentMicrosteps);
 
-    stepperR.moveTo(stepperR.currentPosition() - 500);
+    stepperR.moveTo(stepperR.currentPosition() - 550);
     while(stepperR.distanceToGo() != 0) {
         if (isEmergencyStopRequest()) {
             emergencyStop();
@@ -86,7 +86,7 @@ int8_t calibrateHome() {
 
     disableLMotor();
 
-    stepperR.move(345);
+    stepperR.move(405);
 
     while (stepperR.distanceToGo() != 0) {
         if (isEmergencyStopRequest()) {
