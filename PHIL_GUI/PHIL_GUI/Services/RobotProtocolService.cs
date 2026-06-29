@@ -39,6 +39,7 @@ namespace PHIL_GUI.Services
         const string DEC_STEP_CMD = "DEC_STEP";
         const string ASPIRATE_CMD = "ASPIRATE";
         const string DISPENSE_CMD = "DISPENSE";
+        const string PRIME_CMD = "PRIME";
         const string CALIBRATE_HOME_CMD = "CALIBRATE_HOME";
         const string MOVE_HARD_WELL_CMD = "MOVE_HARD_WELL";
         const string MOVE_CALC_WELL_CMD = "MOVE_CALC_WELL";
@@ -365,7 +366,7 @@ namespace PHIL_GUI.Services
         /// <param name="pumpNumber">The pump number (1-4) to prime.</param>
         public void Prime(int pumpNumber)
         {
-            SendCommand($"{DISPENSE_CMD} {pumpNumber} {int.MaxValue}");
+            SendCommand($"{PRIME_CMD} {pumpNumber} {int.MaxValue}");
         }
 
         /// <summary>

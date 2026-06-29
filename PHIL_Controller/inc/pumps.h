@@ -34,6 +34,16 @@
 void dispense(uint8_t pump, uint16_t microliters, char* well);
 
 /**
+ * prime(pump, microliters)
+ *
+ * Primes the selected pump by dispensing liquid to the waste container.
+ *
+ * @param pump         Pump index (e.g., P1, P2)
+ * @param microliters  Volume to prime in µL
+ */
+void prime(uint8_t pump, uint16_t microliters);
+
+/**
  * aspirate(pump, microliters, well)
  * 
  * Aspirates (draws) liquid into the specified pump.

@@ -99,6 +99,55 @@ void dispense(uint8_t pump, uint16_t microliters, char* well) {
 }
 
 /**
+ * prime(pump, microliters)
+ *
+ * Primes the selected pump by moving to the waste container,
+ * lowering the Z-axis, and dispensing the requested volume.
+ */
+void prime(uint8_t pump, uint16_t microliters) {
+
+    goToWasteContainer();
+    moveZMotors(ZMotorPumpPosition);
+
+    AccelStepper pumpStepper;
+    switch (pump) {
+        case 1:
+        enableP1Motor();
+        pumpStepper = stepperP1;
+        break;
+        
+        case 2:
+        enableP2Motor();
+        pumpStepper = stepperP2;
+        break;
+
+        default:
+        return;
+    }
+
+    long stepsNeeded = uLToSteps(microliters);
+
+    if (stepsNeeded > 0) {
+        pumpStepper.moveTo(pumpStepper.currentPosition() - stepsNeeded);
+        while(pumpStepper.distanceToGo() != 0) {
+            if (isEmergencyStopRequest()) {
+                emergencyStop();
+                break;
+            }
+            
+            pumpStepper.run();
+        }
+    }
+
+    moveZMotors(ZMotorNormalPosition);
+
+    Serial.print(F("PUMP"));
+    Serial.print(pump);
+    Serial.print(F(":dispensed=")); Serial.print(microliters);
+    Serial.println(F("uL"));
+}
+
+/**
  * aspirate(pump, microliters, well)
  * 
  * Aspirates (draws) liquid into the selected pump.

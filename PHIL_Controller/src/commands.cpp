@@ -139,6 +139,12 @@ void parseCommands() {
 
 		dispense(pump, amount, well);
 	}
+	else if (strcmp_P(cmd, PRIME_CMD) == 0) {
+		uint8_t pump = atoi(tokens[1]);
+		uint16_t amount = atoi(tokens[2]);
+
+		prime(pump, amount);
+	}
 	// ========================
 	// Calibration
 	// ========================
