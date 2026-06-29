@@ -455,8 +455,8 @@ void executeAction(Action &action) {
                 if (isInvalidWell(nxtRow, nxtCol)) return;
                 
                 if (action.pump2 >= 0 && action.pump1 >= 0) {
-                    aspirate(action.pump2, action.amount_uL, wellName);
-                    dispense(action.pump1, action.amount_uL, outWellName);
+                    aspirate(action.pump2, action.amount_uL, outWellName);
+                    dispense(action.pump1, action.amount_uL, wellName);
                     aspirate(action.pump2, action.amount_uL, outWellName);
                     dispense(action.pump1, action.amount_uL, wellName);
                 }
